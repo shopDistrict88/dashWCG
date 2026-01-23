@@ -1,0 +1,376 @@
+.container {
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #999999;
+  margin: 0;
+}
+
+.formSection {
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  padding: 32px;
+  border-radius: 8px;
+  margin-bottom: 40px;
+}
+
+.formTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+}
+
+.form {
+  display: grid;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  padding: 12px;
+  background: #0a0a0a;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #555555;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 12px;
+}
+
+.submitBtn {
+  padding: 14px 24px;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  margin-top: 12px;
+}
+
+.submitBtn:hover {
+  background: #f5f5f5;
+  transform: translateY(-1px);
+}
+
+.brandsSection {
+  margin-top: 40px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+}
+
+.brandsList {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+
+.brandCard {
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  padding: 24px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.brandCard:hover {
+  border-color: #555555;
+  background: #222222;
+}
+
+/* Score Card */
+.scoreCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #333333;
+}
+
+.scoreCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.scoreNumber {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.scoreMax {
+  font-size: 12px;
+  color: #999999;
+  line-height: 1;
+}
+
+.scoreLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+}
+
+.scoreDescription {
+  font-size: 12px;
+  color: #999999;
+  margin: 0;
+}
+
+/* Brand Header */
+.brandHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.brandHeader > div {
+  flex: 1;
+}
+
+.brandName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.brandDesc {
+  font-size: 13px;
+  color: #999999;
+  margin: 4px 0 0 0;
+  line-height: 1.4;
+}
+
+.deleteBtn {
+  background: #333333;
+  color: #ffffff;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.deleteBtn:hover {
+  background: #555555;
+}
+
+/* Consistency Indicators */
+.indicators {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #333333;
+}
+
+.indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: #0a0a0a;
+  border-radius: 4px;
+  border: 1px solid #2d2d2d;
+  transition: all 0.2s ease;
+}
+
+.indicator.active {
+  background: #1a3a1a;
+  border-color: #4caf50;
+}
+
+.indicatorIcon {
+  font-size: 20px;
+}
+
+.indicator small {
+  font-size: 11px;
+  color: #999999;
+}
+
+.indicator.active small {
+  color: #81c784;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #333333;
+}
+
+.section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sectionLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 8px;
+}
+
+.colorItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.colorSwatch {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  border: 1px solid #555555;
+  transition: transform 0.2s ease;
+}
+
+.colorSwatch:hover {
+  transform: scale(1.1);
+}
+
+.colorItem small {
+  font-size: 11px;
+  color: #999999;
+  text-align: center;
+  word-break: break-all;
+}
+
+.fontList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fontList p {
+  margin: 0;
+  padding: 8px;
+  background: #0a0a0a;
+  border-radius: 4px;
+  border: 1px solid #2d2d2d;
+}
+
+.voiceText {
+  color: #cccccc;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 12px;
+  background: #0a0a0a;
+  border-radius: 4px;
+  border: 1px solid #2d2d2d;
+}
+
+.empty {
+  font-size: 14px;
+  color: #999999;
+  text-align: center;
+  padding: 40px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 24px 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .brandsList {
+    grid-template-columns: 1fr;
+  }
+
+  .indicators {
+    gap: 8px;
+  }
+}

@@ -1,0 +1,184 @@
+.container {
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.header {
+  margin-bottom: 32px;
+  border-bottom: 1px solid #333333;
+  padding-bottom: 24px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #999999;
+  margin: 0;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.statsBar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.stat {
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat span:first-child {
+  font-size: 12px;
+  color: #999999;
+  margin-bottom: 8px;
+}
+
+.stat span:last-child {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.section {
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input,
+.textarea,
+.select {
+  background: #0a0a0a;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  padding: 10px 12px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #666666;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: #666666;
+}
+
+.button {
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: #e0e0e0;
+}
+
+.experimentsList {
+  display: grid;
+  gap: 12px;
+}
+
+.expCard {
+  background: #0a0a0a;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.expHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.expHeader h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: #666666;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+}
+
+.deleteBtn:hover {
+  color: #ffffff;
+}
+
+.hypothesis {
+  font-size: 12px;
+  color: #d0d0d0;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.resultSelector {
+  display: flex;
+  gap: 8px;
+}
+
+.select {
+  flex: 1;
+  font-size: 12px;
+  padding: 8px;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 20px 16px;
+  }
+
+  .statsBar {
+    grid-template-columns: 1fr;
+  }
+}

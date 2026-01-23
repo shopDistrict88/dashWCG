@@ -1,0 +1,145 @@
+.container {
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #999999;
+}
+
+.section {
+  margin-bottom: 40px;
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 20px;
+  border-bottom: 1px solid #333333;
+  background: #0a0a0a;
+  color: #ffffff;
+}
+
+.settingItem {
+  padding: 20px;
+  border-bottom: 1px solid #333333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.settingItem:last-child {
+  border-bottom: none;
+}
+
+.settingLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.settingValue {
+  font-size: 14px;
+  color: #999999;
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  font-size: 14px;
+  flex: 1;
+  max-width: 200px;
+  background: #0a0a0a;
+  color: #ffffff;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #555555;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #ffffff;
+}
+
+.checkbox input {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.saveBtn {
+  padding: 8px 16px;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saveBtn:hover {
+  background: #d0d0d0;
+}
+
+.exportBtn {
+  width: 100%;
+  padding: 12px;
+  background: #e8e8e8;
+  color: #000000;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exportBtn:hover {
+  background: #d0d0d0;
+}
+
+.logoutBtn {
+  width: 100%;
+  padding: 12px;
+  background: #d32f2f;
+  color: #ffffff;
+  border: 1px solid #d32f2f;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background: #b71c1c;
+  border-color: #b71c1c;
+}
