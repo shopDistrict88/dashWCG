@@ -636,7 +636,7 @@ export function ContentStudio() {
 
   const generateConstraint = () => {
     const constraintTypes = ['Time', 'Format', 'Platform', 'Budget', 'Theme', 'Length', 'Style', 'Audience']
-    const constraints = [
+    const constraintOptions = [
       'Create in under 1 hour',
       'Use only 3 colors',
       'No talking, only text',
@@ -651,7 +651,7 @@ export function ContentStudio() {
       'Documentary format'
     ]
     
-    const randomConstraint = constraints[Math.floor(Math.random() * constraints.length)]
+    const randomConstraint = constraintOptions[Math.floor(Math.random() * constraintOptions.length)]
     const randomType = constraintTypes[Math.floor(Math.random() * constraintTypes.length)]
     const difficulty: 'easy' | 'medium' | 'hard' = Math.random() > 0.6 ? 'hard' : Math.random() > 0.3 ? 'medium' : 'easy'
     const inspiration = Math.floor(Math.random() * 30) + 70
