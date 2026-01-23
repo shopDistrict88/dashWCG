@@ -55,7 +55,7 @@ const MOBILE_NAV = [
   { label: 'Create', path: '/dashboard/projects', icon: '+' },
   { label: 'AI', path: '/dashboard/ai', icon: '◇' },
   { label: 'Activity', path: '/dashboard/insights-lab', icon: '▵' },
-  { label: 'Profile', path: '/dashboard/settings', icon: '◆' },
+  { label: 'Explore', path: null, icon: '⊞' },
 ]
 
 export function DashboardPage() {
@@ -63,6 +63,7 @@ export function DashboardPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 768)
+  const [exploreOpen, setExploreOpen] = useState(false)
 
   const handleLogout = () => {
     logout()
@@ -134,15 +135,19 @@ export function DashboardPage() {
       <nav className={styles.mobileNav}>
         {MOBILE_NAV.map((item) => (
           <button
-            key={item.path}
+            key={item.label}
             className={`${styles.mobileNavItem} ${
-              location.pathname === item.path || 
-              (item.path === '/dashboard' && location.pathname === '/dashboard')
+              item.path && (location.pathname === item.path || 
+              (item.path === '/dashboard' && location.pathname === '/dashboard'))
                 ? styles.mobileNavItemActive
                 : ''
             }`}
             onClick={() => {
-              navigate(item.path)
+              if (item.path) {
+                navigate(item.path)
+              } else if (item.label === 'Explore') {
+                setExploreOpen(true)
+              }
             }}
           >
             <span className={styles.mobileNavIcon}>{item.icon}</span>
@@ -150,6 +155,34 @@ export function DashboardPage() {
           </button>
         ))}
       </nav>
+
+      {/* Explore Modal */}
+      {exploreOpen && (
+        <>
+          <div className={styles.exploreOverlay} onClick={() => setExploreOpen(false)} />
+          <div className={styles.exploreModal}>
+            <div className={styles.exploreHeader}>
+              <h2>Explore All Pages</h2>
+              <button onClick={() => setExploreOpen(false)} className={styles.exploreClose}>×</button>
+            </div>
+            <div className={styles.exploreContent}>
+              {MENU_ITEMS.map((item) => (
+                <button
+                  key={item.path}
+                  className={styles.exploreItem}
+                  onClick={() => {
+                    navigate(item.path)
+                    setExploreOpen(false)
+                  }}
+                >
+                  <span className={styles.exploreItemLabel}>{item.label}</span>
+                  <span className={styles.exploreItemArrow}>→</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
