@@ -82,7 +82,7 @@ interface BurnoutMetric {
   creator: string
   weeklyHours: number
   contentPieces: number
-  quality Score: number
+  qualityScore: number
   alertLevel: 'green' | 'yellow' | 'red'
   recommendation: string
 }
