@@ -279,8 +279,8 @@ export function Ideas() {
     const viability = calculateViabilityScore(ideaData)
     
     const newIdea: Idea = {
-      id: Date.now().toString(),
       ...ideaData as Idea,
+      id: Date.now().toString(),
       viabilityScore: viability,
       status: 'raw',
       createdAt: new Date().toISOString()

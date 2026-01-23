@@ -354,7 +354,7 @@ export function Commerce() {
     }
     
     setChurnPredictions([...churnPredictions, newPrediction])
-    addToast(`Churn risk: ${probability}%`, probability > 70 ? 'warning' : 'info')
+    addToast(`Churn risk: ${probability}%`, probability > 70 ? 'info' : 'info')
   }
 
   const analyzePaymentFlow = (flowName: string) => {

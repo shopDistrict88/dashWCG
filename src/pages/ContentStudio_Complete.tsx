@@ -606,7 +606,7 @@ export function ContentStudio() {
     
     const metric = calculateBurnout(creator, hours, pieces)
     setBurnoutMetrics([...burnoutMetrics, metric])
-    addToast(`Burnout check complete: ${metric.alertLevel.toUpperCase()}`, metric.alertLevel === 'red' ? 'error' : metric.alertLevel === 'yellow' ? 'warning' : 'success')
+    addToast(`Burnout check complete: ${metric.alertLevel.toUpperCase()}`, metric.alertLevel === 'red' ? 'error' : metric.alertLevel === 'yellow' ? 'info' : 'success')
     e.currentTarget.reset()
   }
 

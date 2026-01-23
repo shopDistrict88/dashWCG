@@ -316,7 +316,7 @@ export function LaunchLab() {
     
     setReadiness([...readiness, newReadiness])
     setShowReadinessForm(false)
-    addToast(`Readiness score: ${score.toFixed(0)}/100`, score >= 80 ? 'success' : 'warning')
+    addToast(`Readiness score: ${score.toFixed(0)}/100`, score >= 80 ? 'success' : 'info')
     e.currentTarget.reset()
   }
 
@@ -361,7 +361,7 @@ export function LaunchLab() {
     
     setAudienceTests([...audienceTests, newTest])
     setShowTestForm(false)
-    addToast(`Test ${newTest.validated ? 'validated' : 'invalidated'}`, newTest.validated ? 'success' : 'warning')
+    addToast(`Test ${newTest.validated ? 'validated' : 'invalidated'}`, newTest.validated ? 'success' : 'info')
     e.currentTarget.reset()
   }
 
@@ -469,7 +469,7 @@ export function LaunchLab() {
     }
     
     setDecays([...decays, newDecay])
-    addToast(`Decay rate: ${decayRate.toFixed(2)}% per day`, decayRate > 5 ? 'warning' : 'info')
+    addToast(`Decay rate: ${decayRate.toFixed(2)}% per day`, decayRate > 5 ? 'info' : 'info')
   }
 
   const addRelaunch = (e: React.FormEvent<HTMLFormElement>) => {

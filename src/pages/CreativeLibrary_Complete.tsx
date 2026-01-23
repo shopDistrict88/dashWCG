@@ -230,7 +230,7 @@ export function CreativeLibrary() {
   }
 
   const generateTypographyScale = (baseSize: number, ratio: number): {name: string, size: number, lineHeight: number}[] => {
-    const scale = []
+    const scale: {name: string, size: number, lineHeight: number}[] = []
     const sizes = ['xs', 'sm', 'base', 'lg', 'xl', '2xl', '3xl', '4xl']
     
     sizes.forEach((name, idx) => {

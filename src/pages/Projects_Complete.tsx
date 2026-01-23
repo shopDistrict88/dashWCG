@@ -349,7 +349,7 @@ export function Projects() {
     }
     
     setScopeCreeps([...scopeCreeps, creep])
-    addToast(`Scope creep: ${analysis.percentage.toFixed(0)}% - ${analysis.severity.toUpperCase()}`, 'warning')
+    addToast(`Scope creep: ${analysis.percentage.toFixed(0)}% - ${analysis.severity.toUpperCase()}`, 'info')
   }
 
   const addDecision = (e: React.FormEvent<HTMLFormElement>) => {
