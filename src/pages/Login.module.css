@@ -5,6 +5,10 @@
   min-height: 100vh;
   background: #000000;
   padding: 16px;
+  position: fixed;
+  width: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .card {
@@ -168,7 +172,7 @@
 .divider {
   position: relative;
   z-index: 1;
-  background: #ffffff;
+  background: #ffffff !important;
   padding: 0 12px;
   width: fit-content;
   margin: 24px auto;
