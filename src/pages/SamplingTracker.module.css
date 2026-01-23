@@ -265,7 +265,11 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 1rem;
+    padding: 80px 1rem 90px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .header {
@@ -279,13 +283,16 @@
 
   .samplesList {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .stats {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .actions {
     flex-direction: column;
+    gap: 0.75rem;
   }
 }

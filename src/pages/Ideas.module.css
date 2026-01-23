@@ -438,7 +438,11 @@
 
 @media (max-width: 640px) {
   .container {
-    padding: 16px 12px;
+    padding: 80px 12px 90px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .title {
@@ -447,10 +451,12 @@
 
   .statsBar {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .formRow {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .scoreSection {

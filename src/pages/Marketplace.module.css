@@ -205,7 +205,11 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 20px 16px;
+    padding: 80px 16px 90px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .title {
@@ -214,10 +218,12 @@
 
   .servicesList {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .cardHeader {
     flex-direction: column;
+    gap: 0.5rem;
   }
 
   .status {

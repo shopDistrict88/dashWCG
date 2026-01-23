@@ -318,7 +318,11 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 1rem;
+    padding: 80px 1rem 90px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .header {
@@ -332,9 +336,11 @@
 
   .collectionsGrid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .metricsBar {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }

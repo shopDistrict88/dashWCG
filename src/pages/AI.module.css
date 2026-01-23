@@ -345,7 +345,11 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 12px;
+    padding: 80px 12px 90px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .messageContent {

@@ -453,7 +453,11 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .container {
-    padding: var(--spacing-lg);
+    padding: 80px var(--spacing-lg) 90px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .header {

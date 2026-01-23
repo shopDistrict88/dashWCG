@@ -4,6 +4,13 @@
   box-sizing: border-box;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 80px 16px 90px;
+    overflow-x: hidden;
+  }
+}
+
 .header {
   margin-bottom: 40px;
 }

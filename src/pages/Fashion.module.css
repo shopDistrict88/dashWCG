@@ -1058,16 +1058,27 @@
 }
 
 @media (max-width: 768px) {
+  .container {
+    padding: 80px 16px 90px !important;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  
   .formGrid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .driftScores {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .stages {
     flex-direction: column;
+    gap: 0.75rem;
   }
 
   .stageBtn {

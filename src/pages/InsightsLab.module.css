@@ -4,6 +4,21 @@
   margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 80px 1rem 90px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  
+  .metrics {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+}
+
 .header {
   margin-bottom: 3rem;
 }

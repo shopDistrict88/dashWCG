@@ -180,7 +180,11 @@
 
 @media (max-width: 640px) {
   .container {
-    padding: 20px 16px;
+    padding: 80px 16px 90px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .title {
@@ -189,5 +193,12 @@
 
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
   }
 }
