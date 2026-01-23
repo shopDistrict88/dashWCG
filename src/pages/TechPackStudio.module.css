@@ -1,0 +1,286 @@
+.container {
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0 0 0.5rem 0;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.subtitle {
+  color: #7a7a7a;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.primaryBtn {
+  padding: 0.75rem 1.5rem;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.primaryBtn:hover {
+  background: #e5e5e5;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statBox {
+  padding: 1.5rem;
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.statLabel {
+  color: #7a7a7a;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statValue {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.packsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  gap: 1.5rem;
+}
+
+.packCard {
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.2s;
+}
+
+.packCard:hover {
+  border-color: #2a2a2a;
+}
+
+.packHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.packHeader h3 {
+  margin: 0 0 0.25rem 0;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.styleNumber {
+  color: #7a7a7a;
+  font-size: 0.85rem;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+}
+
+.status {
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.statusProduction {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.statusApproved {
+  background: rgba(200, 200, 200, 0.1);
+  color: #c8c8c8;
+}
+
+.statusReview {
+  background: rgba(150, 150, 150, 0.1);
+  color: #969696;
+}
+
+.statusDraft {
+  background: rgba(122, 122, 122, 0.1);
+  color: #7a7a7a;
+}
+
+.packMeta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metaLabel {
+  color: #7a7a7a;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metaValue {
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.completion {
+  margin-bottom: 1.5rem;
+}
+
+.completionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.completionLabel {
+  color: #7a7a7a;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.completionPercent {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.completionBar {
+  width: 100%;
+  height: 6px;
+  background: #1a1a1a;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.completionFill {
+  height: 100%;
+  background: #fff;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.sections {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #000;
+  border-radius: 6px;
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  color: #7a7a7a;
+  font-size: 0.85rem;
+}
+
+.sectionComplete {
+  color: #fff;
+}
+
+.sectionIcon {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.sectionName {
+  font-size: 0.85rem;
+}
+
+.packActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.secondaryBtn {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  background: #000;
+  color: #fff;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.secondaryBtn:hover {
+  border-color: #3a3a3a;
+  background: #0a0a0a;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .primaryBtn {
+    width: 100%;
+  }
+
+  .packsList {
+    grid-template-columns: 1fr;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .packActions {
+    flex-direction: column;
+  }
+}

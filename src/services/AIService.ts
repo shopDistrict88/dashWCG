@@ -57,6 +57,10 @@ export class AIService {
 
   constructor() {
     this.apiKey = import.meta.env.VITE_OPENAI_API_KEY || null
+    console.log('OpenAI API Key loaded:', this.apiKey ? 'YES ✓' : 'NO ✗')
+    if (this.apiKey) {
+      console.log('Key length:', this.apiKey.length, 'characters')
+    }
   }
 
   async generateResponse(
@@ -90,30 +94,43 @@ export class AIService {
     ]
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      console.log('Calling Supabase Edge Function...')
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+      
+      console.log('Supabase URL:', supabaseUrl)
+      console.log('Supabase Key loaded:', supabaseKey ? 'YES' : 'NO')
+      
+      const edgeFunctionUrl = `${supabaseUrl}/functions/v1/quick-responder`
+      console.log('Edge Function URL:', edgeFunctionUrl)
+      
+      const response = await fetch(edgeFunctionUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${supabaseKey}`,
         },
         body: JSON.stringify({
-          model: this.model,
           messages,
-          temperature: 0.7,
-          max_tokens: 1000,
         }),
       })
 
+      console.log('Edge Function Response status:', response.status)
+
       if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.statusText}`)
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Edge Function error details:', errorData)
+        throw new Error(`Edge Function error: ${response.statusText}`)
       }
 
       const data = await response.json()
-      const content = data.choices[0].message.content
+      const content = data.content || data.choices?.[0]?.message?.content
+      console.log('AI response received successfully')
 
       return this.parseResponse(content)
     } catch (error) {
       console.error('OpenAI API error:', error)
+      console.log('Falling back to mock responses')
       // Fallback to mock response
       return this.generateMockResponse(userMessage, dashboardContext)
     }

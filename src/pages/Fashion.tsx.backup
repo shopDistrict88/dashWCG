@@ -1,0 +1,289 @@
+import { useState } from 'react'
+import styles from './Fashion.module.css'
+
+interface Collection {
+  id: string
+  name: string
+  season: string
+  pieces: number
+  status: 'concept' | 'sampling' | 'production' | 'archived'
+  aestheticScore: number
+}
+
+interface TechPack {
+  id: string
+  garmentName: string
+  styleNumber: string
+  version: string
+  status: 'draft' | 'review' | 'approved'
+  completion: number
+}
+
+interface Material {
+  id: string
+  name: string
+  supplier: string
+  sustainability: number
+  inStock: boolean
+}
+
+interface Sample {
+  id: string
+  garmentName: string
+  factory: string
+  status: 'ordered' | 'in-production' | 'received' | 'approved'
+  qualityScore: number
+}
+
+export function Fashion() {
+  const [activeSection, setActiveSection] = useState<'collections' | 'tech-packs' | 'materials' | 'sampling' | 'manufacturing'>('collections')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const collections: Collection[] = [
+    { id: '1', name: 'Monochrome Foundation', season: 'SS 2026', pieces: 12, status: 'production', aestheticScore: 94 },
+    { id: '2', name: 'Technical Silence', season: 'FW 2026', pieces: 18, status: 'sampling', aestheticScore: 97 },
+  ]
+
+  const techPacks: TechPack[] = [
+    { id: '1', garmentName: 'Minimal Overshirt', styleNumber: 'MF-001-SS26', version: '3.2', status: 'approved', completion: 100 },
+    { id: '2', garmentName: 'Technical Cargo Pant', styleNumber: 'TS-003-FW26', version: '2.1', status: 'review', completion: 75 },
+  ]
+
+  const materials: Material[] = [
+    { id: '1', name: 'Japanese Cotton Twill', supplier: 'Kurabo Industries', sustainability: 92, inStock: true },
+    { id: '2', name: 'Technical Ripstop', supplier: 'Schoeller Textil AG', sustainability: 78, inStock: false },
+  ]
+
+  const samples: Sample[] = [
+    { id: '1', garmentName: 'Minimal Overshirt', factory: 'Atelier Kyoto', status: 'approved', qualityScore: 95 },
+    { id: '2', garmentName: 'Technical Cargo Pant', factory: 'Precision Manufacturing', status: 'in-production', qualityScore: 0 },
+  ]
+
+  const filteredCollections = collections.filter(c => 
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.season.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const filteredTechPacks = techPacks.filter(t => 
+    t.garmentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.styleNumber.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const filteredMaterials = materials.filter(m => 
+    m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.supplier.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const filteredSamples = samples.filter(s => 
+    s.garmentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.factory.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <div>
+          <h1>Fashion & Manufacturing</h1>
+          <p className={styles.subtitle}>Complete production pipeline and supply chain</p>
+        </div>
+      </div>
+
+      <nav className={styles.sectionNav}>
+        <button
+          className={`${styles.navBtn} ${activeSection === 'collections' ? styles.navBtnActive : ''}`}
+          onClick={() => setActiveSection('collections')}
+        >
+          Collections
+        </button>
+        <button
+          className={`${styles.navBtn} ${activeSection === 'tech-packs' ? styles.navBtnActive : ''}`}
+          onClick={() => setActiveSection('tech-packs')}
+        >
+          Tech Packs
+        </button>
+        <button
+          className={`${styles.navBtn} ${activeSection === 'materials' ? styles.navBtnActive : ''}`}
+          onClick={() => setActiveSection('materials')}
+        >
+          Materials
+        </button>
+        <button
+          className={`${styles.navBtn} ${activeSection === 'sampling' ? styles.navBtnActive : ''}`}
+          onClick={() => setActiveSection('sampling')}
+        >
+          Sampling
+        </button>
+        <button
+          className={`${styles.navBtn} ${activeSection === 'manufacturing' ? styles.navBtnActive : ''}`}
+          onClick={() => setActiveSection('manufacturing')}
+        >
+          Manufacturing
+        </button>
+      </nav>
+
+      <div className={styles.searchBar}>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className={styles.searchInput}
+        />
+      </div>
+
+      {activeSection === 'collections' && (
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2>Collections</h2>
+            <button className={styles.primaryBtn} onClick={() => alert('Create new collection')}>New Collection</button>
+          </div>
+          <div className={styles.grid}>
+            {filteredCollections.map((col) => (
+              <div key={col.id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div>
+                    <h3>{col.name}</h3>
+                    <p className={styles.meta}>{col.season}</p>
+                  </div>
+                  <span className={`${styles.badge} ${styles[col.status]}`}>{col.status}</span>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.stat}>
+                    <span className={styles.statLabel}>Pieces</span>
+                    <span className={styles.statValue}>{col.pieces}</span>
+                  </div>
+                  <div className={styles.stat}>
+                    <span className={styles.statLabel}>Aesthetic Score</span>
+                    <span className={styles.statValue}>{col.aestheticScore}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeSection === 'tech-packs' && (
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2>Tech Packs</h2>
+            <button className={styles.primaryBtn} onClick={() => alert('Create new tech pack')}>New Tech Pack</button>
+          </div>
+          <div className={styles.grid}>
+            {filteredTechPacks.map((pack) => (
+              <div key={pack.id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div>
+                    <h3>{pack.garmentName}</h3>
+                    <p className={styles.meta}>{pack.styleNumber}</p>
+                  </div>
+                  <span className={`${styles.badge} ${styles[pack.status]}`}>{pack.status}</span>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.stat}>
+                    <span className={styles.statLabel}>Version</span>
+                    <span className={styles.statValue}>{pack.version}</span>
+                  </div>
+                  <div className={styles.stat}>
+                    <span className={styles.statLabel}>Completion</span>
+                    <span className={styles.statValue}>{pack.completion}%</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeSection === 'materials' && (
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2>Material Library</h2>
+            <button className={styles.primaryBtn} onClick={() => alert('Add new material')}>Add Material</button>
+          </div>
+          <div className={styles.grid}>
+            {filteredMaterials.map((mat) => (
+              <div key={mat.id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div>
+                    <h3>{mat.name}</h3>
+                    <p className={styles.meta}>{mat.supplier}</p>
+                  </div>
+                  <span className={`${styles.badge} ${mat.inStock ? styles.instock : styles.outofstock}`}>
+                    {mat.inStock ? 'In Stock' : 'Out of Stock'}
+                  </span>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.stat}>
+                    <span className={styles.statLabel}>Sustainability</span>
+                    <span className={styles.statValue}>{mat.sustainability}/100</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeSection === 'sampling' && (
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2>Sampling Tracker</h2>
+            <button className={styles.primaryBtn} onClick={() => alert('Order new sample')}>Order Sample</button>
+          </div>
+          <div className={styles.grid}>
+            {filteredSamples.map((sample) => (
+              <div key={sample.id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div>
+                    <h3>{sample.garmentName}</h3>
+                    <p className={styles.meta}>{sample.factory}</p>
+                  </div>
+                  <span className={`${styles.badge} ${styles[sample.status.replace('-', '')]}`}>{sample.status}</span>
+                </div>
+                {sample.qualityScore > 0 && (
+                  <div className={styles.cardBody}>
+                    <div className={styles.stat}>
+                      <span className={styles.statLabel}>Quality Score</span>
+                      <span className={styles.statValue}>{sample.qualityScore}/100</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeSection === 'manufacturing' && (
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2>Manufacturing Partners</h2>
+            <button className={styles.primaryBtn} onClick={() => alert('Add new manufacturing partner')}>Add Partner</button>
+          </div>
+          <div className={styles.grid}>
+            <div className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div>
+                  <h3>Atelier Kyoto</h3>
+                  <p className={styles.meta}>Kyoto, Japan</p>
+                </div>
+                <span className={`${styles.badge} ${styles.active}`}>Active</span>
+              </div>
+              <div className={styles.cardBody}>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>Capacity</span>
+                  <span className={styles.statValue}>1000 units/mo</span>
+                </div>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>Quality Rating</span>
+                  <span className={styles.statValue}>98/100</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

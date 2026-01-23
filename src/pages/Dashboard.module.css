@@ -138,6 +138,67 @@
   padding: 24px 16px;
 }
 
+/* Mobile Bottom Navigation */
+.mobileNav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobileNav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: #000;
+    border-top: 1px solid #1a1a1a;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 50;
+    padding: 0;
+  }
+
+  .mobileNavItem {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 4px;
+    background: none;
+    border: none;
+    color: #7a7a7a;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 64px;
+  }
+
+  .mobileNavItem:active {
+    background: #0a0a0a;
+  }
+
+  .mobileNavItemActive {
+    color: #fff;
+  }
+
+  .mobileNavIcon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .mobileNavLabel {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .main {
+    padding: 72px 12px 80px;
+  }
+}
+
 /* Tablet */
 @media (max-width: 1024px) {
   .sidebar {
