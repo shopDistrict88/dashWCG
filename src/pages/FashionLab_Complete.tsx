@@ -858,7 +858,7 @@ function CollectionBuilderSection({ collections, designs, showForm, setShowForm,
             <div className={styles.measurements}>
               {Object.entries(formData.pricingTiers).map(([name, price]) => (
                 <div key={name} className={styles.measurementItem}>
-                  <span><strong>{name}:</strong> ${price}</span>
+                  <span><strong>{name}:</strong> ${String(price)}</span>
                   <button type="button" onClick={() => { const { [name]: removed, ...rest } = formData.pricingTiers; setFormData({ ...formData, pricingTiers: rest }) }} className={styles.removeBtn}>×</button>
                 </div>
               ))}

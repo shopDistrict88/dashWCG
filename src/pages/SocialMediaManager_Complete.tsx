@@ -408,7 +408,7 @@ export function SocialMedia() {
     if (sentiment === 'negative') {
       return voice === 'professional'
         ? 'Thank you for your feedback. We take this seriously and would love to make it right. Can you DM us?'
-        : 'Oh no! We're sorry to hear that. Let us fix this - DM us! 💙'
+        : 'Oh no! We are sorry to hear that. Let us fix this - DM us!'
     }
     return voice === 'professional'
       ? 'Thank you for your comment! We appreciate you engaging with our content.'
