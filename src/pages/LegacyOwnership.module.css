@@ -124,8 +124,10 @@
   transition: border-color 0.2s ease;
 }
 
-.buttonSecondary:hover {
-  border-color: #3f3f3f;
+@media (hover: hover) and (pointer: fine) {
+  .buttonSecondary:hover {
+    border-color: #3f3f3f;
+  }
 }
 
 .rightsCard {
@@ -237,8 +239,10 @@
   transition: opacity 0.2s ease;
 }
 
-.button:hover {
-  opacity: 0.9;
+@media (hover: hover) and (pointer: fine) {
+  .button:hover {
+    opacity: 0.9;
+  }
 }
 
 .ownershipCard {

@@ -52,9 +52,11 @@
   transition: all 0.2s ease;
 }
 
-.roadmapStage:hover {
-  border-color: #444444;
-  background: #111111;
+@media (hover: hover) and (pointer: fine) {
+  .roadmapStage:hover {
+    border-color: #444444;
+    background: #111111;
+  }
 }
 
 .stageIcon {
@@ -159,9 +161,11 @@
   margin-top: 12px;
 }
 
-.submitBtn:hover {
-  background: #f5f5f5;
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .submitBtn:hover {
+    background: #f5f5f5;
+    transform: translateY(-1px);
+  }
 }
 
 /* Creators List */
@@ -199,9 +203,11 @@
   transition: all 0.2s ease;
 }
 
-.creatorCard:hover {
-  border-color: #555555;
-  background: #222222;
+@media (hover: hover) and (pointer: fine) {
+  .creatorCard:hover {
+    border-color: #555555;
+    background: #222222;
+  }
 }
 
 .creatorHeader {
@@ -236,8 +242,10 @@
   transition: all 0.2s ease;
 }
 
-.deleteBtn:hover {
-  background: #555555;
+@media (hover: hover) and (pointer: fine) {
+  .deleteBtn:hover {
+    background: #555555;
+  }
 }
 
 .stageSelector {
@@ -267,8 +275,10 @@
   justify-content: center;
 }
 
-.advanceBtn:hover {
-  background: #f5f5f5;
+@media (hover: hover) and (pointer: fine) {
+  .advanceBtn:hover {
+    background: #f5f5f5;
+  }
 }
 
 .maxed {
@@ -326,9 +336,11 @@
   transition: all 0.2s ease;
 }
 
-.tag:hover {
-  background: #3d3d3d;
-  color: #ffffff;
+@media (hover: hover) and (pointer: fine) {
+  .tag:hover {
+    background: #3d3d3d;
+    color: #ffffff;
+  }
 }
 
 @media (max-width: 768px) {

@@ -92,9 +92,11 @@
   text-align: left;
 }
 
-.quickActionBtn:hover {
-  background: #d0d0d0;
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .quickActionBtn:hover {
+    background: #d0d0d0;
+    transform: translateY(-2px);
+  }
 }
 
 .info {
@@ -212,10 +214,12 @@
   white-space: nowrap;
 }
 
-.actionBtn:hover {
-  background: #000000;
-  color: #ffffff;
-  border-color: #000000;
+@media (hover: hover) and (pointer: fine) {
+  .actionBtn:hover {
+    background: #000000;
+    color: #ffffff;
+    border-color: #000000;
+  }
 }
 
 .typing {
@@ -307,9 +311,11 @@
   justify-content: center;
 }
 
-.sendBtn:hover:not(:disabled) {
-  background: #e8e8e8;
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .sendBtn:hover:not(:disabled) {
+    background: #e8e8e8;
+    transform: translateY(-2px);
+  }
 }
 
 .sendBtn:disabled {
@@ -330,9 +336,11 @@
   transition: all 0.2s ease;
 }
 
-.newChatBtn:hover {
-  background: #2a2a2a;
-  border-color: #555555;
+@media (hover: hover) and (pointer: fine) {
+  .newChatBtn:hover {
+    background: #2a2a2a;
+    border-color: #555555;
+  }
 }
 
 @media (max-width: 768px) {

@@ -158,8 +158,10 @@
   transition: background-color 0.2s;
 }
 
-.submitBtn:hover {
-  background: #e0e0e0;
+@media (hover: hover) and (pointer: fine) {
+  .submitBtn:hover {
+    background: #e0e0e0;
+  }
 }
 
 .ideasSection {
@@ -227,9 +229,11 @@
   transition: all 0.2s;
 }
 
-.noteCard:hover {
-  border-color: #666666;
-  background: #202020;
+@media (hover: hover) and (pointer: fine) {
+  .noteCard:hover {
+    border-color: #666666;
+    background: #202020;
+  }
 }
 
 .noteHeader {
@@ -302,8 +306,10 @@
   flex-shrink: 0;
 }
 
-.deleteBtn:hover {
-  color: #ffffff;
+@media (hover: hover) and (pointer: fine) {
+  .deleteBtn:hover {
+    color: #ffffff;
+  }
 }
 
 .scoreSection {

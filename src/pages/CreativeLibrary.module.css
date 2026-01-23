@@ -36,8 +36,10 @@
   transition: opacity var(--transition-fast);
 }
 
-.uploadBtn:hover {
-  opacity: 0.85;
+@media (hover: hover) and (pointer: fine) {
+  .uploadBtn:hover {
+    opacity: 0.85;
+  }
 }
 
 /* Tabs */
@@ -60,8 +62,10 @@
   transition: all var(--transition-fast);
 }
 
-.tabs button:hover {
-  color: var(--color-text-primary);
+@media (hover: hover) and (pointer: fine) {
+  .tabs button:hover {
+    color: var(--color-text-primary);
+  }
 }
 
 .tabs button.active {
@@ -104,8 +108,10 @@
   transition: all var(--transition-fast);
 }
 
-.viewToggle button:hover {
-  border-color: var(--color-text-tertiary);
+@media (hover: hover) and (pointer: fine) {
+  .viewToggle button:hover {
+    border-color: var(--color-text-tertiary);
+  }
 }
 
 .viewToggle button.active {
@@ -134,8 +140,10 @@
   transition: border-color var(--transition-fast);
 }
 
-.fileCard:hover {
-  border-color: var(--color-text-tertiary);
+@media (hover: hover) and (pointer: fine) {
+  .fileCard:hover {
+    border-color: var(--color-text-tertiary);
+  }
 }
 
 .fileThumbnail {
@@ -236,8 +244,10 @@
   transition: all var(--transition-fast);
 }
 
-.actionBtn:hover {
-  background: var(--color-border);
+@media (hover: hover) and (pointer: fine) {
+  .actionBtn:hover {
+    background: var(--color-border);
+  }
 }
 
 /* Moodboards Section */
@@ -266,8 +276,10 @@
   transition: opacity var(--transition-fast);
 }
 
-.createBtn:hover {
-  opacity: 0.85;
+@media (hover: hover) and (pointer: fine) {
+  .createBtn:hover {
+    opacity: 0.85;
+  }
 }
 
 .moodboardsGrid {
@@ -284,8 +296,10 @@
   transition: border-color var(--transition-fast);
 }
 
-.moodboardCard:hover {
-  border-color: var(--color-text-tertiary);
+@media (hover: hover) and (pointer: fine) {
+  .moodboardCard:hover {
+    border-color: var(--color-text-tertiary);
+  }
 }
 
 .moodboardCover {
@@ -410,8 +424,10 @@
   transition: all var(--transition-fast);
 }
 
-.categoryTags span:hover {
-  background: var(--color-border);
+@media (hover: hover) and (pointer: fine) {
+  .categoryTags span:hover {
+    background: var(--color-border);
+  }
 }
 
 .inspirationTip {

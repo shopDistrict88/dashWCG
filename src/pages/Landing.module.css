@@ -73,10 +73,12 @@
   box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
 }
 
-.button:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 60px rgba(139, 92, 246, 0.5);
-  background: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
+@media (hover: hover) and (pointer: fine) {
+  .button:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.5);
+    background: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
+  }
 }
 
 .arrow {
@@ -84,8 +86,10 @@
   transition: transform 0.3s;
 }
 
-.button:hover .arrow {
-  transform: translateX(4px);
+@media (hover: hover) and (pointer: fine) {
+  .button:hover .arrow {
+    transform: translateX(4px);
+  }
 }
 
 @keyframes fadeIn {

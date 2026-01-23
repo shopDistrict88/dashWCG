@@ -98,9 +98,11 @@
   margin-top: 12px;
 }
 
-.submitBtn:hover {
-  background: #f5f5f5;
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .submitBtn:hover {
+    background: #f5f5f5;
+    transform: translateY(-1px);
+  }
 }
 
 .brandsSection {
@@ -128,9 +130,11 @@
   transition: all 0.2s ease;
 }
 
-.brandCard:hover {
-  border-color: #555555;
-  background: #222222;
+@media (hover: hover) and (pointer: fine) {
+  .brandCard:hover {
+    border-color: #555555;
+    background: #222222;
+  }
 }
 
 /* Score Card */
@@ -221,8 +225,10 @@
   flex-shrink: 0;
 }
 
-.deleteBtn:hover {
-  background: #555555;
+@media (hover: hover) and (pointer: fine) {
+  .deleteBtn:hover {
+    background: #555555;
+  }
 }
 
 /* Consistency Indicators */
@@ -307,8 +313,10 @@
   transition: transform 0.2s ease;
 }
 
-.colorSwatch:hover {
-  transform: scale(1.1);
+@media (hover: hover) and (pointer: fine) {
+  .colorSwatch:hover {
+    transform: scale(1.1);
+  }
 }
 
 .colorItem small {

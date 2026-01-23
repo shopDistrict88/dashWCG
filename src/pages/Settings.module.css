@@ -105,8 +105,10 @@
   transition: all 0.2s ease;
 }
 
-.saveBtn:hover {
-  background: #d0d0d0;
+@media (hover: hover) and (pointer: fine) {
+  .saveBtn:hover {
+    background: #d0d0d0;
+  }
 }
 
 .exportBtn {
@@ -122,8 +124,10 @@
   transition: all 0.2s ease;
 }
 
-.exportBtn:hover {
-  background: #d0d0d0;
+@media (hover: hover) and (pointer: fine) {
+  .exportBtn:hover {
+    background: #d0d0d0;
+  }
 }
 
 .logoutBtn {
@@ -139,7 +143,9 @@
   transition: all 0.2s ease;
 }
 
-.logoutBtn:hover {
-  background: #b71c1c;
-  border-color: #b71c1c;
+@media (hover: hover) and (pointer: fine) {
+  .logoutBtn:hover {
+    background: #b71c1c;
+    border-color: #b71c1c;
+  }
 }

@@ -61,8 +61,10 @@
   transition: all var(--transition-fast);
 }
 
-.categories button:hover {
-  border-color: var(--color-text-tertiary);
+@media (hover: hover) and (pointer: fine) {
+  .categories button:hover {
+    border-color: var(--color-text-tertiary);
+  }
 }
 
 .categories button.active {
@@ -88,9 +90,11 @@
   transition: all var(--transition-fast);
 }
 
-.toolCard:hover {
-  border-color: var(--color-text-tertiary);
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .toolCard:hover {
+    border-color: var(--color-text-tertiary);
+    transform: translateY(-2px);
+  }
 }
 
 .toolHeader {
@@ -162,10 +166,12 @@
   transition: all var(--transition-fast);
 }
 
-.launchBtn:hover {
-  background: var(--color-accent);
-  color: #000;
-  border-color: var(--color-accent);
+@media (hover: hover) and (pointer: fine) {
+  .launchBtn:hover {
+    background: var(--color-accent);
+    color: #000;
+    border-color: var(--color-accent);
+  }
 }
 
 /* Empty State */
@@ -257,8 +263,10 @@
   transition: opacity var(--transition-fast);
 }
 
-.enableBtn:hover {
-  opacity: 0.85;
+@media (hover: hover) and (pointer: fine) {
+  .enableBtn:hover {
+    opacity: 0.85;
+  }
 }
 
 /* Trends */

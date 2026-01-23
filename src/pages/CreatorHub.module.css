@@ -53,8 +53,10 @@
   transition: border-color var(--transition-fast);
 }
 
-.platformCard:hover {
-  border-color: var(--color-text-tertiary);
+@media (hover: hover) and (pointer: fine) {
+  .platformCard:hover {
+    border-color: var(--color-text-tertiary);
+  }
 }
 
 .platformHeader {
@@ -92,8 +94,10 @@
   transition: opacity var(--transition-fast);
 }
 
-.connectBtn:hover {
-  opacity: 0.8;
+@media (hover: hover) and (pointer: fine) {
+  .connectBtn:hover {
+    opacity: 0.8;
+  }
 }
 
 .platformStats {
@@ -144,8 +148,10 @@
   transition: all var(--transition-fast);
 }
 
-.timeRangeSelector button:hover {
-  border-color: var(--color-text-tertiary);
+@media (hover: hover) and (pointer: fine) {
+  .timeRangeSelector button:hover {
+    border-color: var(--color-text-tertiary);
+  }
 }
 
 .timeRangeSelector button.active {
@@ -214,8 +220,10 @@
   transition: border-color var(--transition-fast);
 }
 
-.postCard:hover {
-  border-color: var(--color-text-tertiary);
+@media (hover: hover) and (pointer: fine) {
+  .postCard:hover {
+    border-color: var(--color-text-tertiary);
+  }
 }
 
 .postThumbnail {

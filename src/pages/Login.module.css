@@ -95,9 +95,11 @@
   min-height: 48px;
 }
 
-.button:hover:not(:disabled) {
-  background: #1a1a1a;
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .button:hover:not(:disabled) {
+    background: #1a1a1a;
+    transform: translateY(-1px);
+  }
 }
 
 /* Mobile responsive */
@@ -186,9 +188,11 @@
   margin-bottom: 24px;
 }
 
-.demoButton:hover:not(:disabled) {
-  background: #efefef;
-  border-color: #d0d0d0;
+@media (hover: hover) and (pointer: fine) {
+  .demoButton:hover:not(:disabled) {
+    background: #efefef;
+    border-color: #d0d0d0;
+  }
 }
 
 .demoButton:disabled {
@@ -215,8 +219,10 @@
   transition: color 0.2s;
 }
 
-.toggleButton:hover:not(:disabled) {
-  color: #333333;
+@media (hover: hover) and (pointer: fine) {
+  .toggleButton:hover:not(:disabled) {
+    color: #333333;
+  }
 }
 
 .toggleButton:disabled {

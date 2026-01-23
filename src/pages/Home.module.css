@@ -57,9 +57,11 @@
   cursor: pointer;
 }
 
-.statCard:hover {
-  background: #d0d0d0;
-  box-shadow: 0 2px 8px rgba(232, 232, 232, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .statCard:hover {
+    background: #d0d0d0;
+    box-shadow: 0 2px 8px rgba(232, 232, 232, 0.3);
+  }
 }
 
 .statValue {
@@ -102,9 +104,11 @@
   color: #000000;
 }
 
-.card:hover {
-  background: #d0d0d0;
-  box-shadow: 0 2px 8px rgba(232, 232, 232, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    background: #d0d0d0;
+    box-shadow: 0 2px 8px rgba(232, 232, 232, 0.3);
+  }
 }
 
 .card h3 {
@@ -130,8 +134,10 @@
   transition: all 0.2s ease;
 }
 
-.recommendation:hover {
-  background: #d0d0d0;
+@media (hover: hover) and (pointer: fine) {
+  .recommendation:hover {
+    background: #d0d0d0;
+  }
 }
 
 .recommendationIcon {
@@ -163,8 +169,10 @@
   transition: all 0.2s ease;
 }
 
-.activityItem:hover {
-  background: #d0d0d0;
+@media (hover: hover) and (pointer: fine) {
+  .activityItem:hover {
+    background: #d0d0d0;
+  }
 }
 
 .activityMeta {

@@ -36,8 +36,10 @@
   transition: opacity var(--transition-fast);
 }
 
-.uploadBtn:hover {
-  opacity: 0.85;
+@media (hover: hover) and (pointer: fine) {
+  .uploadBtn:hover {
+    opacity: 0.85;
+  }
 }
 
 /* Tabs */
@@ -60,8 +62,10 @@
   transition: all var(--transition-fast);
 }
 
-.tabs button:hover {
-  color: var(--color-text-primary);
+@media (hover: hover) and (pointer: fine) {
+  .tabs button:hover {
+    color: var(--color-text-primary);
+  }
 }
 
 .tabs button.active {
@@ -110,8 +114,10 @@
   transition: border-color var(--transition-fast);
 }
 
-.fileCard:hover {
-  border-color: var(--color-text-tertiary);
+@media (hover: hover) and (pointer: fine) {
+  .fileCard:hover {
+    border-color: var(--color-text-tertiary);
+  }
 }
 
 .fileIcon {
@@ -169,8 +175,10 @@
   transition: all var(--transition-fast);
 }
 
-.actionBtn:hover {
-  background: var(--color-border);
+@media (hover: hover) and (pointer: fine) {
+  .actionBtn:hover {
+    background: var(--color-border);
+  }
 }
 
 /* Releases */
@@ -199,8 +207,10 @@
   transition: opacity var(--transition-fast);
 }
 
-.createReleaseBtn:hover {
-  opacity: 0.85;
+@media (hover: hover) and (pointer: fine) {
+  .createReleaseBtn:hover {
+    opacity: 0.85;
+  }
 }
 
 .distributionInfo {
@@ -398,8 +408,10 @@
   transition: opacity var(--transition-fast);
 }
 
-.findBtn:hover {
-  opacity: 0.85;
+@media (hover: hover) and (pointer: fine) {
+  .findBtn:hover {
+    opacity: 0.85;
+  }
 }
 
 .collaborationRequests h3 {
@@ -433,8 +445,10 @@
   transition: opacity var(--transition-fast);
 }
 
-.createRequestBtn:hover {
-  opacity: 0.85;
+@media (hover: hover) and (pointer: fine) {
+  .createRequestBtn:hover {
+    opacity: 0.85;
+  }
 }
 
 /* Modal */
@@ -508,8 +522,10 @@
   transition: background var(--transition-fast);
 }
 
-.cancelBtn:hover {
-  background: var(--color-border);
+@media (hover: hover) and (pointer: fine) {
+  .cancelBtn:hover {
+    background: var(--color-border);
+  }
 }
 
 /* Mobile Responsive */
