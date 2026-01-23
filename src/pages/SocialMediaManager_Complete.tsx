@@ -588,6 +588,66 @@ export function SocialMedia() {
           ))}
           {alerts.length === 0 && <p className={styles.emptyState}>No alerts yet. We'll notify you of important events.</p>}
         </div>
+
+        {/* Mobile Navigation - All Features */}
+        <div className={styles.mobileNavGrid}>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'calendar' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('calendar')}>
+            <span className={styles.mobileNavIcon}>📅</span>
+            <span className={styles.mobileNavLabel}>Calendar</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'post-creator' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('post-creator')}>
+            <span className={styles.mobileNavIcon}>✏️</span>
+            <span className={styles.mobileNavLabel}>Post Creator</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'analytics' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('analytics')}>
+            <span className={styles.mobileNavIcon}>📊</span>
+            <span className={styles.mobileNavLabel}>Analytics</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'comments' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('comments')}>
+            <span className={styles.mobileNavIcon}>💬</span>
+            <span className={styles.mobileNavLabel}>Comments</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'trends' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('trends')}>
+            <span className={styles.mobileNavIcon}>🔥</span>
+            <span className={styles.mobileNavLabel}>Trends</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'hashtags' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('hashtags')}>
+            <span className={styles.mobileNavIcon}>#</span>
+            <span className={styles.mobileNavLabel}>Hashtags</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'influencers' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('influencers')}>
+            <span className={styles.mobileNavIcon}>🤝</span>
+            <span className={styles.mobileNavLabel}>Influencers</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'abtesting' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('abtesting')}>
+            <span className={styles.mobileNavIcon}>🧪</span>
+            <span className={styles.mobileNavLabel}>A/B Testing</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'templates' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('templates')}>
+            <span className={styles.mobileNavIcon}>📋</span>
+            <span className={styles.mobileNavLabel}>Templates</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'team' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('team')}>
+            <span className={styles.mobileNavIcon}>👥</span>
+            <span className={styles.mobileNavLabel}>Team</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'vault' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('vault')}>
+            <span className={styles.mobileNavIcon}>🗃️</span>
+            <span className={styles.mobileNavLabel}>Vault</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'alerts' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('alerts')}>
+            <span className={styles.mobileNavIcon}>🔔</span>
+            <span className={styles.mobileNavLabel}>Alerts</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'ads' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('ads')}>
+            <span className={styles.mobileNavIcon}>💰</span>
+            <span className={styles.mobileNavLabel}>Ads</span>
+          </button>
+          <button className={`${styles.mobileNavBox} ${activeSection === 'reports' ? styles.mobileNavBoxActive : ''}`} onClick={() => setActiveSection('reports')}>
+            <span className={styles.mobileNavIcon}>📈</span>
+            <span className={styles.mobileNavLabel}>Reports</span>
+          </button>
+        </div>
       </div>
     )
   }
