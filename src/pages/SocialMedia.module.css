@@ -203,8 +203,34 @@
 
 @media (max-width: 768px) {
   .layout { flex-direction: column; }
-  .sideNav { width: 100%; min-height: auto; position: relative; display: flex; flex-direction: row; overflow-x: auto; padding: 1rem; gap: 0.5rem; }
-  .navItem { white-space: nowrap; flex-shrink: 0; }
+  .sideNav { 
+    width: 100%; 
+    min-height: auto; 
+    position: relative; 
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 1rem; 
+    gap: 0.5rem;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .navItem { 
+    white-space: nowrap; 
+    font-size: 0.85rem;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+  }
   .mainContent { padding: 1rem; }
   .statsGrid, .calendarGrid, .actionGrid, .formActions, .platformGrid { grid-template-columns: 1fr; }
+  .postCreatorGrid, .commentsGrid, .trendsGrid, .teamGrid, .vaultGrid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .sideNav {
+    grid-template-columns: 1fr;
+  }
+  .navItem {
+    text-align: left;
+  }
 }
