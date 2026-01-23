@@ -16,7 +16,6 @@ const MENU_ITEMS = [
   { label: 'Launch Lab', path: '/dashboard/launch-lab' },
   { label: 'Fashion & Manufacturing', path: '/dashboard/fashion' },
   { label: 'Product Ideation', path: '/dashboard/product-ideation-lab' },
-  { label: 'Fit & Wear Testing', path: '/dashboard/fit-wear-testing' },
   { label: 'Commerce', path: '/dashboard/commerce' },
   { label: 'Funding', path: '/dashboard/funding' },
   { label: 'Business', path: '/dashboard/business' },
