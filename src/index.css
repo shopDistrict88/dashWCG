@@ -65,12 +65,28 @@ body,
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
   display: flex;
   min-width: 320px;
   touch-action: pan-y;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Prevent horizontal overflow on mobile */
+* {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
 }
 
 h1 {
