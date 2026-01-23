@@ -135,9 +135,34 @@
   min-height: 44px;
 }
 
-.logoutBtn:hover {
-  background: #e8e8e8;
-  border-color: #e8e8e8;
+@media (hover: hover) and (pointer: fine) {
+  .logoutBtn:hover {
+    background: #e8e8e8;
+    border-color: #e8e8e8;
+  }
+}
+
+.loginBtn {
+  width: 100%;
+  padding: 14px 16px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .loginBtn:hover {
+    background: #e8e8e8;
+    border-color: #e8e8e8;
+    transform: translateY(-1px);
+  }
 }
 
 .main {

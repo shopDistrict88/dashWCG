@@ -68,11 +68,7 @@ function AppRoutes() {
         <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
         <Route
           path="/dashboard/*"
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
+          element={<DashboardPage />}
         >
           <Route index element={<Home />} />
           <Route path="ai" element={<AI />} />

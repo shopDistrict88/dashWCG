@@ -116,13 +116,21 @@ export function DashboardPage() {
         </nav>
 
         <div className={styles.footer}>
-          <div className={styles.userInfo}>
-            <p className={styles.userName}>{(user as any)?.user_metadata?.name || user?.email?.split('@')[0] || 'User'}</p>
-            <p className={styles.userEmail}>{user?.email}</p>
-          </div>
-          <button className={styles.logoutBtn} onClick={handleLogout}>
-            Logout
-          </button>
+          {user ? (
+            <>
+              <div className={styles.userInfo}>
+                <p className={styles.userName}>{(user as any)?.user_metadata?.name || user?.email?.split('@')[0] || 'User'}</p>
+                <p className={styles.userEmail}>{user?.email}</p>
+              </div>
+              <button className={styles.logoutBtn} onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <button className={styles.loginBtn} onClick={() => navigate('/login')}>
+              Login / Sign Up
+            </button>
+          )}
         </div>
       </aside>
 
