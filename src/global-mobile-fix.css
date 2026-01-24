@@ -1,5 +1,11 @@
 /* Global Mobile Optimization for All Pages */
 
+/* Prevent all animations during scroll */
+.scrolling * {
+  transition: none !important;
+  animation: none !important;
+}
+
 @media (max-width: 768px) {
   /* Prevent horizontal overflow on all containers */
   body,
@@ -41,4 +47,5 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 

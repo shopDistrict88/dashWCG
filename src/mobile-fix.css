@@ -1,14 +1,15 @@
-/* Mobile-First Hover Fix - Disable hover effects on touch devices */
+/* ========================================
+   COMPREHENSIVE MOBILE INTERACTION FIX
+   Prevents accidental hover/touch animations while scrolling
+   ======================================== */
 
-/* Remove tap highlight colors globally */
+/* 1. REMOVE MOBILE TAP HIGHLIGHT */
 * {
   -webkit-tap-highlight-color: transparent !important;
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
-/* Re-enable selection for inputs */
+/* Re-enable text selection for inputs only */
 input,
 textarea,
 [contenteditable] {
@@ -16,14 +17,27 @@ textarea,
   user-select: text;
 }
 
-/* Disable all hover effects on touch devices globally */
+/* Disable text selection on everything else */
+*:not(input):not(textarea):not([contenteditable]) {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 2. PREVENT FOCUS STYLES FROM FIRING ON TOUCH */
+*:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Keep accessibility for keyboard users */
+*:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* 3. DISABLE HOVER ON TOUCH DEVICES */
 @media (hover: none) {
-  * {
-    /* Remove hover transitions on touch devices for better performance */
-    transition: none !important;
-  }
-  
-  /* Prevent sticky hover states on mobile */
+  /* Remove ALL hover effects on touch devices */
   *:hover {
     background-color: inherit !important;
     border-color: inherit !important;
@@ -31,265 +45,193 @@ textarea,
     transform: none !important;
     box-shadow: inherit !important;
     opacity: inherit !important;
+    filter: inherit !important;
   }
   
-  /* Remove all hover-based visibility changes */
+  /* Remove hover pseudo-elements */
   *:hover::before,
   *:hover::after {
-    display: none !important;
+    opacity: inherit !important;
+    transform: none !important;
   }
   
-  /* Prevent active state color changes */
-  *:active {
-    background-color: inherit !important;
-    border-color: inherit !important;
-    color: inherit !important;
-  }
-}
-
-/* Ensure hover effects only work on devices with precise pointers */
-@media (hover: hover) and (pointer: fine) {
-  /* Allow hover transitions on desktop */
+  /* Disable transitions during scroll for smoother experience */
   * {
-    transition: all 0.2s ease;
+    transition-duration: 0ms !important;
   }
 }
 
-/* Touch-specific improvements */
+/* 4. ENABLE HOVER ONLY ON DESKTOP WITH PRECISE POINTER */
+@media (hover: hover) and (pointer: fine) {
+  /* Only apply hover to interactive elements */
+  button:hover,
+  a:hover,
+  [role="button"]:hover,
+  [class*="btn"]:hover,
+  [class*="Btn"]:hover,
+  [class*="button"]:hover,
+  [class*="Button"]:hover {
+    opacity: 0.85;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  
+  /* Card hover effects only on desktop */
+  [class*="card"]:hover,
+  [class*="Card"]:hover,
+  [class*="item"]:hover,
+  [class*="Item"]:hover {
+    border-color: #555 !important;
+    transition: border-color 0.2s ease;
+  }
+}
+
+/* 5. USE :ACTIVE ONLY FOR REAL TAPS/CLICKS */
+button:active,
+a:active,
+[role="button"]:active,
+[class*="btn"]:active,
+[class*="Btn"]:active,
+[class*="button"]:active,
+[class*="Button"]:active {
+  transform: scale(0.98) !important;
+  opacity: 0.9 !important;
+  transition: transform 0.1s ease, opacity 0.1s ease !important;
+}
+
+/* Prevent :active during scroll */
+.scrolling button:active,
+.scrolling a:active,
+.scrolling [role="button"]:active,
+.scrolling [class*="btn"]:active,
+.scrolling [class*="Btn"]:active,
+.scrolling [class*="button"]:active,
+.scrolling [class*="Button"]:active {
+  transform: none !important;
+  opacity: inherit !important;
+}
+
+/* 6. REMOVE ANIMATIONS FROM NON-INTERACTIVE ELEMENTS */
+div:not([role]):hover,
+section:hover,
+article:hover,
+main:hover,
+header:hover,
+footer:hover,
+nav:hover,
+aside:hover,
+span:hover,
+p:hover,
+h1:hover,
+h2:hover,
+h3:hover,
+h4:hover,
+h5:hover,
+h6:hover {
+  background-color: inherit !important;
+  transform: none !important;
+  opacity: inherit !important;
+}
+
+/* 7. MOBILE-SPECIFIC TOUCH IMPROVEMENTS */
 @media (hover: none) and (pointer: coarse) {
-  /* Increase tap targets for mobile */
+  /* Better tap targets */
   button,
   a,
-  input[type="button"],
-  input[type="submit"],
   [role="button"],
   [class*="btn"],
   [class*="Btn"],
   [class*="button"],
   [class*="Button"] {
-    min-height: 48px !important;
-    min-width: 48px !important;
-    padding: 12px 16px !important;
+    min-height: 44px;
+    min-width: 44px;
   }
   
-  /* Remove cursor pointer on touch devices (misleading) */
+  /* Remove cursor styles on touch devices */
   * {
     cursor: default !important;
   }
   
-  /* Better touch feedback with active states instead of hover */
-  button:active,
-  a:active,
-  [role="button"]:active,
-  [class*="btn"]:active,
-  [class*="Btn"]:active,
-  [class*="button"]:active,
-  [class*="Button"]:active,
-  [class*="card"]:active,
-  [class*="Card"]:active {
+  /* Only show feedback on actual tap, not during scroll */
+  button:active:not(.scrolling *),
+  a:active:not(.scrolling *),
+  [role="button"]:active:not(.scrolling *),
+  [class*="btn"]:active:not(.scrolling *),
+  [class*="Btn"]:active:not(.scrolling *),
+  [class*="button"]:active:not(.scrolling *),
+  [class*="Button"]:active:not(.scrolling *) {
     opacity: 0.7 !important;
     transform: scale(0.98) !important;
     transition: all 0.1s ease !important;
   }
-  
-  /* Ensure all cards are tappable on mobile */
-  [class*="card"],
-  [class*="Card"] {
-    cursor: pointer !important;
-  }
 }
 
-/* Ensure all interactive elements are accessible on mobile */
+/* 8. DISABLE TRANSITIONS DURING SCROLL */
+.scrolling * {
+  transition: none !important;
+  animation: none !important;
+  pointer-events: none !important;
+}
+
+/* 9. SMOOTH SCROLLING */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 10. PREVENT PULL-TO-REFRESH OVERSCROLL */
+body {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 11. OPTIMIZE FOR MOBILE PERFORMANCE */
 @media (max-width: 768px) {
-  /* Force all content to be visible - no desktop-only sections */
-  [class*="desktop"],
-  [class*="Desktop"] {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+  /* Reduce animations for better performance */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
   
-  /* Force all features to be enabled on mobile */
-  [class*="feature"],
-  [class*="Feature"],
-  [class*="section"],
-  [class*="Section"] {
-    display: block !important;
-    visibility: visible !important;
-  }
-  
-  /* Force visible scrollbars on mobile for clarity */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Prevent text size adjustment on orientation change */
-  html {
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-  }
-  
-  /* Improve form controls on mobile */
-  input,
-  textarea,
-  select {
-    font-size: 16px !important; /* Prevents zoom on focus in iOS */
-    max-width: 100% !important;
-  }
-  
-  /* Make sure modals/dialogs are mobile-friendly */
-  [role="dialog"],
-  [class*="modal"],
-  [class*="Modal"],
-  [class*="overlay"],
-  [class*="Overlay"] {
-    width: 95vw !important;
-    max-width: 95vw !important;
-    max-height: 90vh !important;
-    overflow-y: auto !important;
-    margin: 0 auto !important;
-  }
-  
-  /* Make grids single column on mobile */
-  [style*="display: grid"],
-  [class*="grid"],
-  [class*="Grid"] {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-  }
-  
-  /* Stack flex containers on mobile */
-  [style*="display: flex"] {
-    flex-wrap: wrap !important;
-  }
-  
-  /* Ensure tables are scrollable on mobile */
-  table {
-    display: block !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-  
-  /* Make all text readable on mobile */
-  * {
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-  }
-  
-  /* Prevent horizontal scroll */
-  body, html, #root {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-  }
-  
-  /* Make sure all buttons are accessible */
-  button[disabled],
-  [class*="btn"][disabled],
-  [class*="Btn"][disabled] {
-    opacity: 0.5 !important;
-    pointer-events: none !important;
-  }
-  
-  /* Improve spacing on mobile */
-  [class*="container"],
-  [class*="Container"] {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+  /* Only allow transitions on intentional interactions */
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transition-duration: 0.1s !important;
   }
 }
 
-/* Tablet optimizations */
-@media (min-width: 769px) and (max-width: 1024px) {
-  /* Optimize layouts for tablet */
-  [style*="display: grid"],
-  [class*="grid"],
-  [class*="Grid"] {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
-  }
+/* 12. PREVENT ACCIDENTAL DOUBLE-TAP ZOOM */
+button,
+a,
+[role="button"],
+[class*="btn"],
+[class*="Btn"],
+[class*="button"],
+[class*="Button"] {
+  touch-action: manipulation;
 }
 
-/* Ensure landscape mobile also has proper layout */
-@media (max-width: 926px) and (orientation: landscape) {
-  /* Reduce heights on landscape mobile */
-  [class*="modal"],
-  [class*="Modal"],
-  [role="dialog"] {
-    max-height: 80vh !important;
-  }
-  
-  /* Optimize form layouts for landscape */
-  form {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-  }
-  
-  /* Full width buttons on landscape mobile */
-  button[type="submit"],
-  [class*="submitBtn"],
-  [class*="SubmitBtn"] {
-    grid-column: 1 / -1 !important;
-  }
+/* 13. REMOVE WEBKIT DEFAULT STYLES */
+button,
+input,
+select,
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
-/* iOS specific fixes */
-@supports (-webkit-touch-callout: none) {
-  /* Fix iOS Safari bounce effect interfering with scrolling */
-  body {
-    position: fixed;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-  }
-  
-  #root {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    height: 100%;
-  }
-  
-  /* Fix iOS input zoom */
-  input,
-  textarea,
-  select {
-    font-size: 16px !important;
-  }
+/* 14. PREVENT FLASH OF UNSTYLED CONTENT */
+html {
+  visibility: visible;
+  opacity: 1;
 }
 
-/* Android specific fixes */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  /* Improve Android Chrome performance */
-  * {
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-  }
-}
-
-/* Print styles - ensure all content is visible when printing */
-@media print {
-  * {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-  
-  [class*="sidebar"],
-  [class*="Sidebar"],
-  [class*="nav"],
-  [class*="Nav"],
-  button,
-  [role="button"] {
-    display: none !important;
-  }
+/* 15. ENSURE SMOOTH TOUCH SCROLLING */
+* {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }

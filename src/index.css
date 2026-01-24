@@ -52,12 +52,9 @@ a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
+  touch-action: manipulation;
 }
-@media (hover: hover) and (pointer: fine) {
-  a:hover {
-    color: #535bf2;
-  }
-}
+
 
 html,
 body,
@@ -114,24 +111,61 @@ button {
   background-color: #ffffff;
   color: #000000;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: none;
   min-height: 44px;
   min-width: 44px;
+  touch-action: manipulation;
 }
+
+/* Hover styles only on desktop */
+@media (hover: hover) and (pointer: fine) {
+  button {
+    transition: all 0.2s ease;
+  }
+  
+  button:hover {
+    background-color: #e8e8e8;
+    border-color: #e8e8e8;
+  }
+  
+  a:hover {
+    opacity: 0.8;
+  }
+}
+/* Mobile tap highlight - will be overridden by mobile-fix.css */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Global focus management */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Hover styles only on desktop */
 @media (hover: hover) and (pointer: fine) {
   button:hover {
     background-color: #e8e8e8;
     border-color: #e8e8e8;
   }
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  
+  a:hover {
+    opacity: 0.8;
+  }
 }
 
-/* Mobile tap highlight */
-* {
-  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+/* Active states for real taps/clicks */
+button:active,
+a:active,
+[role="button"]:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+  transition: transform 0.1s ease, opacity 0.1s ease;
 }
 
 /* Responsive utilities */
