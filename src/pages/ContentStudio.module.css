@@ -352,7 +352,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .modalContent {
@@ -364,6 +364,8 @@
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
+  position: relative;
+  z-index: 10000;
 }
 
 .modalContent h3 {
@@ -929,7 +931,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
   padding: 16px;
 }
 
@@ -944,6 +946,7 @@
   overflow-y: auto;
   color: #ffffff;
   position: relative;
+  z-index: 10000;
 }
 
 .modalContent h3 {
