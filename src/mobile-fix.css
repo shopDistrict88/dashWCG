@@ -36,10 +36,24 @@ textarea,
 }
 
 /* 3. DISABLE HOVER ON TOUCH DEVICES */
-@media (hover: none) {
-  /* Remove ALL hover effects on touch devices */
-  *:hover {
+@media (hover: none) and (pointer: coarse) {
+  /* Remove ALL hover effects on touch devices with maximum specificity */
+  *:hover,
+  button:hover,
+  a:hover,
+  div:hover,
+  [class]:hover,
+  [class*="btn"]:hover,
+  [class*="button"]:hover,
+  [class*="Button"]:hover,
+  [class*="card"]:hover,
+  [class*="Card"]:hover,
+  [class*="item"]:hover,
+  [class*="Item"]:hover,
+  [class*="tab"]:hover,
+  [class*="Tab"]:hover {
     background-color: inherit !important;
+    background: inherit !important;
     border-color: inherit !important;
     color: inherit !important;
     transform: none !important;
@@ -55,9 +69,21 @@ textarea,
     transform: none !important;
   }
   
-  /* Disable transitions during scroll for smoother experience */
+  /* CRITICAL: Disable active state on touch devices to prevent scroll feedback */
+  *:active {
+    background-color: inherit !important;
+    border-color: inherit !important;
+    color: inherit !important;
+    transform: none !important;
+    box-shadow: inherit !important;
+    opacity: inherit !important;
+    filter: inherit !important;
+  }
+  
+  /* Disable transitions on touch devices */
   * {
     transition-duration: 0ms !important;
+    transition-property: none !important;
   }
 }
 
@@ -85,17 +111,52 @@ textarea,
   }
 }
 
-/* 5. USE :ACTIVE ONLY FOR REAL TAPS/CLICKS */
-button:active,
-a:active,
-[role="button"]:active,
-[class*="btn"]:active,
-[class*="Btn"]:active,
-[class*="button"]:active,
-[class*="Button"]:active {
-  transform: scale(0.98) !important;
-  opacity: 0.9 !important;
-  transition: transform 0.1s ease, opacity 0.1s ease !important;
+/* 5. DISABLE :ACTIVE ON TOUCH DEVICES (prevents scroll feedback) */
+@media (hover: none) and (pointer: coarse) {
+  /* Completely disable active states on mobile with maximum specificity */
+  *:active,
+  button:active,
+  a:active,
+  div:active,
+  [class]:active,
+  [role="button"]:active,
+  [class*="btn"]:active,
+  [class*="Btn"]:active,
+  [class*="button"]:active,
+  [class*="Button"]:active,
+  [class*="card"]:active,
+  [class*="Card"]:active,
+  [class*="item"]:active,
+  [class*="Item"]:active,
+  [class*="tab"]:active,
+  [class*="Tab"]:active,
+  [class*="action"]:active,
+  [class*="Action"]:active {
+    background-color: inherit !important;
+    background: inherit !important;
+    border-color: inherit !important;
+    color: inherit !important;
+    transform: none !important;
+    box-shadow: inherit !important;
+    opacity: inherit !important;
+    filter: inherit !important;
+    transition: none !important;
+  }
+}
+
+/* Only enable active on desktop with mouse */
+@media (hover: hover) and (pointer: fine) {
+  button:active,
+  a:active,
+  [role="button"]:active,
+  [class*="btn"]:active,
+  [class*="Btn"]:active,
+  [class*="button"]:active,
+  [class*="Button"]:active {
+    transform: scale(0.98) !important;
+    opacity: 0.9 !important;
+    transition: transform 0.1s ease, opacity 0.1s ease !important;
+  }
 }
 
 /* Prevent :active during scroll */
@@ -151,17 +212,51 @@ h6:hover {
     cursor: default !important;
   }
   
-  /* Only show feedback on actual tap, not during scroll */
-  button:active:not(.scrolling *),
-  a:active:not(.scrolling *),
-  [role="button"]:active:not(.scrolling *),
-  [class*="btn"]:active:not(.scrolling *),
-  [class*="Btn"]:active:not(.scrolling *),
-  [class*="button"]:active:not(.scrolling *),
-  [class*="Button"]:active:not(.scrolling *) {
-    opacity: 0.7 !important;
-    transform: scale(0.98) !important;
-    transition: all 0.1s ease !important;
+  /* CRITICAL: Disable ALL pseudo-class states on touch with maximum specificity */
+  *:hover,
+  *:active,
+  *:focus,
+  button:hover,
+  button:active,
+  a:hover,
+  a:active,
+  div:hover,
+  div:active,
+  [class]:hover,
+  [class]:active,
+  [class]:focus,
+  [class*="btn"]:hover,
+  [class*="btn"]:active,
+  [class*="button"]:hover,
+  [class*="button"]:active,
+  [class*="Button"]:hover,
+  [class*="Button"]:active,
+  [class*="card"]:hover,
+  [class*="card"]:active,
+  [class*="Card"]:hover,
+  [class*="Card"]:active,
+  [class*="item"]:hover,
+  [class*="item"]:active,
+  [class*="Item"]:hover,
+  [class*="Item"]:active,
+  [class*="tab"]:hover,
+  [class*="tab"]:active,
+  [class*="Tab"]:hover,
+  [class*="Tab"]:active,
+  [class*="action"]:hover,
+  [class*="action"]:active,
+  [class*="Action"]:hover,
+  [class*="Action"]:active {
+    background-color: inherit !important;
+    background: inherit !important;
+    border-color: inherit !important;
+    color: inherit !important;
+    transform: none !important;
+    opacity: inherit !important;
+    box-shadow: inherit !important;
+    filter: inherit !important;
+    outline: none !important;
+    transition: none !important;
   }
 }
 
