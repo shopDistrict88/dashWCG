@@ -90,6 +90,12 @@
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quickActionBtn:active {
+  background: #e8e8e8;
+  color: #000000;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -212,6 +218,12 @@
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.actionBtn:active {
+  background: #ffffff;
+  color: #000000;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -273,25 +285,31 @@
   background: #0a0a0a;
   border: 1px solid #333333;
   border-radius: 6px;
-  color: #ffffff;
+  color: #ffffff !important;
   font-size: 14px;
   font-family: inherit;
   resize: none;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 .input:focus {
   outline: none;
   border-color: #555555;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+  background: #0a0a0a !important;
+  color: #ffffff !important;
 }
 
 .input::placeholder {
   color: #666666;
+  -webkit-text-fill-color: #666666;
 }
 
 .input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  color: #999999 !important;
+  -webkit-text-fill-color: #999999 !important;
 }
 
 .sendBtn {
@@ -309,6 +327,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sendBtn:active {
+  background: #ffffff;
+  color: #000000;
 }
 
 @media (hover: hover) and (pointer: fine) {

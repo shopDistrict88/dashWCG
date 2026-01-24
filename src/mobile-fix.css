@@ -1,5 +1,21 @@
 /* Mobile-First Hover Fix - Disable hover effects on touch devices */
 
+/* Remove tap highlight colors globally */
+* {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Re-enable selection for inputs */
+input,
+textarea,
+[contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 /* Disable all hover effects on touch devices globally */
 @media (hover: none) {
   * {
@@ -21,6 +37,13 @@
   *:hover::before,
   *:hover::after {
     display: none !important;
+  }
+  
+  /* Prevent active state color changes */
+  *:active {
+    background-color: inherit !important;
+    border-color: inherit !important;
+    color: inherit !important;
   }
 }
 
