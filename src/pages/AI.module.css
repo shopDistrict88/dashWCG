@@ -345,7 +345,7 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 80px 12px 90px;
+    padding: 12px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;

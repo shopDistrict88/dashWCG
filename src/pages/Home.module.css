@@ -6,7 +6,7 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 80px 16px 90px;
+    padding: 16px;
     overflow-x: hidden;
   }
 }
