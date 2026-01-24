@@ -17,10 +17,10 @@ textarea,
   user-select: text;
 }
 
-/* Disable text selection on everything else */
+/* Allow text selection - improves scroll performance */
 *:not(input):not(textarea):not([contenteditable]) {
-  -webkit-user-select: none;
-  user-select: none;
+  -webkit-user-select: auto;
+  user-select: auto;
 }
 
 /* 2. PREVENT FOCUS STYLES FROM FIRING ON TOUCH */
@@ -264,7 +264,6 @@ h6:hover {
 .scrolling * {
   transition: none !important;
   animation: none !important;
-  pointer-events: none !important;
 }
 
 /* 9. SMOOTH SCROLLING */
