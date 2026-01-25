@@ -93,12 +93,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.quickActionBtn:active {
-  background: #e8e8e8;
-  color: #000000;
-}
-
 @media (hover: hover) and (pointer: fine) {
+  .quickActionBtn:active {
+    background: #e8e8e8;
+    color: #000000;
+  }
+  
   .quickActionBtn:hover {
     background: #d0d0d0;
     transform: translateY(-2px);
@@ -221,12 +221,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.actionBtn:active {
-  background: #ffffff;
-  color: #000000;
-}
-
 @media (hover: hover) and (pointer: fine) {
+  .actionBtn:active {
+    background: #ffffff;
+    color: #000000;
+  }
+  
   .actionBtn:hover {
     background: #000000;
     color: #ffffff;
@@ -330,12 +330,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.sendBtn:active {
-  background: #ffffff;
-  color: #000000;
-}
-
 @media (hover: hover) and (pointer: fine) {
+  .sendBtn:active {
+    background: #ffffff;
+    color: #000000;
+  }
+  
   .sendBtn:hover:not(:disabled) {
     background: #e8e8e8;
     transform: translateY(-2px);

@@ -215,9 +215,11 @@
     position: relative;
   }
 
-  .mobileNavItem:active {
-    background: rgba(255, 255, 255, 0.05);
-    transform: scale(0.95);
+  @media (hover: hover) and (pointer: fine) {
+    .mobileNavItem:active {
+      background: rgba(255, 255, 255, 0.05);
+      transform: scale(0.95);
+    }
   }
 
   .mobileNavItemActive {
@@ -318,9 +320,11 @@
     transition: all 0.2s;
   }
 
-  .exploreClose:active {
-    background: #222;
-    color: #fff;
+  @media (hover: hover) and (pointer: fine) {
+    .exploreClose:active {
+      background: #222;
+      color: #fff;
+    }
   }
 
   .exploreContent {
@@ -345,9 +349,11 @@
     transition: all 0.2s;
   }
 
-  .exploreItem:active {
-    background: #1a1a1a;
-    transform: scale(0.98);
+  @media (hover: hover) and (pointer: fine) {
+    .exploreItem:active {
+      background: #1a1a1a;
+      transform: scale(0.98);
+    }
   }
 
   .exploreItemLabel {

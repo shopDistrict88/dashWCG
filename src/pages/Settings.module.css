@@ -315,8 +315,10 @@
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-.actionBtn:active {
-  transform: translateY(0);
+@media (hover: hover) and (pointer: fine) {
+  .actionBtn:active {
+    transform: translateY(0);
+  }
 }
 
 .dangerBtn {

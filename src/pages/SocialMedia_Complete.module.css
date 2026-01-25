@@ -228,9 +228,11 @@
     -webkit-tap-highlight-color: transparent;
   }
   
-  .mobileNavBox:active {
-    transform: scale(0.98);
-    opacity: 0.8;
+  @media (hover: hover) and (pointer: fine) {
+    .mobileNavBox:active {
+      transform: scale(0.98);
+      opacity: 0.8;
+    }
   }
   
   .mobileNavBoxActive {
