@@ -6,7 +6,7 @@ import styles from './Dashboard.module.css'
 const MENU_ITEMS = [
   { label: 'Home', path: '/dashboard' },
   { label: 'AI Assistant', path: '/dashboard/ai' },
-  { label: 'Thought System', path: '/dashboard/notes' },
+  { label: 'Notes / Thought System', path: '/dashboard/notes' },
   { label: 'Music Studio', path: '/dashboard/music-studio' },
   { label: 'Social Media', path: '/dashboard/social-media' },
   { label: 'Creators', path: '/dashboard/creators' },
@@ -80,16 +80,17 @@ export function DashboardPage() {
         />
       )}
 
+      <button
+        className={styles.toggleBtn}
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Toggle sidebar"
+      >
+        ☰
+      </button>
+
       <aside className={`${styles.sidebar} ${!sidebarOpen ? styles.closed : ''}`}>
         <div className={styles.header}>
           <h2 className={styles.logo}>WCG</h2>
-          <button
-            className={styles.toggleBtn}
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            aria-label="Toggle sidebar"
-          >
-            ☰
-          </button>
         </div>
 
         <nav className={styles.nav}>

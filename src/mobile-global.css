@@ -692,7 +692,51 @@
 }
 
 /* ========================================
-   15. DEBUGGING & DEVELOPMENT
+   15. MOBILE SECTION NAV OVERRIDES
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Keep in-page side navs visible by converting to horizontal scroll bars */
+  [class*="sideNav"],
+  [class*="SideNav"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    gap: 8px !important;
+    padding: 12px !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(0, 0, 0, 0.92) !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [class*="sideNav"] button,
+  [class*="sideNav"] a,
+  [class*="SideNav"] button,
+  [class*="SideNav"] a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* Ensure tab bars are scrollable when they overflow */
+  [class*="tabs"],
+  [class*="Tabs"],
+  [class*="sectionNav"],
+  [class*="panelTabs"] {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ========================================
+   16. DEBUGGING & DEVELOPMENT
    ======================================== */
 
 /* Uncomment to visualize breakpoints during development */
