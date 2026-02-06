@@ -36,10 +36,6 @@
   transition: all 0.2s;
 }
 
-.primaryBtn:hover {
-  background: #e5e5e5;
-}
-
 .tabs {
   display: flex;
   gap: 0.5rem;
@@ -57,10 +53,6 @@
   transition: all 0.2s;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
-}
-
-.tab:hover {
-  color: #fff;
 }
 
 .activeTab {
@@ -115,10 +107,6 @@
   border-radius: 8px;
   padding: 1.5rem;
   transition: all 0.2s;
-}
-
-.collectionCard:hover {
-  border-color: #2a2a2a;
 }
 
 .cardHeader {
@@ -254,11 +242,6 @@
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s;
-}
-
-.secondaryBtn:hover {
-  border-color: #3a3a3a;
-  background: #0a0a0a;
 }
 
 .emptyState {

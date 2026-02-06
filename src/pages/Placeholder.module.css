@@ -36,10 +36,6 @@
   transition: all 0.2s;
 }
 
-.primaryBtn:hover {
-  background: #e5e5e5;
-}
-
 .secondaryBtn {
   padding: 0.65rem 1rem;
   background: #000;
@@ -49,11 +45,6 @@
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s;
-}
-
-.secondaryBtn:hover {
-  border-color: #3a3a3a;
-  background: #0a0a0a;
 }
 
 .searchBar {
@@ -69,12 +60,6 @@
   color: #fff;
   font-size: 0.95rem;
   transition: all 0.2s;
-}
-
-.searchInput:focus {
-  outline: none;
-  border-color: #2a2a2a;
-  background: #000;
 }
 
 .searchInput::placeholder {
@@ -105,10 +90,6 @@
   font-weight: 500;
   white-space: nowrap;
   transition: all 0.2s;
-}
-
-.tab:hover {
-  color: #c8c8c8;
 }
 
 .tabActive {
@@ -146,11 +127,6 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
-}
-
-.filterSelect:focus {
-  outline: none;
-  border-color: #2a2a2a;
 }
 
 .tags {
@@ -207,10 +183,6 @@
   border-radius: 8px;
   padding: 1.5rem;
   transition: all 0.2s;
-}
-
-.card:hover {
-  border-color: #2a2a2a;
 }
 
 .card h3 {
@@ -373,10 +345,6 @@
   padding: 60px 40px;
   text-align: center;
   transition: all 0.2s ease;
-}
-
-.content:hover {
-  border-color: #2a2a2a;
 }
 
 .icon {

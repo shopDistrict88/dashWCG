@@ -65,14 +65,6 @@
   font-family: inherit;
 }
 
-.formGroup input:focus,
-.formGroup textarea:focus,
-.formGroup select:focus {
-  outline: none;
-  border-color: #555555;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
-}
-
 .formRow {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -98,13 +90,6 @@
   margin-top: 12px;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .submitBtn:hover {
-    background: #f5f5f5;
-    transform: translateY(-1px);
-  }
-}
-
 .brandsSection {
   margin-top: 40px;
 }
@@ -128,13 +113,6 @@
   padding: 24px;
   border-radius: 8px;
   transition: all 0.2s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .brandCard:hover {
-    border-color: #555555;
-    background: #222222;
-  }
 }
 
 /* Score Card */
@@ -225,12 +203,6 @@
   flex-shrink: 0;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .deleteBtn:hover {
-    background: #555555;
-  }
-}
-
 /* Consistency Indicators */
 .indicators {
   display: flex;
@@ -311,12 +283,6 @@
   border-radius: 4px;
   border: 1px solid #555555;
   transition: transform 0.2s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .colorSwatch:hover {
-    transform: scale(1.1);
-  }
 }
 
 .colorItem small {

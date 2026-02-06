@@ -81,11 +81,6 @@
   flex-shrink: 0;
 }
 
-.navItem:hover {
-  background: #e8e8e8;
-  color: #000000;
-}
-
 .navItem.active {
   background: #e8e8e8;
   color: #000000;
@@ -135,13 +130,6 @@
   min-height: 44px;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .logoutBtn:hover {
-    background: #e8e8e8;
-    border-color: #e8e8e8;
-  }
-}
-
 .loginBtn {
   width: 100%;
   padding: 14px 16px;
@@ -155,14 +143,6 @@
   transition: all 0.2s ease;
   min-height: 48px;
   text-align: center;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .loginBtn:hover {
-    background: #e8e8e8;
-    border-color: #e8e8e8;
-    transform: translateY(-1px);
-  }
 }
 
 .main {
@@ -213,13 +193,6 @@
     transition: all 0.2s;
     min-height: 70px;
     position: relative;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .mobileNavItem:active {
-      background: rgba(255, 255, 255, 0.05);
-      transform: scale(0.95);
-    }
   }
 
   .mobileNavItemActive {
@@ -320,13 +293,6 @@
     transition: all 0.2s;
   }
 
-  @media (hover: hover) and (pointer: fine) {
-    .exploreClose:active {
-      background: #222;
-      color: #fff;
-    }
-  }
-
   .exploreContent {
     flex: 1;
     overflow-y: auto;
@@ -347,13 +313,6 @@
     font-size: 15px;
     cursor: pointer;
     transition: all 0.2s;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .exploreItem:active {
-      background: #1a1a1a;
-      transform: scale(0.98);
-    }
   }
 
   .exploreItemLabel {

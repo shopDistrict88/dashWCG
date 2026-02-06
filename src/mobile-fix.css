@@ -24,66 +24,36 @@ textarea,
 }
 
 /* 2. PREVENT FOCUS STYLES FROM FIRING ON TOUCH */
-*:focus:not(:focus-visible) {
-  outline: none !important;
-  box-shadow: none !important;
-}
 
 /* Keep accessibility for keyboard users */
-*:focus-visible {
-  outline: 2px solid #ffffff;
-  outline-offset: 2px;
-}
 
 /* 3. DISABLE HOVER ON TOUCH DEVICES */
 @media (hover: none) and (pointer: coarse) {
   /* Remove ALL hover effects on touch devices with maximum specificity */
-  *:hover,
-  button:hover,
-  a:hover,
-  div:hover,
-  [class]:hover,
-  [class*="btn"]:hover,
-  [class*="button"]:hover,
-  [class*="Button"]:hover,
-  [class*="card"]:hover,
-  [class*="Card"]:hover,
-  [class*="item"]:hover,
-  [class*="Item"]:hover,
-  [class*="tab"]:hover,
-  [class*="Tab"]:hover {
-    background-color: inherit !important;
-    background: inherit !important;
-    border-color: inherit !important;
-    color: inherit !important;
-    transform: none !important;
-    box-shadow: inherit !important;
-    opacity: inherit !important;
-    filter: inherit !important;
-  }
   
   /* Remove hover pseudo-elements */
-  *:hover::before,
-  *:hover::after {
-    opacity: inherit !important;
-    transform: none !important;
-  }
   
   /* CRITICAL: Disable active state on touch devices to prevent scroll feedback */
-  *:active {
-    background-color: inherit !important;
-    border-color: inherit !important;
-    color: inherit !important;
-    transform: none !important;
-    box-shadow: inherit !important;
-    opacity: inherit !important;
-    filter: inherit !important;
-  }
   
   /* Disable transitions on touch devices */
   * {
     transition-duration: 0ms !important;
     transition-property: none !important;
+  }
+
+  /* Enable active states for touch feedback */
+  button:active,
+  a:active,
+  [role="button"]:active {
+    opacity: 0.8;
+  }
+
+  /* Better touch feedback */
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
   }
 }
 
@@ -92,106 +62,153 @@ textarea,
   /* Only apply hover to interactive elements */
   button:hover,
   a:hover,
-  [role="button"]:hover,
-  [class*="btn"]:hover,
-  [class*="Btn"]:hover,
-  [class*="button"]:hover,
-  [class*="Button"]:hover {
-    opacity: 0.85;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+  [role="button"]:hover {
+    opacity: 0.9;
   }
-  
+
   /* Card hover effects only on desktop */
   [class*="card"]:hover,
-  [class*="Card"]:hover,
-  [class*="item"]:hover,
-  [class*="Item"]:hover {
-    border-color: #555 !important;
-    transition: border-color 0.2s ease;
+  [class*="Card"]:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
   }
 }
+
+/* ========================================
+   5. TOUCH DEVICE SPECIFIC OPTIMIZATIONS
+   ======================================== */
+
+@media (pointer: coarse) {
+  /* Increase minimum tap target size */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [role="link"],
+  [role="tab"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Better spacing around buttons */
+  button {
+    margin: 4px;
+  }
+
+  /* Disable double-tap zoom on buttons */
+  button,
+  a,
+  input,
+  label {
+    touch-action: manipulation;
+  }
+
+  /* Improve scrolling on mobile */
+  [class*="scroll"],
+  [class*="Scroll"],
+  [class*="list"],
+  [class*="List"] {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better form input spacing */
+  input,
+  textarea,
+  select {
+    padding: 12px;
+    min-height: 48px;
+    margin: 8px 0;
+  }
+
+  /* Prevent zoom on inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px;
+    zoom: 1;
+  }
+
+  /* Better checkbox/radio sizing */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 24px;
+    height: 24px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
+/* ========================================
+   6. LANDSCAPE MOBILE OPTIMIZATIONS
+   ======================================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  [class*="header"],
+  [class*="Header"] {
+    margin-bottom: 8px;
+  }
+
+  button {
+    padding: 8px 12px;
+    min-height: 40px;
+    margin: 2px;
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 8px 12px;
+    margin: 4px 0;
+    font-size: 14px;
+  }
+
+  [class*="modal"],
+  [class*="Modal"],
+  [class*="drawer"],
+  [class*="Drawer"] {
+    max-height: 85vh;
+  }
+}
+
+/* ========================================
+   7. PERFORMANCE OPTIMIZATIONS
+   ======================================== */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Disable animations while scrolling */
+.scrolling,
+.scrolling * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ======================================== */
 
 /* 5. DISABLE :ACTIVE ON TOUCH DEVICES (prevents scroll feedback) */
 @media (hover: none) and (pointer: coarse) {
   /* Completely disable active states on mobile with maximum specificity */
-  *:active,
-  button:active,
-  a:active,
-  div:active,
-  [class]:active,
-  [role="button"]:active,
-  [class*="btn"]:active,
-  [class*="Btn"]:active,
-  [class*="button"]:active,
-  [class*="Button"]:active,
-  [class*="card"]:active,
-  [class*="Card"]:active,
-  [class*="item"]:active,
-  [class*="Item"]:active,
-  [class*="tab"]:active,
-  [class*="Tab"]:active,
-  [class*="action"]:active,
-  [class*="Action"]:active {
-    background-color: inherit !important;
-    background: inherit !important;
-    border-color: inherit !important;
-    color: inherit !important;
-    transform: none !important;
-    box-shadow: inherit !important;
-    opacity: inherit !important;
-    filter: inherit !important;
-    transition: none !important;
-  }
 }
 
 /* Only enable active on desktop with mouse */
-@media (hover: hover) and (pointer: fine) {
-  button:active,
-  a:active,
-  [role="button"]:active,
-  [class*="btn"]:active,
-  [class*="Btn"]:active,
-  [class*="button"]:active,
-  [class*="Button"]:active {
-    transform: scale(0.98) !important;
-    opacity: 0.9 !important;
-    transition: transform 0.1s ease, opacity 0.1s ease !important;
-  }
-}
 
 /* Prevent :active during scroll */
-.scrolling button:active,
-.scrolling a:active,
-.scrolling [role="button"]:active,
-.scrolling [class*="btn"]:active,
-.scrolling [class*="Btn"]:active,
-.scrolling [class*="button"]:active,
-.scrolling [class*="Button"]:active {
-  transform: none !important;
-  opacity: inherit !important;
-}
 
 /* 6. REMOVE ANIMATIONS FROM NON-INTERACTIVE ELEMENTS */
-div:not([role]):hover,
-section:hover,
-article:hover,
-main:hover,
-header:hover,
-footer:hover,
-nav:hover,
-aside:hover,
-span:hover,
-p:hover,
-h1:hover,
-h2:hover,
-h3:hover,
-h4:hover,
-h5:hover,
-h6:hover {
-  background-color: inherit !important;
-  transform: none !important;
-  opacity: inherit !important;
-}
 
 /* 7. MOBILE-SPECIFIC TOUCH IMPROVEMENTS */
 @media (hover: none) and (pointer: coarse) {
@@ -213,51 +230,6 @@ h6:hover {
   }
   
   /* CRITICAL: Disable ALL pseudo-class states on touch with maximum specificity */
-  *:hover,
-  *:active,
-  *:focus,
-  button:hover,
-  button:active,
-  a:hover,
-  a:active,
-  div:hover,
-  div:active,
-  [class]:hover,
-  [class]:active,
-  [class]:focus,
-  [class*="btn"]:hover,
-  [class*="btn"]:active,
-  [class*="button"]:hover,
-  [class*="button"]:active,
-  [class*="Button"]:hover,
-  [class*="Button"]:active,
-  [class*="card"]:hover,
-  [class*="card"]:active,
-  [class*="Card"]:hover,
-  [class*="Card"]:active,
-  [class*="item"]:hover,
-  [class*="item"]:active,
-  [class*="Item"]:hover,
-  [class*="Item"]:active,
-  [class*="tab"]:hover,
-  [class*="tab"]:active,
-  [class*="Tab"]:hover,
-  [class*="Tab"]:active,
-  [class*="action"]:hover,
-  [class*="action"]:active,
-  [class*="Action"]:hover,
-  [class*="Action"]:active {
-    background-color: inherit !important;
-    background: inherit !important;
-    border-color: inherit !important;
-    color: inherit !important;
-    transform: none !important;
-    opacity: inherit !important;
-    box-shadow: inherit !important;
-    filter: inherit !important;
-    outline: none !important;
-    transition: none !important;
-  }
 }
 
 /* 8. DISABLE TRANSITIONS DURING SCROLL */
@@ -290,11 +262,6 @@ body {
   }
   
   /* Only allow transitions on intentional interactions */
-  button:active,
-  a:active,
-  [role="button"]:active {
-    transition-duration: 0.1s !important;
-  }
 }
 
 /* 12. PREVENT ACCIDENTAL DOUBLE-TAP ZOOM */

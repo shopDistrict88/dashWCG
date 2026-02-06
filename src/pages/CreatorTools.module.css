@@ -38,11 +38,6 @@
   margin-bottom: var(--spacing-lg);
 }
 
-.searchInput:focus {
-  outline: none;
-  border-color: var(--color-accent);
-}
-
 .categories {
   display: flex;
   flex-wrap: wrap;
@@ -59,12 +54,6 @@
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .categories button:hover {
-    border-color: var(--color-text-tertiary);
-  }
 }
 
 .categories button.active {
@@ -88,13 +77,6 @@
   padding: var(--spacing-xl);
   cursor: pointer;
   transition: all var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .toolCard:hover {
-    border-color: var(--color-text-tertiary);
-    transform: translateY(-2px);
-  }
 }
 
 .toolHeader {
@@ -164,14 +146,6 @@
   cursor: pointer;
   width: 100%;
   transition: all var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .launchBtn:hover {
-    background: var(--color-accent);
-    color: #000;
-    border-color: var(--color-accent);
-  }
 }
 
 /* Empty State */
@@ -261,12 +235,6 @@
   cursor: pointer;
   width: 100%;
   transition: opacity var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .enableBtn:hover {
-    opacity: 0.85;
-  }
 }
 
 /* Trends */

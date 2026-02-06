@@ -42,10 +42,6 @@
   transition: opacity 0.2s;
 }
 
-.primaryBtn:hover {
-  opacity: 0.9;
-}
-
 .secondaryBtn {
   padding: 10px 20px;
   background: transparent;
@@ -56,10 +52,6 @@
   font-weight: 500;
   cursor: pointer;
   transition: border-color 0.2s;
-}
-
-.secondaryBtn:hover {
-  border-color: #555;
 }
 
 .tabs {
@@ -79,10 +71,6 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-}
-
-.tab:hover {
-  color: #ffffff;
 }
 
 .tabActive {
@@ -132,10 +120,6 @@
   border-radius: 8px;
   padding: 20px;
   transition: border-color 0.2s;
-}
-
-.collaboratorCard:hover {
-  border-color: #555;
 }
 
 .collabHeader {
@@ -264,10 +248,6 @@
   padding: 20px;
   cursor: pointer;
   transition: border-color 0.2s;
-}
-
-.collabProjectCard:hover {
-  border-color: #555;
 }
 
 .projectHeader {
@@ -455,10 +435,6 @@
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
-}
-
-.closeBtn:hover {
-  background: #222;
 }
 
 .modalSection {

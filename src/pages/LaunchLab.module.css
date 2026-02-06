@@ -61,12 +61,6 @@
   transition: border-color 0.2s;
 }
 
-.input:focus,
-.select:focus {
-  outline: none;
-  border-color: #666666;
-}
-
 .input::placeholder {
   color: #666666;
 }
@@ -87,10 +81,6 @@
   transition: background-color 0.2s;
 }
 
-.button:hover:not(:disabled) {
-  background: #e0e0e0;
-}
-
 .button:disabled {
   background: #666666;
   color: #999999;
@@ -103,18 +93,10 @@
   font-weight: 600;
 }
 
-.publishButton:hover:not(:disabled) {
-  background: #3a6b1e;
-}
-
 .deleteButton {
   background: #5a1a1a;
   color: #e0a0a0;
   font-weight: 600;
-}
-
-.deleteButton:hover:not(:disabled) {
-  background: #6b2222;
 }
 
 /* Pages List */
@@ -131,11 +113,6 @@
   padding: 16px;
   cursor: pointer;
   transition: all 0.2s;
-}
-
-.pageCard:hover {
-  border-color: #666666;
-  background: #111111;
 }
 
 .pageCard.selected {
@@ -289,10 +266,6 @@
   padding: 8px;
   border-radius: 3px;
   transition: background-color 0.2s;
-}
-
-.checklistItem:hover {
-  background-color: #111111;
 }
 
 .checkbox {

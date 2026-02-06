@@ -95,13 +95,6 @@
   color: #666666;
 }
 
-.input:focus,
-.textarea:focus,
-.select:focus {
-  outline: none;
-  border-color: #666666;
-}
-
 .button {
   background: #ffffff;
   color: #000000;
@@ -110,10 +103,6 @@
   padding: 10px 16px;
   font-weight: 600;
   cursor: pointer;
-}
-
-.button:hover {
-  background: #e0e0e0;
 }
 
 .experimentsList {
@@ -149,10 +138,6 @@
   cursor: pointer;
   font-size: 16px;
   padding: 4px;
-}
-
-.deleteBtn:hover {
-  color: #ffffff;
 }
 
 .hypothesis {

@@ -36,12 +36,6 @@
   transition: opacity var(--transition-fast);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .uploadBtn:hover {
-    opacity: 0.85;
-  }
-}
-
 /* Tabs */
 .tabs {
   display: flex;
@@ -60,12 +54,6 @@
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: all var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .tabs button:hover {
-    color: var(--color-text-primary);
-  }
 }
 
 .tabs button.active {
@@ -108,12 +96,6 @@
   transition: all var(--transition-fast);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .viewToggle button:hover {
-    border-color: var(--color-text-tertiary);
-  }
-}
-
 .viewToggle button.active {
   background: var(--color-accent);
   color: #000;
@@ -138,12 +120,6 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   transition: border-color var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .fileCard:hover {
-    border-color: var(--color-text-tertiary);
-  }
 }
 
 .fileThumbnail {
@@ -244,12 +220,6 @@
   transition: all var(--transition-fast);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .actionBtn:hover {
-    background: var(--color-border);
-  }
-}
-
 /* Moodboards Section */
 .moodboardsHeader {
   display: flex;
@@ -276,12 +246,6 @@
   transition: opacity var(--transition-fast);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .createBtn:hover {
-    opacity: 0.85;
-  }
-}
-
 .moodboardsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -294,12 +258,6 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   transition: border-color var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .moodboardCard:hover {
-    border-color: var(--color-text-tertiary);
-  }
 }
 
 .moodboardCover {
@@ -422,12 +380,6 @@
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .categoryTags span:hover {
-    background: var(--color-border);
-  }
 }
 
 .inspirationTip {

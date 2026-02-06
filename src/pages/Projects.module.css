@@ -78,14 +78,6 @@
   color: #ffffff;
 }
 
-.formGroup input:focus,
-.formGroup textarea:focus,
-.formGroup select:focus {
-  outline: none;
-  border-color: #555555;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
-}
-
 .checkboxGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -119,10 +111,6 @@
   align-self: flex-start;
 }
 
-.submitBtn:hover {
-  background: #d0d0d0;
-}
-
 .projectsSection {
   margin-top: 40px;
 }
@@ -145,10 +133,6 @@
   padding: 24px;
   border-radius: 4px;
   transition: all 0.2s ease;
-}
-
-.projectCard:hover {
-  background: #d0d0d0;
 }
 
 .projectHeader {
@@ -181,10 +165,6 @@
   padding: 0;
   width: 24px;
   height: 24px;
-}
-
-.deleteBtn:hover {
-  color: #333333;
 }
 
 .description {
@@ -231,8 +211,50 @@
   padding: 24px;
 }
 
-@media (max-width: 600px) {
+/* Extra Small: 480px and below */
+@media (max-width: 480px) {
+  .container {
+    padding: 8px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .filterBar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filterInput,
+  .filterSelect {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
   .row {
     grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  button,
+  [class*="btn"],
+  [class*="Btn"] {
+    width: 100%;
+    min-height: 44px;
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  [class*="card"],
+  [class*="Card"] {
+    padding: 10px;
   }
 }
+

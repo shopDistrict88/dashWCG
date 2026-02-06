@@ -6,7 +6,7 @@ import styles from './Dashboard.module.css'
 const MENU_ITEMS = [
   { label: 'Home', path: '/dashboard' },
   { label: 'AI Assistant', path: '/dashboard/ai' },
-  { label: 'Notes', path: '/dashboard/notes' },
+  { label: 'Thought System', path: '/dashboard/notes' },
   { label: 'Music Studio', path: '/dashboard/music-studio' },
   { label: 'Social Media', path: '/dashboard/social-media' },
   { label: 'Creators', path: '/dashboard/creators' },

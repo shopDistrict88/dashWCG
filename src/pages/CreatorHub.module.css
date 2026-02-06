@@ -53,12 +53,6 @@
   transition: border-color var(--transition-fast);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .platformCard:hover {
-    border-color: var(--color-text-tertiary);
-  }
-}
-
 .platformHeader {
   display: flex;
   justify-content: space-between;
@@ -92,12 +86,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: opacity var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .connectBtn:hover {
-    opacity: 0.8;
-  }
 }
 
 .platformStats {
@@ -146,12 +134,6 @@
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .timeRangeSelector button:hover {
-    border-color: var(--color-text-tertiary);
-  }
 }
 
 .timeRangeSelector button.active {
@@ -218,12 +200,6 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   transition: border-color var(--transition-fast);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .postCard:hover {
-    border-color: var(--color-text-tertiary);
-  }
 }
 
 .postThumbnail {

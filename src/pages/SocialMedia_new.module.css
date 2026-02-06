@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
    SOCIAL MEDIA MANAGER STYLES - PREMIUM BLACK/WHITE/GRAY THEME
    ============================================================================ */
 
@@ -40,12 +40,6 @@
   margin-bottom: 0.5rem;
 }
 
-.navItem:hover {
-  background: #0f0f0f;
-  color: #fff;
-  border-color: #333;
-}
-
 .navItemActive {
   background: #fff;
   color: #000;
@@ -85,11 +79,6 @@
   padding: 1.5rem;
   border-radius: 8px;
   transition: all 0.2s;
-}
-
-.statCard:hover {
-  border-color: #333;
-  transform: translateY(-2px);
 }
 
 .statLabel {
@@ -141,12 +130,6 @@
   font-size: 0.9rem;
 }
 
-.actionBtn:hover {
-  background: #fff;
-  color: #000;
-  border-color: #fff;
-}
-
 .recentAlerts {
   background: #0a0a0a;
   border: 1px solid #1a1a1a;
@@ -170,10 +153,6 @@
   margin-bottom: 0.75rem;
   border-radius: 4px;
   transition: all 0.2s;
-}
-
-.alertItem:hover {
-  border-color: #333;
 }
 
 .alertItem.unread {
@@ -215,9 +194,4 @@
   border-radius: 4px;
   font-size: 0.85rem;
   transition: all 0.2s;
-}
-
-.markReadBtn:hover {
-  border-color: #fff;
-  color: #fff;
 }

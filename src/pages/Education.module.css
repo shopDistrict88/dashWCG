@@ -147,10 +147,6 @@
   transition: background-color 0.2s;
 }
 
-.button:hover {
-  background: #e0e0e0;
-}
-
 .categoriesGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

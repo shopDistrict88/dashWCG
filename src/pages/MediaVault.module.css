@@ -51,10 +51,6 @@
   transition: opacity 0.2s ease;
 }
 
-.uploadButton:hover {
-  opacity: 0.9;
-}
-
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -97,11 +93,6 @@
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-.filter:hover {
-  border-color: #3f3f3f;
-  color: #ffffff;
 }
 
 .filterActive {
@@ -179,10 +170,6 @@
   transition: border-color 0.2s ease;
 }
 
-.actionButton:hover {
-  border-color: #3f3f3f;
-}
-
 .section {
   margin-bottom: 3rem;
 }
@@ -225,10 +212,6 @@
   font-size: 0.875rem;
   cursor: pointer;
   transition: border-color 0.2s ease;
-}
-
-.buttonSecondary:hover {
-  border-color: #3f3f3f;
 }
 
 .versions {
@@ -283,9 +266,4 @@
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-.versionAction:hover {
-  border-color: #3f3f3f;
-  color: #ffffff;
 }

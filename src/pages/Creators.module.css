@@ -52,13 +52,6 @@
   transition: all 0.2s ease;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .roadmapStage:hover {
-    border-color: #444444;
-    background: #111111;
-  }
-}
-
 .stageIcon {
   font-size: 36px;
   margin-bottom: 12px;
@@ -120,13 +113,6 @@
   font-size: 14px;
 }
 
-.formGroup input:focus,
-.formGroup select:focus {
-  outline: none;
-  border-color: #555555;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
-}
-
 .checkboxGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -159,13 +145,6 @@
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 12px;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .submitBtn:hover {
-    background: #f5f5f5;
-    transform: translateY(-1px);
-  }
 }
 
 /* Creators List */
@@ -203,13 +182,6 @@
   transition: all 0.2s ease;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .creatorCard:hover {
-    border-color: #555555;
-    background: #222222;
-  }
-}
-
 .creatorHeader {
   display: flex;
   justify-content: space-between;
@@ -242,12 +214,6 @@
   transition: all 0.2s ease;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .deleteBtn:hover {
-    background: #555555;
-  }
-}
-
 .stageSelector {
   display: flex;
   align-items: center;
@@ -273,12 +239,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .advanceBtn:hover {
-    background: #f5f5f5;
-  }
 }
 
 .maxed {
@@ -334,13 +294,6 @@
   border-radius: 3px;
   font-size: 12px;
   transition: all 0.2s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .tag:hover {
-    background: #3d3d3d;
-    color: #ffffff;
-  }
 }
 
 @media (max-width: 768px) {

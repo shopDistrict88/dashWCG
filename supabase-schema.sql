@@ -107,6 +107,109 @@ CREATE TABLE IF NOT EXISTS music_files (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Music Studio projects
+CREATE TABLE IF NOT EXISTS music_projects (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'archived')),
+  data JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS music_tracks (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES music_projects(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  data JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS music_stems (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES music_projects(id) ON DELETE CASCADE,
+  track_id UUID REFERENCES music_tracks(id) ON DELETE SET NULL,
+  name TEXT NOT NULL,
+  data JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS music_revisions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES music_projects(id) ON DELETE CASCADE,
+  label TEXT,
+  summary TEXT,
+  data JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS music_collaborators (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES music_projects(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('owner', 'editor', 'viewer')),
+  status TEXT NOT NULL DEFAULT 'invited' CHECK (status IN ('invited', 'active')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS music_publishing_targets (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES music_projects(id) ON DELETE CASCADE,
+  platform TEXT NOT NULL,
+  data JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS music_analytics_events (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES music_projects(id) ON DELETE CASCADE,
+  event_type TEXT NOT NULL,
+  value NUMERIC DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS music_notes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES music_projects(id) ON DELETE CASCADE,
+  track_id UUID REFERENCES music_tracks(id) ON DELETE SET NULL,
+  data JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS music_samples (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES music_projects(id) ON DELETE CASCADE,
+  data JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS music_splits (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES music_projects(id) ON DELETE CASCADE,
+  data JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Design files table
 CREATE TABLE IF NOT EXISTS design_files (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -172,6 +275,22 @@ CREATE TABLE IF NOT EXISTS ai_conversations (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Thought System notes table
+CREATE TABLE IF NOT EXISTS thought_notes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  tags TEXT[] DEFAULT '{}',
+  linked_notes UUID[] DEFAULT '{}',
+  references JSONB DEFAULT '{}'::jsonb,
+  data JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  last_viewed TIMESTAMP WITH TIME ZONE,
+  view_count INTEGER DEFAULT 0
+);
+
 -- Social connections table
 CREATE TABLE IF NOT EXISTS social_connections (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -197,7 +316,18 @@ CREATE INDEX IF NOT EXISTS idx_content_user_id ON content(user_id);
 CREATE INDEX IF NOT EXISTS idx_content_platform ON content(platform);
 CREATE INDEX IF NOT EXISTS idx_content_status ON content(status);
 CREATE INDEX IF NOT EXISTS idx_music_files_user_id ON music_files(user_id);
+CREATE INDEX IF NOT EXISTS idx_music_projects_user_id ON music_projects(user_id);
+CREATE INDEX IF NOT EXISTS idx_music_tracks_project_id ON music_tracks(project_id);
+CREATE INDEX IF NOT EXISTS idx_music_stems_project_id ON music_stems(project_id);
+CREATE INDEX IF NOT EXISTS idx_music_revisions_project_id ON music_revisions(project_id);
+CREATE INDEX IF NOT EXISTS idx_music_collaborators_project_id ON music_collaborators(project_id);
+CREATE INDEX IF NOT EXISTS idx_music_publishing_project_id ON music_publishing_targets(project_id);
+CREATE INDEX IF NOT EXISTS idx_music_analytics_project_id ON music_analytics_events(project_id);
+CREATE INDEX IF NOT EXISTS idx_music_notes_project_id ON music_notes(project_id);
+CREATE INDEX IF NOT EXISTS idx_music_samples_project_id ON music_samples(project_id);
+CREATE INDEX IF NOT EXISTS idx_music_splits_project_id ON music_splits(project_id);
 CREATE INDEX IF NOT EXISTS idx_design_files_user_id ON design_files(user_id);
+CREATE INDEX IF NOT EXISTS idx_thought_notes_user_id ON thought_notes(user_id);
 CREATE INDEX IF NOT EXISTS idx_ideas_user_id ON ideas(user_id);
 CREATE INDEX IF NOT EXISTS idx_experiments_user_id ON experiments(user_id);
 CREATE INDEX IF NOT EXISTS idx_ai_conversations_user_id ON ai_conversations(user_id);
@@ -209,6 +339,16 @@ ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE content ENABLE ROW LEVEL SECURITY;
 ALTER TABLE brands ENABLE ROW LEVEL SECURITY;
 ALTER TABLE music_files ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music_projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music_tracks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music_stems ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music_revisions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music_collaborators ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music_publishing_targets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music_analytics_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music_notes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music_samples ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music_splits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE design_files ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ideas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE experiments ENABLE ROW LEVEL SECURITY;
@@ -244,6 +384,56 @@ CREATE POLICY "Users can view own music" ON music_files FOR SELECT USING (auth.u
 CREATE POLICY "Users can insert own music" ON music_files FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update own music" ON music_files FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own music" ON music_files FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own music projects" ON music_projects FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own music projects" ON music_projects FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own music projects" ON music_projects FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own music projects" ON music_projects FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own music tracks" ON music_tracks FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own music tracks" ON music_tracks FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own music tracks" ON music_tracks FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own music tracks" ON music_tracks FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own music stems" ON music_stems FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own music stems" ON music_stems FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own music stems" ON music_stems FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own music stems" ON music_stems FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own music revisions" ON music_revisions FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own music revisions" ON music_revisions FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own music revisions" ON music_revisions FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own music revisions" ON music_revisions FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own music collaborators" ON music_collaborators FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own music collaborators" ON music_collaborators FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own music collaborators" ON music_collaborators FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own music collaborators" ON music_collaborators FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own music publishing" ON music_publishing_targets FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own music publishing" ON music_publishing_targets FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own music publishing" ON music_publishing_targets FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own music publishing" ON music_publishing_targets FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own music analytics" ON music_analytics_events FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own music analytics" ON music_analytics_events FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own music analytics" ON music_analytics_events FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own music analytics" ON music_analytics_events FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own music notes" ON music_notes FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own music notes" ON music_notes FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own music notes" ON music_notes FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own music notes" ON music_notes FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own music samples" ON music_samples FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own music samples" ON music_samples FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own music samples" ON music_samples FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own music samples" ON music_samples FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own music splits" ON music_splits FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own music splits" ON music_splits FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own music splits" ON music_splits FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own music splits" ON music_splits FOR DELETE USING (auth.uid() = user_id);
 
 -- Design files policies
 CREATE POLICY "Users can view own designs" ON design_files FOR SELECT USING (auth.uid() = user_id);
@@ -311,6 +501,16 @@ CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects FOR EACH ROW
 CREATE TRIGGER update_content_updated_at BEFORE UPDATE ON content FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_brands_updated_at BEFORE UPDATE ON brands FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_music_files_updated_at BEFORE UPDATE ON music_files FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_projects_updated_at BEFORE UPDATE ON music_projects FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_tracks_updated_at BEFORE UPDATE ON music_tracks FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_stems_updated_at BEFORE UPDATE ON music_stems FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_revisions_updated_at BEFORE UPDATE ON music_revisions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_collaborators_updated_at BEFORE UPDATE ON music_collaborators FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_publishing_updated_at BEFORE UPDATE ON music_publishing_targets FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_analytics_updated_at BEFORE UPDATE ON music_analytics_events FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_notes_updated_at BEFORE UPDATE ON music_notes FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_samples_updated_at BEFORE UPDATE ON music_samples FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_splits_updated_at BEFORE UPDATE ON music_splits FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_design_files_updated_at BEFORE UPDATE ON design_files FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_ideas_updated_at BEFORE UPDATE ON ideas FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_experiments_updated_at BEFORE UPDATE ON experiments FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

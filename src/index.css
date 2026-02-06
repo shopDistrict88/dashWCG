@@ -122,15 +122,6 @@ button {
   button {
     transition: all 0.2s ease;
   }
-  
-  button:hover {
-    background-color: #e8e8e8;
-    border-color: #e8e8e8;
-  }
-  
-  a:hover {
-    opacity: 0.8;
-  }
 }
 /* Mobile tap highlight - will be overridden by mobile-fix.css */
 * {
@@ -138,35 +129,10 @@ button {
 }
 
 /* Global focus management */
-*:focus:not(:focus-visible) {
-  outline: none;
-}
-
-*:focus-visible {
-  outline: 2px solid #ffffff;
-  outline-offset: 2px;
-}
 
 /* Hover styles only on desktop */
-@media (hover: hover) and (pointer: fine) {
-  button:hover {
-    background-color: #e8e8e8;
-    border-color: #e8e8e8;
-  }
-  
-  a:hover {
-    opacity: 0.8;
-  }
-}
 
 /* Active states for real taps/clicks */
-button:active,
-a:active,
-[role="button"]:active {
-  transform: scale(0.98);
-  opacity: 0.9;
-  transition: transform 0.1s ease, opacity 0.1s ease;
-}
 
 /* Responsive utilities */
 @media (max-width: 768px) {
@@ -183,11 +149,6 @@ a:active,
   :root {
     color: #213547;
     background-color: #ffffff;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    a:hover {
-      color: #747bff;
-    }
   }
   button {
     background-color: #f9f9f9;
@@ -262,3 +223,182 @@ input, textarea, select {
     padding: 16px !important;
   }
 }
+
+/* ========================================
+   COMPREHENSIVE MOBILE BREAKPOINTS
+   ======================================== */
+
+/* Extra Small: 320px - 480px (phones in portrait) */
+@media (max-width: 480px) {
+  :root {
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+  }
+  
+  h1 {
+    font-size: clamp(1.5rem, 4vw, 2.4rem);
+  }
+  
+  h2 {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+  }
+  
+  h3 {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+  }
+  
+  button {
+    padding: 0.7em 1.2em;
+    font-size: 14px;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  input, textarea, select {
+    font-size: 16px !important;
+    width: 100% !important;
+  }
+}
+
+/* Small: 480px - 768px (phones in landscape, small tablets) */
+@media (min-width: 481px) and (max-width: 768px) {
+  :root {
+    --spacing-lg: 18px;
+  }
+  
+  button {
+    font-size: 15px;
+  }
+}
+
+/* Medium: 769px - 1024px (tablets) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+/* Large: 1025px+ (desktop) */
+@media (min-width: 1025px) {
+  .container {
+    max-width: 1400px;
+  }
+}
+
+/* ========================================
+   MOBILE-SPECIFIC OPTIMIZATIONS
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Touch-friendly spacing */
+  [role="button"],
+  button,
+  [type="button"],
+  [type="submit"],
+  [type="reset"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  /* Tap target areas - at least 48px */
+  a, button, input[type="checkbox"], input[type="radio"], select {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  /* Stack flexible layouts vertically */
+  [class*="flex"]:not([class*="row"]) {
+    flex-direction: column;
+  }
+  
+  /* Readable text on mobile */
+  small {
+    font-size: 12px;
+  }
+  
+  /* Fix labels for mobile */
+  label {
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  /* Better list spacing */
+  ul, ol {
+    padding-left: 20px;
+  }
+  
+  li {
+    margin-bottom: 8px;
+  }
+  
+  /* Modal/dialog mobile */
+  [role="dialog"],
+  .modal,
+  [class*="Modal"],
+  .drawer,
+  [class*="Drawer"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
+  
+  /* Prevent zoom on input focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    zoom: 1;
+  }
+}
+
+/* ========================================
+   LANDSCAPE MOBILE ADJUSTMENTS
+   ======================================== */
+@media (max-height: 500px) and (orientation: landscape) {
+  button {
+    padding: 0.4em 0.8em;
+    min-height: 40px;
+  }
+  
+  [class*="modal"],
+  [class*="Modal"],
+  [class*="drawer"],
+  [class*="Drawer"] {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY & PERFORMANCE
+   ======================================== */
+
+/* Reduce motion for those who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles for mobile */
+@media print {
+  * {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  button,
+  input,
+  select,
+  textarea {
+    background: white;
+  }
+}
+

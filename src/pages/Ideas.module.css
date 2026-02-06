@@ -135,13 +135,6 @@
   color: #666666;
 }
 
-.titleInput:focus,
-.contentInput:focus,
-.select:focus {
-  outline: none;
-  border-color: #666666;
-}
-
 .contentInput {
   resize: vertical;
 }
@@ -156,12 +149,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .submitBtn:hover {
-    background: #e0e0e0;
-  }
 }
 
 .ideasSection {
@@ -204,11 +191,6 @@
   cursor: pointer;
 }
 
-.filterSelect:focus {
-  outline: none;
-  border-color: #666666;
-}
-
 .sectionTitle {
   font-size: 16px;
   font-weight: 600;
@@ -227,13 +209,6 @@
   border-radius: 6px;
   padding: 16px;
   transition: all 0.2s;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .noteCard:hover {
-    border-color: #666666;
-    background: #202020;
-  }
 }
 
 .noteHeader {
@@ -304,12 +279,6 @@
   width: 24px;
   height: 24px;
   flex-shrink: 0;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .deleteBtn:hover {
-    color: #ffffff;
-  }
 }
 
 .scoreSection {
@@ -386,11 +355,6 @@
   cursor: pointer;
 }
 
-.smallSelect:focus {
-  outline: none;
-  border-color: #666666;
-}
-
 .noteDate {
   font-size: 12px;
   color: #999999;
@@ -433,6 +397,42 @@
   .sortControls {
     flex: 1;
     min-width: 200px;
+  }
+}
+
+/* Extra Small: 480px and below */
+@media (max-width: 480px) {
+  .container {
+    padding: 8px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .controlsBar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filterControls,
+  .sortControls {
+    width: 100%;
+    min-width: 0;
+  }
+
+  button {
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  input, select {
+    font-size: 16px !important;
   }
 }
 

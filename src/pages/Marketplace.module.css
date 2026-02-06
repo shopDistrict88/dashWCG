@@ -93,10 +93,6 @@
   font-weight: 600;
 }
 
-.categoryBtn:hover {
-  border-color: #666666;
-}
-
 .categoryBtn.active {
   background: #2d5016;
   border-color: #2d5016;
@@ -191,10 +187,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-}
-
-.bookBtn:hover:not(:disabled) {
-  background: #e0e0e0;
 }
 
 .bookBtn:disabled {

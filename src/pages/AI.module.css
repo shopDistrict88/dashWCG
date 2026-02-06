@@ -93,18 +93,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .quickActionBtn:active {
-    background: #e8e8e8;
-    color: #000000;
-  }
-  
-  .quickActionBtn:hover {
-    background: #d0d0d0;
-    transform: translateY(-2px);
-  }
-}
-
 .info {
   text-align: left;
   background: #0a0a0a;
@@ -221,19 +209,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .actionBtn:active {
-    background: #ffffff;
-    color: #000000;
-  }
-  
-  .actionBtn:hover {
-    background: #000000;
-    color: #ffffff;
-    border-color: #000000;
-  }
-}
-
 .typing {
   display: flex;
   gap: 4px;
@@ -292,14 +267,6 @@
   -webkit-text-fill-color: #ffffff !important;
 }
 
-.input:focus {
-  outline: none;
-  border-color: #555555;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
-  background: #0a0a0a !important;
-  color: #ffffff !important;
-}
-
 .input::placeholder {
   color: #666666;
   -webkit-text-fill-color: #666666;
@@ -330,18 +297,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .sendBtn:active {
-    background: #ffffff;
-    color: #000000;
-  }
-  
-  .sendBtn:hover:not(:disabled) {
-    background: #e8e8e8;
-    transform: translateY(-2px);
-  }
-}
-
 .sendBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -358,13 +313,6 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .newChatBtn:hover {
-    background: #2a2a2a;
-    border-color: #555555;
-  }
 }
 
 @media (max-width: 768px) {

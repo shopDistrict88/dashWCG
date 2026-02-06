@@ -76,10 +76,6 @@
   font-weight: 600;
 }
 
-.previewCard a:hover {
-  text-decoration: underline;
-}
-
 .formGrid {
   display: flex;
   flex-direction: column;
@@ -114,12 +110,6 @@
 .input::placeholder,
 .textarea::placeholder {
   color: #666666;
-}
-
-.input:focus,
-.textarea:focus {
-  outline: none;
-  border-color: #666666;
 }
 
 .toggleLabel {

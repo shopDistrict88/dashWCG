@@ -76,14 +76,6 @@
   color: #666666;
 }
 
-.formGroup input:focus,
-.formGroup select:focus,
-.formGroup textarea:focus {
-  outline: none;
-  border-color: #555555;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
-}
-
 .formGroup select option {
   background: #1a1a1a;
   color: #ffffff;
@@ -119,13 +111,6 @@
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 12px;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .submitBtn:hover {
-    background: #f5f5f5;
-    transform: translateY(-1px);
-  }
 }
 
 .contentSection {
@@ -184,13 +169,6 @@
   color: #000000;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .contentCard:hover {
-    border-color: #b0b0b0;
-    background: #d0d0d0;
-  }
-}
-
 .contentHeader {
   display: flex;
   justify-content: space-between;
@@ -246,13 +224,6 @@
   flex-shrink: 0;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .deleteBtn:hover {
-    background: #d0d0d0;
-    border-color: #b0b0b0;
-  }
-}
-
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -297,11 +268,6 @@
   cursor: pointer;
 }
 
-.statusSelect:focus {
-  outline: none;
-  border-color: #000000;
-}
-
 .statusSelect option {
   background: #ffffff;
   color: #000000;
@@ -317,13 +283,6 @@
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .repurposeBtn:hover {
-    background: #2d5016;
-    color: #a5d6a7;
-  }
 }
 
 .date {
@@ -397,11 +356,6 @@
   transition: all 0.2s ease;
 }
 
-.typeBtn:hover {
-  background: #2d2d2d;
-  border-color: #555555;
-}
-
 .closeBtn {
   width: 100%;
   padding: 12px;
@@ -412,10 +366,6 @@
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s ease;
-}
-
-.closeBtn:hover {
-  background: #555555;
 }
 
 @media (max-width: 768px) {
@@ -481,14 +431,6 @@
   resize: vertical;
 }
 
-.formGroup input:focus,
-.formGroup textarea:focus,
-.formGroup select:focus {
-  outline: none;
-  border-color: #000000;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-}
-
 .submitBtn {
   padding: 12px 24px;
   background: #000000;
@@ -499,10 +441,6 @@
   cursor: pointer;
   transition: all 0.2s ease;
   align-self: flex-start;
-}
-
-.submitBtn:hover {
-  background: #333333;
 }
 
 .contentSection {
@@ -584,10 +522,6 @@
   height: 24px;
 }
 
-.deleteBtn:hover {
-  color: #000000;
-}
-
 .contentPreview {
   font-size: 14px;
   color: #333333;
@@ -649,10 +583,6 @@
   white-space: nowrap;
 }
 
-.tab:hover {
-  color: #ffffff;
-}
-
 .tab.active {
   color: #ffffff;
   border-bottom-color: #ffffff;
@@ -710,11 +640,6 @@
   transition: all 0.2s ease;
 }
 
-.analysisCard:hover {
-  background: #d0d0d0;
-  transform: translateY(-2px);
-}
-
 .analysisCard strong {
   display: block;
   margin-bottom: 8px;
@@ -750,11 +675,6 @@
   font-family: inherit;
 }
 
-.hookInput:focus {
-  outline: none;
-  border-color: #555555;
-}
-
 .hookList {
   display: grid;
   gap: 12px;
@@ -772,10 +692,6 @@
   gap: 12px;
   color: #000000;
   transition: all 0.2s ease;
-}
-
-.hookCard:hover {
-  background: #d0d0d0;
 }
 
 .hookText {
@@ -796,10 +712,6 @@
   transition: all 0.2s ease;
   white-space: nowrap;
   flex-shrink: 0;
-}
-
-.hookCopyBtn:hover {
-  background: #d0d0d0;
 }
 
 /* Opportunities */
@@ -980,10 +892,6 @@
   justify-content: center;
 }
 
-.closeBtn:hover {
-  background: #555555;
-}
-
 .typeGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -1003,8 +911,36 @@
   transition: all 0.2s ease;
 }
 
-.typeBtn:hover {
-  background: #d0d0d0;
+/* Extra Small Screens */
+@media (max-width: 480px) {
+  .container {
+    padding: 8px;
+  }
+
+  .header {
+    margin-bottom: 16px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .row,
+  .stats,
+  .contentList {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  button {
+    width: 100%;
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  input, textarea, select {
+    font-size: 16px !important;
+  }
 }
 
 @media (max-width: 600px) {

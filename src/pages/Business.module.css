@@ -62,10 +62,6 @@
   transition: background-color 0.2s;
 }
 
-.smallButton:hover {
-  background: #e0e0e0;
-}
-
 /* Health Card */
 .healthCard {
   display: grid;
@@ -182,13 +178,6 @@
   width: 100%;
 }
 
-.cellInput:focus {
-  outline: none;
-  background: #1a1a1a;
-  border-radius: 3px;
-  padding: 4px;
-}
-
 .profitPositive {
   color: #b8e6a0;
   font-weight: 600;
@@ -239,10 +228,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-}
-
-.actionButton:hover {
-  background: #e0e0e0;
 }
 
 /* Responsive */

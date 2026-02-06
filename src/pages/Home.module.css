@@ -64,13 +64,6 @@
   cursor: pointer;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .statCard:hover {
-    background: #d0d0d0;
-    box-shadow: 0 2px 8px rgba(232, 232, 232, 0.3);
-  }
-}
-
 .statValue {
   font-size: 36px;
   font-weight: 700;
@@ -111,13 +104,6 @@
   color: #000000;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .card:hover {
-    background: #d0d0d0;
-    box-shadow: 0 2px 8px rgba(232, 232, 232, 0.3);
-  }
-}
-
 .card h3 {
   font-size: 18px;
   font-weight: 600;
@@ -139,12 +125,6 @@
   align-items: flex-start;
   gap: 12px;
   transition: all 0.2s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .recommendation:hover {
-    background: #d0d0d0;
-  }
 }
 
 .recommendationIcon {
@@ -174,12 +154,6 @@
   justify-content: space-between;
   align-items: center;
   transition: all 0.2s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .activityItem:hover {
-    background: #d0d0d0;
-  }
 }
 
 .activityMeta {

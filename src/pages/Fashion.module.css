@@ -47,10 +47,6 @@
   white-space: nowrap;
 }
 
-.navBtn:hover {
-  color: #fff;
-}
-
 .navBtnActive {
   color: #fff;
   border-bottom-color: #fff;
@@ -69,12 +65,6 @@
   color: #fff;
   font-size: 0.95rem;
   transition: all 0.2s;
-}
-
-.searchInput:focus {
-  outline: none;
-  border-color: #2a2a2a;
-  background: #000;
 }
 
 .searchInput::placeholder {
@@ -112,10 +102,6 @@
   transition: all 0.2s;
 }
 
-.primaryBtn:hover {
-  background: #e5e5e5;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -128,10 +114,6 @@
   border-radius: 8px;
   padding: 1.5rem;
   transition: all 0.2s;
-}
-
-.card:hover {
-  border-color: #2a2a2a;
 }
 
 .cardHeader {
@@ -306,12 +288,6 @@
   border-radius: 4px;
 }
 
-.navItem:hover {
-  background: #0a0a0a;
-  color: #fff;
-  border-color: #333;
-}
-
 .navItemActive {
   background: #fff;
   color: #000;
@@ -350,11 +326,6 @@
   color: #fff;
   font-size: 0.9rem;
   border-radius: 4px;
-}
-
-.input:focus, .select:focus, .textarea:focus {
-  outline: none;
-  border-color: #666;
 }
 
 .textarea {
@@ -414,10 +385,6 @@
   transition: all 0.2s;
 }
 
-.pipelineDesignItem:hover {
-  border-color: #333;
-}
-
 .pipelineDesignItem.active {
   background: #fff;
   color: #000;
@@ -472,11 +439,6 @@
   font-size: 0.85rem;
   border-radius: 4px;
   transition: all 0.2s;
-}
-
-.stageBtn:hover {
-  border-color: #666;
-  color: #fff;
 }
 
 .stageBtn.active {
@@ -908,10 +870,6 @@
   padding: 0.5rem;
   border-radius: 4px;
   transition: background 0.2s;
-}
-
-.checkboxItem:hover {
-  background: #1a1a1a;
 }
 
 .checkboxItem input[type="checkbox"] {

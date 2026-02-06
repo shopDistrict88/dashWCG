@@ -36,10 +36,6 @@
   transition: all 0.2s;
 }
 
-.primaryBtn:hover {
-  background: #e5e5e5;
-}
-
 .filters {
   display: flex;
   gap: 0.75rem;
@@ -60,11 +56,6 @@
   white-space: nowrap;
 }
 
-.filter:hover {
-  border-color: #2a2a2a;
-  color: #fff;
-}
-
 .filterActive {
   background: #fff;
   color: #000;
@@ -83,10 +74,6 @@
   border-radius: 8px;
   padding: 1.5rem;
   transition: all 0.2s;
-}
-
-.materialCard:hover {
-  border-color: #2a2a2a;
 }
 
 .cardHeader {
@@ -263,11 +250,6 @@
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s;
-}
-
-.secondaryBtn:hover {
-  border-color: #3a3a3a;
-  background: #0a0a0a;
 }
 
 @media (max-width: 768px) {
