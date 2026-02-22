@@ -288,14 +288,21 @@
   line-height: 1.5;
 }
 
-/* Mobile Responsive */
 @media (max-width: 768px) {
   .container {
-    padding: var(--spacing-lg);
+    padding: 8px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
   }
 
   .platformsGrid,
@@ -303,16 +310,69 @@
   .postsGrid,
   .insightsGrid {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 12px;
+  }
+
+  .platformCard {
+    padding: 12px;
+  }
+
+  .statCard {
+    padding: 12px;
+  }
+
+  .insightCard {
+    padding: 12px;
+  }
+
+  .timeRangeSelector {
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .timeRangeSelector::-webkit-scrollbar {
+    display: none;
+  }
+
+  .timeRangeSelector button {
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .postsHeader {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-md);
+    gap: 8px;
   }
 
   .platformFilter {
     width: 100%;
+  }
+
+  .connectBtn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 6px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .platformCard {
+    padding: 10px;
+  }
+
+  .statCard {
+    padding: 10px;
+  }
+
+  .insightCard {
+    padding: 10px;
   }
 }

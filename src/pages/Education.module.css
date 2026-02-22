@@ -174,27 +174,82 @@
   margin: 0;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .container {
-    padding: 16px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
+    padding: 8px;
     overflow-x: hidden;
   }
 
+  .header {
+    margin-bottom: 16px;
+  }
+
   .title {
-    font-size: 24px;
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
   }
 
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: 8px;
+  }
+
+  .stat {
+    padding: 12px;
+  }
+
+  .statValue {
+    font-size: 22px;
+  }
+
+  .section {
+    padding: 12px;
+  }
+
+  .playbookCard {
+    padding: 12px;
+  }
+
+  .categoriesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .categoryCard {
+    padding: 12px;
+  }
+
+  .button {
+    padding: 10px 16px;
+    font-size: 14px;
+    width: 100%;
   }
 }
 
-@media (max-width: 480px) {
-  .statsGrid {
-    grid-template-columns: 1fr;
+@media (max-width: 430px) {
+  .container {
+    padding: 6px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .stat {
+    padding: 10px;
+  }
+
+  .statValue {
+    font-size: 18px;
+  }
+
+  .playbookCard {
+    padding: 10px;
+  }
+
+  .categoryCard {
+    padding: 10px;
   }
 }

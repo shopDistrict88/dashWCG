@@ -360,7 +360,7 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 1rem;
+    padding: 8px;
     padding-bottom: 5rem;
   }
 
@@ -369,15 +369,51 @@
     gap: 1rem;
   }
 
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
   .primaryBtn {
     width: 100%;
+  }
+
+  .secondaryBtn {
+    min-height: auto;
+    min-width: auto;
   }
 
   .grid {
     grid-template-columns: 1fr;
   }
 
+  .card {
+    padding: 12px;
+  }
+
   .metrics {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 6px;
+    padding-bottom: 5rem;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .card {
+    padding: 10px;
   }
 }

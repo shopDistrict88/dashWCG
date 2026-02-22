@@ -170,6 +170,12 @@ export function Notes() {
   const [syncing, setSyncing] = useState(false)
   const [aiLoading, setAiLoading] = useState<AiTask | null>(null)
   const [showAbandoned, setShowAbandoned] = useState(false)
+  const [dateFilter, setDateFilter] = useState('')
+  const [focusTimer, setFocusTimer] = useState(0)
+  const [focusTimerActive, setFocusTimerActive] = useState(false)
+  const [showDigest, setShowDigest] = useState(false)
+  const [showQuickCapture, setShowQuickCapture] = useState(false)
+  const [quickCaptureText, setQuickCaptureText] = useState('')
 
   const graphWrapperRef = useRef<HTMLDivElement | null>(null)
   const graphRef = useRef<HTMLCanvasElement | null>(null)
@@ -178,6 +184,22 @@ export function Notes() {
   useEffect(() => {
     fetchThoughts(userId).then((loaded) => setNotes(loaded.map(hydrateThought)))
   }, [userId])
+
+  // Writing sessions timer (#37)
+  useEffect(() => {
+    if (!focusTimerActive) return
+    const iv = setInterval(() => setFocusTimer(p => p + 1), 1000)
+    return () => clearInterval(iv)
+  }, [focusTimerActive])
+
+  // Quick capture keyboard shortcut (#49)
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'q') { e.preventDefault(); setShowQuickCapture(true) }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
 
   useEffect(() => {
     if (!draft) return
@@ -221,7 +243,8 @@ export function Notes() {
       const matchesTemp = temperatureFilter === 'all' || note.temperature === temperatureFilter
       const matchesHorizon = horizonFilter === 'all' || note.strategicHorizon === horizonFilter
       const matchesAbandoned = !showAbandoned || note.abandoned
-      return matchesSearch && matchesTag && matchesRole && matchesStatus && matchesTemp && matchesHorizon && matchesAbandoned
+      const matchesDate = !dateFilter || note.createdAt.startsWith(dateFilter)
+      return matchesSearch && matchesTag && matchesRole && matchesStatus && matchesTemp && matchesHorizon && matchesAbandoned && matchesDate
     })
 
     result = result.sort((a, b) => {
@@ -240,7 +263,7 @@ export function Notes() {
     })
 
     return result
-  }, [notes, searchQuery, tagFilter, roleFilter, statusFilter, temperatureFilter, horizonFilter, sortBy, showAbandoned])
+  }, [notes, searchQuery, tagFilter, roleFilter, statusFilter, temperatureFilter, horizonFilter, sortBy, showAbandoned, dateFilter])
 
   const resurfaced = useMemo(() => {
     const now = Date.now()
@@ -277,6 +300,30 @@ export function Notes() {
     setActivePanel('overview')
     addToast('Thought ready', 'info')
   }
+
+  const handleQuickCapture = async () => {
+    if (!quickCaptureText.trim()) return
+    const note = createEmptyThought()
+    note.title = quickCaptureText.trim().split('\n')[0].slice(0, 80)
+    note.body = quickCaptureText.trim()
+    note.tags = ['quick-capture']
+    const normalized = normalizeNote(note, notes)
+    setNotes(prev => [normalized, ...prev])
+    await upsertThought(userId, normalized)
+    setQuickCaptureText('')
+    setShowQuickCapture(false)
+    addToast('Quick capture saved', 'success')
+  }
+
+  const pinnedNotes = useMemo(() => notes.filter(n => n.tags.includes('pinned')), [notes])
+
+  const insightDigest = useMemo(() => {
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
+    const recent = notes.filter(n => new Date(n.updatedAt).getTime() > weekAgo)
+    const decisions = recent.filter(n => n.isDecision)
+    const topGravity = [...recent].sort((a, b) => b.gravityScore - a.gravityScore).slice(0, 3)
+    return { total: recent.length, decisions: decisions.length, topGravity }
+  }, [notes])
 
   const handleSaveDraft = async (announce = true) => {
     if (!draft) return
@@ -655,11 +702,21 @@ export function Notes() {
   }
 
   if (viewMode === 'focus' && draft) {
+    const mins = Math.floor(focusTimer / 60)
+    const secs = focusTimer % 60
     return (
       <div className={styles.focusMode}>
-        <button onClick={() => setViewMode('list')} className={styles.exitFocus}>
-          Exit Focus
-        </button>
+        <div className={styles.focusToolbar}>
+          <button onClick={() => { setViewMode('list'); setFocusTimerActive(false); setFocusTimer(0) }} className={styles.exitFocus}>
+            Exit Focus
+          </button>
+          <div className={styles.focusTimerDisplay}>
+            <button onClick={() => setFocusTimerActive(p => !p)} className={styles.ghostBtn}>
+              {focusTimerActive ? 'Pause' : 'Start Timer'}
+            </button>
+            <span className={styles.timerValue}>{String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}</span>
+          </div>
+        </div>
         <div className={styles.focusContent}>
           <input
             type="text"
@@ -723,6 +780,20 @@ export function Notes() {
 
   return (
     <div className={styles.container}>
+      {/* Quick Capture Widget (#49) */}
+      {showQuickCapture && (
+        <div className={styles.quickCaptureOverlay}>
+          <div className={styles.quickCapture}>
+            <div className={styles.quickCaptureHeader}><span>Quick Capture</span><button onClick={() => setShowQuickCapture(false)} className={styles.ghostBtn}>×</button></div>
+            <textarea value={quickCaptureText} onChange={e => setQuickCaptureText(e.target.value)} className={styles.focusTextarea} rows={4} placeholder="Capture a thought instantly... (Ctrl+Q)" autoFocus />
+            <div className={styles.quickCaptureActions}>
+              <button onClick={handleQuickCapture} className={styles.primaryBtn}>Save</button>
+              <button onClick={() => setShowQuickCapture(false)} className={styles.secondaryBtn}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={styles.header}>
         <div>
           <h1>Thought System</h1>
@@ -734,14 +805,58 @@ export function Notes() {
           <button onClick={handleNewThought} className={styles.primaryBtn}>
             New Thought
           </button>
+          <button onClick={() => setShowQuickCapture(true)} className={styles.secondaryBtn}>
+            Quick Capture
+          </button>
           <button onClick={() => setViewMode('graph')} className={styles.secondaryBtn}>
             Graph View
+          </button>
+          <button onClick={() => setShowDigest(p => !p)} className={styles.secondaryBtn}>
+            {showDigest ? 'Hide Digest' : 'Digest'}
           </button>
           <button onClick={handleSync} className={styles.secondaryBtn} disabled={syncing}>
             {syncing ? 'Syncing' : 'Sync'}
           </button>
         </div>
       </div>
+
+      {/* Insight Digest (#50) */}
+      {showDigest && (
+        <div className={styles.resurfaced}>
+          <h3>Weekly Insight Digest</h3>
+          <div className={styles.kpiGrid}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Thoughts This Week</div><div className={styles.kpiValue}>{insightDigest.total}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Decisions Made</div><div className={styles.kpiValue}>{insightDigest.decisions}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Total Thoughts</div><div className={styles.kpiValue}>{notes.length}</div></div>
+          </div>
+          {insightDigest.topGravity.length > 0 && (
+            <div>
+              <h4 style={{ color: '#888', fontSize: 12, margin: '12px 0 6px' }}>Highest Gravity This Week</h4>
+              {insightDigest.topGravity.map(n => (
+                <button key={n.id} className={styles.resurfacedItem} onClick={() => handleSelect(n)}>
+                  <div className={styles.resurfacedTitle}>{n.title || 'Untitled'}</div>
+                  <div className={styles.resurfacedTime}>Gravity {n.gravityScore}</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Pinned Insights (#46) */}
+      {pinnedNotes.length > 0 && !showDigest && (
+        <div className={styles.resurfaced}>
+          <h3>Pinned Insights</h3>
+          <div className={styles.resurfacedList}>
+            {pinnedNotes.map(note => (
+              <button key={note.id} className={styles.resurfacedItem} onClick={() => handleSelect(note)}>
+                <div className={styles.resurfacedTitle}>{note.title || 'Untitled'}</div>
+                <div className={styles.resurfacedTime}>Confidence {note.confidence}%</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className={styles.controls}>
         <input
@@ -808,9 +923,11 @@ export function Notes() {
             </option>
           ))}
         </select>
+        <input type="date" value={dateFilter} onChange={e => setDateFilter(e.target.value)} className={styles.searchInput} title="Time Machine — filter by date" />
         <button onClick={() => setShowAbandoned((prev) => !prev)} className={styles.secondaryBtn}>
           {showAbandoned ? 'Hide Abandoned' : 'Show Abandoned'}
         </button>
+        {dateFilter && <button onClick={() => setDateFilter('')} className={styles.ghostBtn}>Clear Date</button>}
       </div>
 
       {resurfaced.length > 0 && (

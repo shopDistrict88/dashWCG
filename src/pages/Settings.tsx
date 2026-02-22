@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useCloudStorage } from '../hooks/useCloudStorage'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useApp } from '../context/AppContext'
@@ -41,46 +42,42 @@ export function Settings() {
   const navigate = useNavigate()
   const [editName, setEditName] = useState((user as any)?.user_metadata?.name || '')
   const [activeTab, setActiveTab] = useState('interface')
-  const [settings, setSettings] = useState<Settings>(() => {
-    const saved = localStorage.getItem('wcg-settings')
-    return saved ? JSON.parse(saved) : {
-      interfaceDensity: 'comfortable',
-      focusMode: false,
-      theme: 'dark',
-      aiModel: 'gpt-4',
-      aiTemperature: 0.7,
-      notifications: {
-        email: true,
-        push: true,
-        mentions: true,
-        updates: false
-      },
-      privacy: {
-        analytics: true,
-        sharing: false,
-        publicProfile: false
-      },
-      features: {
-        ai: true,
-        commerce: true,
-        fashion: true,
-        community: true,
-        creators: true
-      },
-      performance: {
-        animations: true,
-        autoSave: true,
-        prefetch: true
-      },
-      automation: {
-        autoBackup: true,
-        backupFrequency: 'weekly'
-      }
+  const [settings, setSettings] = useCloudStorage<Settings>('wcg-settings', {
+    interfaceDensity: 'comfortable',
+    focusMode: false,
+    theme: 'dark',
+    aiModel: 'gpt-4',
+    aiTemperature: 0.7,
+    notifications: {
+      email: true,
+      push: true,
+      mentions: true,
+      updates: false
+    },
+    privacy: {
+      analytics: true,
+      sharing: false,
+      publicProfile: false
+    },
+    features: {
+      ai: true,
+      commerce: true,
+      fashion: true,
+      community: true,
+      creators: true
+    },
+    performance: {
+      animations: true,
+      autoSave: true,
+      prefetch: true
+    },
+    automation: {
+      autoBackup: true,
+      backupFrequency: 'weekly'
     }
   })
 
   useEffect(() => {
-    localStorage.setItem('wcg-settings', JSON.stringify(settings))
     document.body.setAttribute('data-density', settings.interfaceDensity)
     document.body.setAttribute('data-focus-mode', settings.focusMode.toString())
   }, [settings])

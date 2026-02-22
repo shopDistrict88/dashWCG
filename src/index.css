@@ -76,10 +76,8 @@ body {
   text-size-adjust: 100%;
 }
 
-/* Prevent horizontal overflow on mobile */
 * {
   box-sizing: border-box;
-  max-width: 100%;
 }
 
 img,
@@ -103,17 +101,13 @@ h3 {
 
 button {
   border-radius: 8px;
-  border: 1px solid #ffffff;
+  border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #ffffff;
-  color: #000000;
   cursor: pointer;
   transition: none;
-  min-height: 44px;
-  min-width: 44px;
   touch-action: manipulation;
 }
 
@@ -134,271 +128,20 @@ button {
 
 /* Active states for real taps/clicks */
 
-/* Responsive utilities */
+/* Responsive */
 @media (max-width: 768px) {
-  body {
-    font-size: 14px;
-  }
-  
-  button {
-    padding: 0.8em 1.4em;
-  }
+  body { font-size: 14px }
+  input, select, textarea { font-size: 16px !important }
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
-/* Global mobile-friendly utilities */
-.container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 16px;
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 0 12px;
-  }
-}
-
-/* Make tables responsive */
-table {
-  width: 100%;
-  overflow-x: auto;
-  display: block;
-}
-
-@media (max-width: 768px) {
-  table {
-    font-size: 13px;
-  }
-  
-  th, td {
-    padding: 8px 4px !important;
-  }
-}
-
-/* Grid responsive */
-.grid {
-  display: grid;
-  gap: 20px;
-}
-
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr !important;
-    gap: 12px;
-  }
-}
-
-/* Form inputs mobile friendly */
-input, textarea, select {
-  font-size: 16px !important;
-  padding: 12px !important;
-}
-
-@media (max-width: 768px) {
-  input, textarea, select {
-    padding: 14px !important;
-  }
-}
-
-/* Cards responsive */
-[class*="card"],
-[class*="Card"] {
-  width: 100%;
-}
-
-@media (max-width: 768px) {
-  [class*="card"],
-  [class*="Card"] {
-    padding: 16px !important;
-  }
-}
-
-/* ========================================
-   COMPREHENSIVE MOBILE BREAKPOINTS
-   ======================================== */
-
-/* Extra Small: 320px - 480px (phones in portrait) */
-@media (max-width: 480px) {
-  :root {
-    --spacing-lg: 16px;
-    --spacing-xl: 24px;
-  }
-  
-  h1 {
-    font-size: clamp(1.5rem, 4vw, 2.4rem);
-  }
-  
-  h2 {
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-  }
-  
-  h3 {
-    font-size: clamp(1rem, 2.5vw, 1.5rem);
-  }
-  
-  button {
-    padding: 0.7em 1.2em;
-    font-size: 14px;
-    width: 100%;
-    max-width: 100%;
-  }
-  
-  input, textarea, select {
-    font-size: 16px !important;
-    width: 100% !important;
-  }
-}
-
-/* Small: 480px - 768px (phones in landscape, small tablets) */
-@media (min-width: 481px) and (max-width: 768px) {
-  :root {
-    --spacing-lg: 18px;
-  }
-  
-  button {
-    font-size: 15px;
-  }
-}
-
-/* Medium: 769px - 1024px (tablets) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .container {
-    max-width: 720px;
-  }
-}
-
-/* Large: 1025px+ (desktop) */
-@media (min-width: 1025px) {
-  .container {
-    max-width: 1400px;
-  }
-}
-
-/* ========================================
-   MOBILE-SPECIFIC OPTIMIZATIONS
-   ======================================== */
-
-@media (max-width: 768px) {
-  /* Touch-friendly spacing */
-  [role="button"],
-  button,
-  [type="button"],
-  [type="submit"],
-  [type="reset"] {
-    min-height: 48px;
-    min-width: 48px;
-  }
-  
-  /* Tap target areas - at least 48px */
-  a, button, input[type="checkbox"], input[type="radio"], select {
-    min-height: 48px;
-    min-width: 48px;
-  }
-  
-  /* Stack flexible layouts vertically */
-  [class*="flex"]:not([class*="row"]) {
-    flex-direction: column;
-  }
-  
-  /* Readable text on mobile */
-  small {
-    font-size: 12px;
-  }
-  
-  /* Fix labels for mobile */
-  label {
-    display: block;
-    margin-bottom: 8px;
-  }
-  
-  /* Better list spacing */
-  ul, ol {
-    padding-left: 20px;
-  }
-  
-  li {
-    margin-bottom: 8px;
-  }
-  
-  /* Modal/dialog mobile */
-  [role="dialog"],
-  .modal,
-  [class*="Modal"],
-  .drawer,
-  [class*="Drawer"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    border-radius: 12px 12px 0 0 !important;
-  }
-  
-  /* Prevent zoom on input focus */
-  input,
-  select,
-  textarea {
-    font-size: 16px !important;
-    zoom: 1;
-  }
-}
-
-/* ========================================
-   LANDSCAPE MOBILE ADJUSTMENTS
-   ======================================== */
-@media (max-height: 500px) and (orientation: landscape) {
-  button {
-    padding: 0.4em 0.8em;
-    min-height: 40px;
-  }
-  
-  [class*="modal"],
-  [class*="Modal"],
-  [class*="drawer"],
-  [class*="Drawer"] {
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-}
-
-/* ========================================
-   ACCESSIBILITY & PERFORMANCE
-   ======================================== */
-
-/* Reduce motion for those who prefer it */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
 
-/* Print styles for mobile */
 @media print {
-  * {
-    background: transparent !important;
-    color: #000 !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-  }
-  
-  button,
-  input,
-  select,
-  textarea {
-    background: white;
-  }
+  * { background: transparent !important; color: #000 !important; box-shadow: none !important }
 }
 

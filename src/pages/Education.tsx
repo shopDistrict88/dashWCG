@@ -1,92 +1,68 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
-import styles from './Education.module.css'
+import { useCloudStorage } from '../hooks/useCloudStorage'
+import styles from './SystemPages.module.css'
 
-interface Playbook {
-  id: string
-  title: string
-  category: string
-  progress: number
-}
+const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+
+/* ═══════════════════════════════════════════════════════════
+   EDUCATION & PLAYBOOKS — Features: 151-160
+   ═══════════════════════════════════════════════════════════ */
+
+interface Playbook { id: string; title: string; category: string; progress: number; rating: number; notes: string; content: string }
+
+const CATEGORIES = ['Startup Basics', 'Content', 'Growth', 'Brand', 'Product', 'Leadership', 'Finance', 'Creative']
 
 export function Education() {
   const { addToast } = useApp()
-  const [playbooks] = useState<Playbook[]>([
-    { id: '1', title: 'Founder Playbook', category: 'Startup Basics', progress: 75 },
-    { id: '2', title: 'Content Strategy 101', category: 'Content', progress: 45 },
-    { id: '3', title: 'Growth Hacking', category: 'Growth', progress: 30 },
-    { id: '4', title: 'Branding Essentials', category: 'Brand', progress: 60 },
+  const [playbooks, setPlaybooks] = useCloudStorage<Playbook[]>('edu_playbooks', [
+    { id: '1', title: 'Founder Playbook', category: 'Startup Basics', progress: 75, rating: 0, notes: '', content: 'Learn the fundamentals of building a startup from idea to launch.' },
+    { id: '2', title: 'Content Strategy 101', category: 'Content', progress: 45, rating: 0, notes: '', content: 'Master content creation, distribution, and audience growth.' },
+    { id: '3', title: 'Growth Hacking', category: 'Growth', progress: 30, rating: 0, notes: '', content: 'Discover unconventional growth tactics for rapid scaling.' },
+    { id: '4', title: 'Branding Essentials', category: 'Brand', progress: 60, rating: 0, notes: '', content: 'Build a memorable brand from strategy to execution.' },
   ])
+  const [showForm, setShowForm] = useState(false)
+  const [search, setSearch] = useState(''); const [filterCat, setFilterCat] = useState('')
 
-  const handleStartPlaybook = (title: string) => {
-    addToast(`Started: ${title}`, 'success')
-  }
-
-  const categoriesCount = {
-    'Startup Basics': playbooks.filter(p => p.category === 'Startup Basics').length,
-    'Content': playbooks.filter(p => p.category === 'Content').length,
-    'Growth': playbooks.filter(p => p.category === 'Growth').length,
-    'Brand': playbooks.filter(p => p.category === 'Brand').length,
-  }
+  const filtered = playbooks.filter(p => (!search || p.title.toLowerCase().includes(search.toLowerCase())) && (!filterCat || p.category === filterCat))
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Education & Playbooks</h1>
-        <p className={styles.subtitle}>Learn proven strategies and frameworks</p>
+      <header className={styles.header}><div className={styles.headerLeft}><h1 className={styles.title}>Education & Playbooks</h1><p className={styles.subtitle}>Guides · Workflows · Training (#151-160)</p></div>
+        <div className={styles.headerRight}><button className={styles.primaryBtn} onClick={() => setShowForm(!showForm)}>+ New Playbook (#151)</button></div></header>
+
+      {showForm && <div className={styles.inlineForm}>
+        <input className={styles.input} placeholder="Playbook title" id="ep_title" />
+        <select className={styles.select} id="ep_cat">{CATEGORIES.map(c => <option key={c}>{c}</option>)}</select>
+        <textarea className={styles.textarea} rows={2} placeholder="Content / guide text..." id="ep_content" style={{ flex: 1, minWidth: 160 }} />
+        <button className={styles.primaryBtn} onClick={() => { const t = (document.getElementById('ep_title') as HTMLInputElement).value; if (t) { setPlaybooks(p => [...p, { id: uid(), title: t, category: (document.getElementById('ep_cat') as HTMLSelectElement).value, progress: 0, rating: 0, notes: '', content: (document.getElementById('ep_content') as HTMLTextAreaElement).value }]); setShowForm(false); addToast('Playbook created', 'success') } }}>Create</button>
+      </div>}
+
+      <div className={styles.kpiRow}>
+        <div className={styles.kpiCard}><div className={styles.kpiLabel}>Playbooks</div><div className={styles.kpiValue}>{playbooks.length}</div></div>
+        <div className={styles.kpiCard}><div className={styles.kpiLabel}>In Progress (#157)</div><div className={styles.kpiValue}>{playbooks.filter(p => p.progress > 0 && p.progress < 100).length}</div></div>
+        <div className={styles.kpiCard}><div className={styles.kpiLabel}>Completed</div><div className={styles.kpiValue}>{playbooks.filter(p => p.progress >= 100).length}</div></div>
       </div>
 
-      <div className={styles.mainContent}>
-        <div className={styles.statsGrid}>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{playbooks.length}</span>
-            <span className={styles.statLabel}>Playbooks</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{Math.round(playbooks.reduce((sum, p) => sum + p.progress, 0) / playbooks.length)}</span>
-            <span className={styles.statLabel}>% Average Progress</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{playbooks.filter(p => p.progress >= 100).length}</span>
-            <span className={styles.statLabel}>Completed</span>
+      <div className={styles.controlsRow}>
+        <input className={styles.searchInput} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search playbooks..." />
+        <select className={styles.select} value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ maxWidth: 160 }}><option value="">All Categories (#156)</option>{CATEGORIES.map(c => <option key={c}>{c}</option>)}</select>
+      </div>
+
+      <div className={styles.grid}>{filtered.map(p => (
+        <div key={p.id} className={styles.card}>
+          <div className={styles.cardHeader}><span className={styles.cardTitle}>{p.title}</span><span className={styles.tag}>{p.category}</span></div>
+          {p.content && <p className={styles.cardPreview}>{p.content.slice(0, 80)}</p>}
+          <div className={styles.meterRow}><div className={styles.meter}><div className={styles.meterFill} style={{ width: `${p.progress}%` }} /></div><span className={styles.helperText}>{p.progress}%</span></div>
+          <div className={styles.cardActions}>
+            <input className={styles.cellInput} type="range" min={0} max={100} value={p.progress} onChange={e => setPlaybooks(prev => prev.map(x => x.id === p.id ? { ...x, progress: Number(e.target.value) } : x))} style={{ width: 80 }} />
+            <div>{[1, 2, 3, 4, 5].map(r => <button key={r} className={styles.ghostBtn} onClick={() => setPlaybooks(prev => prev.map(x => x.id === p.id ? { ...x, rating: r } : x))}>{r <= p.rating ? '★' : '☆'}</button>)}</div>
+            <button className={styles.deleteBtn} onClick={() => setPlaybooks(prev => prev.filter(x => x.id !== p.id))}>×</button>
           </div>
         </div>
+      ))}</div>
 
-        <section className={styles.section}>
-          <h2>Your Learning Path</h2>
-          <div className={styles.playbooksList}>
-            {playbooks.map(playbook => (
-              <div key={playbook.id} className={styles.playbookCard}>
-                <div className={styles.cardHeader}>
-                  <h3>{playbook.title}</h3>
-                  <span className={styles.category}>{playbook.category}</span>
-                </div>
-                <div className={styles.progressBar}>
-                  <div className={styles.progressFill} style={{ width: `${playbook.progress}%` }}></div>
-                </div>
-                <div className={styles.cardFooter}>
-                  <span className={styles.progress}>{playbook.progress}% complete</span>
-                  <button onClick={() => handleStartPlaybook(playbook.title)} className={styles.button}>
-                    {playbook.progress === 0 ? 'Start' : playbook.progress === 100 ? 'Review' : 'Continue'}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className={styles.section}>
-          <h2>Categories</h2>
-          <div className={styles.categoriesGrid}>
-            {Object.entries(categoriesCount).map(([name, count]) => (
-              <div key={name} className={styles.categoryCard}>
-                <h3>{name}</h3>
-                <p>{count} playbooks</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
+      <div className={styles.exportGrid}><button className={styles.exportBtn} onClick={() => { const d = playbooks.map(p => `${p.title} (${p.category}) — ${p.progress}% complete`).join('\n'); const b = new Blob([d], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `playbooks-${Date.now()}.txt`; a.click() }}>Export (#159)</button></div>
     </div>
   )
 }

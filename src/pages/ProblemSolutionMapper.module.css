@@ -1,0 +1,156 @@
+.container{background:#000;color:#fff;min-height:100vh;padding:32px 40px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.focusMode .tabNav,.focusMode .header{opacity:.4;pointer-events:none}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.headerLeft{display:flex;flex-direction:column;gap:4px}
+.headerRight{display:flex;gap:10px;flex-wrap:wrap}
+.title{font-size:28px;font-weight:700;letter-spacing:-.5px;margin:0}
+.subtitle{color:#888;font-size:14px;margin:0}
+.tabNav{display:flex;gap:4px;margin-bottom:24px;overflow-x:auto;border-bottom:1px solid #222}
+.tabBtn{background:transparent;border:none;color:#777;font-size:13px;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.tabBtn:hover{color:#ccc}
+.tabActive{color:#fff;border-bottom-color:#fff}
+.mainContent{animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.section{display:flex;flex-direction:column;gap:20px}
+.sectionTitle{font-size:18px;font-weight:600;margin:0}
+.primaryBtn{background:#fff;color:#000;border:none;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.primaryBtn:hover{background:#ddd;transform:scale(1.02)}
+.secondaryBtn{background:transparent;border:1px solid #333;color:#ccc;padding:8px 18px;border-radius:8px;font-size:13px;cursor:pointer;transition:all .2s}
+.secondaryBtn:hover{border-color:#666;color:#fff}
+.ghostBtn{background:transparent;border:none;color:#888;font-size:12px;cursor:pointer;transition:color .2s;padding:4px 8px}
+.ghostBtn:hover{color:#fff}
+.deleteBtn{background:transparent;border:none;color:#555;font-size:14px;cursor:pointer;transition:color .2s}
+.deleteBtn:hover{color:#f55}
+.exportBtn{background:#111;border:1px solid #333;color:#ccc;padding:10px 20px;border-radius:8px;font-size:13px;cursor:pointer;transition:all .2s}
+.exportBtn:hover{border-color:#666;color:#fff}
+.kpiRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.kpiCard{background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:16px;transition:border-color .2s}
+.kpiCard:hover{border-color:#333}
+.kpiLabel{color:#888;font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.kpiValue{font-size:22px;font-weight:700}
+.controlsRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.searchInput{background:#111;border:1px solid #222;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;flex:1;min-width:160px;transition:border-color .2s}
+.searchInput:focus{outline:none;border-color:#555}
+.select{background:#111;border:1px solid #222;color:#ccc;padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer}
+.select:focus{outline:none;border-color:#555}
+.input{background:#111;border:1px solid #222;color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;width:100%;box-sizing:border-box;transition:border-color .2s}
+.input:focus{outline:none;border-color:#555}
+.textarea{background:#111;border:1px solid #222;color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;width:100%;box-sizing:border-box;resize:vertical;transition:border-color .2s}
+.textarea:focus{outline:none;border-color:#555}
+.miniSelect{background:#111;border:1px solid #222;color:#ccc;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer}
+.range{accent-color:#fff;cursor:pointer}
+.formPanel{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:20px;animation:fadeIn .2s}
+.formStack{display:flex;flex-direction:column;gap:12px}
+.fieldRow{display:flex;gap:12px;flex-wrap:wrap}
+.fieldRow>*{flex:1;min-width:140px}
+.formGroup{display:flex;flex-direction:column;gap:4px}
+.formGroup label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.label{font-size:13px;font-weight:600;color:#ccc}
+.tag{background:#1a1a1a;color:#aaa;padding:3px 10px;border-radius:20px;font-size:11px;display:inline-block;white-space:nowrap}
+.tagSmall{background:#111;color:#666;padding:2px 7px;border-radius:12px;font-size:10px}
+.cardGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card{background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:8px}
+.card:hover{border-color:#333;transform:translateY(-1px)}
+.cardSelected{border-color:#555;background:#161616}
+.cardHeader{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cardTitle{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cardMeta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.cardPreview{color:#888;font-size:12px;line-height:1.5;margin:0}
+.cardActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px}
+.scoreRow{display:flex;gap:16px}
+.scoreItem{display:flex;flex-direction:column;gap:2px}
+.scoreLabel{color:#666;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+.scoreVal{font-size:15px;font-weight:700}
+.sevBadge{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.sev_critical{background:#3a1111;color:#f55}
+.sev_high{background:#3a2811;color:#fa3}
+.sev_medium{background:#2a2811;color:#cc3}
+.sev_low{background:#112a11;color:#5c5}
+.statusBadge{padding:2px 8px;border-radius:12px;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+.st_open{background:#1a1a2a;color:#88f}
+.st_exploring{background:#2a2a11;color:#cc3}
+.st_solved{background:#112a11;color:#5c5}
+.st_archived{background:#1a1a1a;color:#666}
+.sst_proposed{background:#1a1a2a;color:#88f}
+.sst_testing{background:#2a2a11;color:#cc3}
+.sst_implemented{background:#112a11;color:#5c5}
+.sst_rejected{background:#2a1111;color:#f55}
+.solutionList{display:flex;flex-direction:column;gap:12px}
+.solutionCard{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s}
+.solutionCard:hover{border-color:#333}
+.meterRow{display:flex;align-items:center;gap:10px}
+.meter{flex:1;height:4px;background:#1a1a1a;border-radius:4px;overflow:hidden}
+.meterFill{height:100%;background:linear-gradient(90deg,#555,#fff);border-radius:4px;transition:width .3s}
+.meterLabel{color:#888;font-size:11px;white-space:nowrap}
+.dnaBlock{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.blockHeader{display:flex;justify-content:space-between;align-items:center}
+.inlineForm{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tableWrap{display:flex;flex-direction:column;gap:0;overflow-x:auto}
+.tableRow{display:grid;gap:0;border-bottom:1px solid #1a1a1a;align-items:center}
+.tableRow5{grid-template-columns:50px 1fr 1fr 100px 100px}
+.tableHeader{color:#666;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;font-weight:600;background:#080808}
+.tableCell{padding:10px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.teamGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.teamCard{background:#111;border:1px solid #1a1a1a;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;transition:border-color .2s}
+.teamCard:hover{border-color:#333}
+.fontName{font-size:13px;font-weight:600}
+.commentList{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
+.commentItem{display:flex;flex-direction:column;gap:2px;padding:10px;background:#111;border-radius:8px;font-size:13px}
+.helperText{color:#555;font-size:12px}
+.emptyState{color:#555;font-size:14px;text-align:center;padding:40px}
+.aiBox{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.aiBoxHeader{color:#888;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.aiOutput{color:#ccc;font-size:12px;line-height:1.8;font-family:'SF Mono',SFMono-Regular,Menlo,monospace;white-space:pre-wrap;margin:0;padding:12px;background:#080808;border-radius:8px;border:1px solid #111}
+.exportGrid{display:flex;gap:10px;flex-wrap:wrap}
+.matrixGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.matrixQuadrant{background:#111;border:1px solid #1a1a1a;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px;min-height:80px;transition:border-color .2s}
+.matrixQuadrant:hover{border-color:#333}
+.matrixLabel{color:#888;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:4px}
+.matrixItem{background:#0a0a0a;padding:6px 12px;border-radius:8px;font-size:12px;color:#ccc;border:1px solid #1a1a1a}
+
+@media(max-width:768px){
+  .container{padding:8px}
+  .header{flex-direction:column;gap:8px;margin-bottom:16px}
+  .headerRight{width:100%}
+  .title{font-size:20px}
+  .subtitle{font-size:12px}
+  .sectionTitle{font-size:16px;margin-bottom:12px}
+  .tabNav{gap:0;margin-bottom:16px;scrollbar-width:none;-ms-overflow-style:none}
+  .tabNav::-webkit-scrollbar{display:none}
+  .tabBtn{font-size:12px;padding:8px 10px}
+  .kpiRow{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:12px}
+  .kpiCard{min-width:0;padding:10px 8px}
+  .kpiValue{font-size:18px}
+  .kpiLabel{font-size:10px}
+  .cardGrid{grid-template-columns:1fr}
+  .matrixGrid{grid-template-columns:1fr}
+  .teamGrid{grid-template-columns:1fr}
+  .fieldRow{flex-direction:column;gap:8px}
+  .fieldRow>*{min-width:0}
+  .controlsRow{flex-direction:column;gap:6px}
+  .searchInput{max-width:100%;width:100%}
+  .inlineForm{flex-direction:column;gap:6px;padding:10px}
+  .inlineForm>*{width:100%}
+  .card{padding:12px}
+  .dnaBlock{padding:12px;margin-bottom:12px}
+  .blockHeader{flex-wrap:wrap;gap:6px}
+  .tableWrap{overflow-x:auto}
+  .tableRow{min-width:400px}
+  .tableRow5{grid-template-columns:40px 1fr 80px 70px 70px}
+  .meterRow{gap:6px}
+  .aiBox{padding:12px}
+  .aiOutput{font-size:11px}
+  .ghostBtn,.deleteBtn,.miniSelect{min-height:auto;min-width:auto}
+  .primaryBtn{padding:10px 16px;font-size:14px;width:100%}
+}
+
+@media(max-width:430px){
+  .container{padding:6px}
+  .title{font-size:18px}
+  .tabBtn{font-size:11px;padding:7px 8px}
+  .kpiRow{grid-template-columns:repeat(2,1fr);gap:4px}
+  .kpiCard{padding:8px 6px}
+  .kpiValue{font-size:16px}
+  .card{padding:10px}
+  .dnaBlock{padding:10px}
+}

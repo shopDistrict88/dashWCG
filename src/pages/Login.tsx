@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabase'
 import styles from './Login.module.css'
 
 export function Login() {
@@ -17,9 +18,9 @@ export function Login() {
     e.preventDefault()
     setError('')
     setLoading(true)
-
     try {
       if (isSignUp) {
+        if (password.length < 6) throw new Error('Password must be at least 6 characters')
         await signup(email, name, password)
       } else {
         await login(email, password)
@@ -32,10 +33,13 @@ export function Login() {
     }
   }
 
-  // Demo credentials
-  const demoLogin = () => {
-    setEmail('demo@wcg.com')
-    setPassword('demo123')
+  const handleOAuth = async (provider: 'google' | 'twitter' | 'github') => {
+    setError('')
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: window.location.origin + '/dashboard' },
+    })
+    if (error) setError(error.message)
   }
 
   return (
@@ -48,76 +52,40 @@ export function Login() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <h2 className={styles.formTitle}>{isSignUp ? 'Create Account' : 'Welcome Back'}</h2>
-
           {error && <div className={styles.error}>{error}</div>}
 
           {isSignUp && (
             <div className={styles.field}>
               <label>Full Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-                disabled={loading}
-              />
+              <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required disabled={loading} />
             </div>
           )}
-
           <div className={styles.field}>
             <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              disabled={loading}
-            />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required disabled={loading} />
           </div>
-
           <div className={styles.field}>
             <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              disabled={loading}
-            />
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Min 6 characters" required minLength={6} disabled={loading} />
           </div>
-
           <button type="submit" className={styles.button} disabled={loading}>
             {loading ? 'Loading...' : isSignUp ? 'Create Account' : 'Sign In'}
           </button>
         </form>
 
-        <div className={styles.divider}>or</div>
+        <div className={styles.divider}>or continue with</div>
 
-        <button className={styles.demoButton} onClick={demoLogin} disabled={loading}>
-          👁️ Try Demo (demo@wcg.com / demo123)
-        </button>
+        <div className={styles.oauthRow}>
+          <button className={styles.oauthBtn} onClick={() => handleOAuth('google')} disabled={loading}>Google</button>
+          <button className={styles.oauthBtn} onClick={() => handleOAuth('twitter')} disabled={loading}>X / Twitter</button>
+          <button className={styles.oauthBtn} onClick={() => handleOAuth('github')} disabled={loading}>GitHub</button>
+        </div>
 
         <div className={styles.toggle}>
           <span>{isSignUp ? 'Already have an account?' : "Don't have an account?"}</span>
-          <button
-            type="button"
-            className={styles.toggleButton}
-            onClick={() => {
-              setIsSignUp(!isSignUp)
-              setError('')
-              setEmail('')
-              setName('')
-              setPassword('')
-            }}
-            disabled={loading}
-          >
+          <button type="button" className={styles.toggleButton} onClick={() => { setIsSignUp(!isSignUp); setError(''); setEmail(''); setName(''); setPassword('') }} disabled={loading}>
             {isSignUp ? 'Sign In' : 'Sign Up'}
           </button>
-        </div>
-
-        <div className={styles.info}>
-          <p>🔐 This is a demo app. Credentials are stored locally in your browser.</p>
-          <p>Try demo credentials or create your own account to explore.</p>
         </div>
       </div>
     </div>

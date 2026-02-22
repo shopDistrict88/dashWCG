@@ -1,882 +1,287 @@
-import { useState } from 'react'
-import styles from './Placeholder.module.css'
+import { useState, useMemo } from 'react'
+import { useCloudStorage } from '../hooks/useCloudStorage'
+import styles from './SystemPages.module.css'
 
-export function PrototypeVault() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const prototypes = [
-    { id: '1', name: 'Modular Jacket v3', date: '2025-11-12', status: 'Archived', iterations: 8 },
-    { id: '2', name: 'Adaptive Bag System', date: '2025-12-20', status: 'Active', iterations: 5 },
-    { id: '3', name: 'Technical Vest Series', date: '2026-01-15', status: 'Testing', iterations: 3 },
-  ]
+const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+const now = () => new Date().toISOString()
+const fmtDate = (d: string) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'
 
-  const filteredPrototypes = prototypes.filter(proto =>
-    proto.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    proto.status.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+/* ═══════════════════════════════════════════════════════════
+   NARRATIVE STUDIO — 20 features
+   Worldbuilding, stories, editorial content
+   ═══════════════════════════════════════════════════════════ */
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Prototype Vault</h1>
-          <p className={styles.subtitle}>Historical prototypes and iteration archive</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert('Upload Prototype functionality')}>
-          Upload Prototype
-        </button>
-      </div>
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search prototypes..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
-      <div className={styles.grid}>
-        {filteredPrototypes.map(proto => (
-          <div key={proto.id} className={styles.card}>
-            <h3>{proto.name}</h3>
-            <p className={styles.meta}>{new Date(proto.date).toLocaleDateString()}</p>
-            <div className={styles.metrics}>
-              <div>
-                <span className={styles.label}>Status</span>
-                <span className={styles.value}>{proto.status}</span>
-              </div>
-              <div>
-                <span className={styles.label}>Iterations</span>
-                <span className={styles.value}>{proto.iterations}</span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
+interface Story { id: string; title: string; description: string; category: string; version: number; tags: string[]; status: 'draft' | 'in-progress' | 'published' | 'archived'; notes: string; createdAt: string }
+interface StoryElement { id: string; storyId: string; type: 'character' | 'location' | 'event' | 'scene'; name: string; description: string }
 
-export function ProblemSolutionMapper() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const challenges = [
-    { id: '1', problem: 'Weather adaptability', solution: 'Modular layering system', status: 'Implemented' },
-    { id: '2', problem: 'Durability vs weight', solution: 'Ripstop technical fabric', status: 'Testing' },
-    { id: '3', problem: 'Accessibility pricing', solution: 'Tiered product line', status: 'Planning' },
-  ]
+type NarTab = 'stories' | 'worldbuilding' | 'editorial' | 'assets'
 
-  const filteredChallenges = challenges.filter(c =>
-    c.problem.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.solution.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.status.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Problem–Solution Mapper</h1>
-          <p className={styles.subtitle}>Design challenges and creative solutions</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert('Map new challenge functionality')}>
-          Map Challenge
-        </button>
-      </div>
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search challenges..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
-      <div className={styles.grid}>
-        {filteredChallenges.map(c => (
-          <div key={c.id} className={styles.card}>
-            <h3>{c.problem}</h3>
-            <p className={styles.description}>{c.solution}</p>
-            <div className={styles.metrics}>
-              <div>
-                <span className={styles.label}>Status</span>
-                <span className={styles.value}>{c.status}</span>
-              </div>
-            </div>
-            <button className={styles.secondaryBtn} onClick={() => alert(`View ${c.problem} details`)}>
-              View Details
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// Business Intelligence Hub - Combined page
-export function MarketSignalsBoard() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'signals' | 'pricing' | 'timing'>('signals')
-
-  const signals = [
-    { id: '1', trend: 'Technical minimalism', strength: 85, trajectory: 'Rising', confidence: 92, category: 'Design' },
-    { id: '2', trend: 'Sustainable luxury', strength: 78, trajectory: 'Stable', confidence: 88, category: 'Values' },
-    { id: '3', trend: 'Modular systems', strength: 72, trajectory: 'Rising', confidence: 84, category: 'Function' },
-  ]
-
-  const pricingStrategies = [
-    { id: '1', name: 'Anchor Pricing', product: 'Premium Collection', impact: 'High', status: 'Active' },
-    { id: '2', name: 'Value Bundling', product: 'Starter Kit', impact: 'Medium', status: 'Testing' },
-    { id: '3', name: 'Prestige Positioning', product: 'Limited Edition', impact: 'Very High', status: 'Active' },
-  ]
-
-  const timingEvents = [
-    { id: '1', event: 'Q2 Fashion Week', optimal: '2026-03-15', confidence: 94, category: 'Launch' },
-    { id: '2', event: 'Summer Campaign', optimal: '2026-05-01', confidence: 88, category: 'Marketing' },
-    { id: '3', event: 'Holiday Collection', optimal: '2026-10-15', confidence: 96, category: 'Launch' },
-  ]
-
-  const filteredSignals = signals.filter(s =>
-    s.trend.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.category.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredPricing = pricingStrategies.filter(p =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.product.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredTiming = timingEvents.filter(t =>
-    t.event.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.category.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Business Intelligence Hub</h1>
-          <p className={styles.subtitle}>Market signals, pricing psychology & cultural timing</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert(`Add new ${activeTab} data`)}>
-          Add {activeTab === 'signals' ? 'Signal' : activeTab === 'pricing' ? 'Strategy' : 'Event'}
-        </button>
-      </div>
-
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search intelligence data..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
-
-      <div className={styles.tabs}>
-        <button 
-          className={`${styles.tab} ${activeTab === 'signals' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('signals')}
-        >
-          Market Signals
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'pricing' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('pricing')}
-        >
-          Pricing Psychology
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'timing' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('timing')}
-        >
-          Cultural Timing
-        </button>
-      </div>
-
-      {activeTab === 'signals' && (
-        <div className={styles.grid}>
-          {filteredSignals.map(s => (
-            <div key={s.id} className={styles.card}>
-              <span className={styles.category}>{s.category}</span>
-              <h3>{s.trend}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Strength</span>
-                  <span className={styles.value}>{s.strength}%</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Trajectory</span>
-                  <span className={styles.value}>{s.trajectory}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Confidence</span>
-                  <span className={styles.value}>{s.confidence}%</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`View ${s.trend} details`)}>
-                View Details
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'pricing' && (
-        <div className={styles.grid}>
-          {filteredPricing.map(p => (
-            <div key={p.id} className={styles.card}>
-              <h3>{p.name}</h3>
-              <p className={styles.meta}>{p.product}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Impact</span>
-                  <span className={styles.value}>{p.impact}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Status</span>
-                  <span className={styles.value}>{p.status}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Edit ${p.name} strategy`)}>
-                Edit Strategy
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'timing' && (
-        <div className={styles.grid}>
-          {filteredTiming.map(t => (
-            <div key={t.id} className={styles.card}>
-              <span className={styles.category}>{t.category}</span>
-              <h3>{t.event}</h3>
-              <p className={styles.meta}>Optimal: {new Date(t.optimal).toLocaleDateString()}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Confidence</span>
-                  <span className={styles.value}>{t.confidence}%</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Analyze ${t.event} timing`)}>
-                Analyze Timing
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// Design Studio - Combined page
-export function PackagingDesignStudio() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'packaging' | 'campaigns'>('packaging')
-
-  const packagingDesigns = [
-    { id: '1', name: 'Minimal Black Box', material: 'Recycled Cardboard', sustainability: 95, status: 'Production' },
-    { id: '2', name: 'Protective Case', material: 'Biodegradable Plastic', sustainability: 88, status: 'Testing' },
-    { id: '3', name: 'Luxury Presentation', material: 'FSC Paper & Hemp', sustainability: 92, status: 'Design' },
-  ]
-
-  const campaigns = [
-    { id: '1', name: 'Spring Launch 2026', type: 'Product Launch', channels: 'Digital, Print, OOH', status: 'Planning' },
-    { id: '2', name: 'Brand Manifesto', type: 'Brand Awareness', channels: 'Social, Video', status: 'Active' },
-    { id: '3', name: 'Sustainability Story', type: 'Values Campaign', channels: 'Editorial, Social', status: 'Development' },
-  ]
-
-  const filteredPackaging = packagingDesigns.filter(p =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.material.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredCampaigns = campaigns.filter(c =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.type.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Design Studio</h1>
-          <p className={styles.subtitle}>Packaging design & visual campaign development</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert(`Create new ${activeTab === 'packaging' ? 'packaging' : 'campaign'}`)}>
-          New {activeTab === 'packaging' ? 'Design' : 'Campaign'}
-        </button>
-      </div>
-
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search designs and campaigns..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
-
-      <div className={styles.tabs}>
-        <button 
-          className={`${styles.tab} ${activeTab === 'packaging' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('packaging')}
-        >
-          Packaging Design
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'campaigns' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('campaigns')}
-        >
-          Visual Campaigns
-        </button>
-      </div>
-
-      {activeTab === 'packaging' && (
-        <div className={styles.grid}>
-          {filteredPackaging.map(p => (
-            <div key={p.id} className={styles.card}>
-              <h3>{p.name}</h3>
-              <p className={styles.meta}>{p.material}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Sustainability</span>
-                  <span className={styles.value}>{p.sustainability}%</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Status</span>
-                  <span className={styles.value}>{p.status}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Edit ${p.name}`)}>
-                Edit Design
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'campaigns' && (
-        <div className={styles.grid}>
-          {filteredCampaigns.map(c => (
-            <div key={c.id} className={styles.card}>
-              <span className={styles.category}>{c.type}</span>
-              <h3>{c.name}</h3>
-              <p className={styles.meta}>{c.channels}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Status</span>
-                  <span className={styles.value}>{c.status}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`View ${c.name} campaign`)}>
-                View Campaign
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// Narrative Studio - Combined page
 export function WorldbuildingStudio() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'worlds' | 'stories' | 'editorial'>('worlds')
+  const [tab, setTab] = useState<NarTab>('stories')
+  const [stories, setStories] = useCloudStorage<Story[]>('nar_stories', [])
+  const [elements, setElements] = useCloudStorage<StoryElement[]>('nar_elements', [])
+  const [search, setSearch] = useState('')
+  const [showForm, setShowForm] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [focusMode, setFocusMode] = useState(false)
 
-  const worlds = [
-    { id: '1', name: 'Urban Nomad Universe', elements: 12, status: 'Active', depth: 'High' },
-    { id: '2', name: 'Technical Heritage', elements: 8, status: 'Development', depth: 'Medium' },
-    { id: '3', name: 'Future Utility', elements: 15, status: 'Active', depth: 'Very High' },
-  ]
-
-  const stories = [
-    { id: '1', title: 'Origin Story', type: 'Brand Narrative', registered: '2025-08-15', protection: 'Registered' },
-    { id: '2', title: 'Maker Series', type: 'Campaign IP', registered: '2025-11-20', protection: 'Copyright' },
-    { id: '3', title: 'City Chronicles', type: 'Editorial IP', registered: '2026-01-05', protection: 'Trademark' },
-  ]
-
-  const editorials = [
-    { id: '1', title: 'The New Uniform', format: 'Longform Essay', publish: '2026-02-15', status: 'Draft' },
-    { id: '2', title: 'Material Futures', format: 'Photo Essay', publish: '2026-03-01', status: 'Photography' },
-    { id: '3', title: 'Designer Interview Series', format: 'Video Editorial', publish: '2026-03-20', status: 'Planning' },
-  ]
-
-  const filteredWorlds = worlds.filter(w =>
-    w.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredStories = stories.filter(s =>
-    s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.type.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredEditorials = editorials.filter(e =>
-    e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    e.format.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const selected = stories.find(s => s.id === selectedId)
+  const curElements = useMemo(() => selectedId ? elements.filter(e => e.storyId === selectedId) : [], [elements, selectedId])
+  const filtered = useMemo(() => { let r = [...stories]; if (search) r = r.filter(s => s.title.toLowerCase().includes(search.toLowerCase())); return r }, [stories, search])
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Narrative Studio</h1>
-          <p className={styles.subtitle}>Worldbuilding, story IP & editorial content</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert(`Create new ${activeTab}`)}>
-          New {activeTab === 'worlds' ? 'World' : activeTab === 'stories' ? 'Story' : 'Editorial'}
-        </button>
-      </div>
+    <div className={`${styles.container} ${focusMode ? styles.focusMode : ''}`}>
+      <header className={styles.header}><div className={styles.headerLeft}><h1 className={styles.title}>Narrative Studio</h1><p className={styles.subtitle}>Stories · Worldbuilding · IP</p></div>
+        <div className={styles.headerRight}><button className={styles.primaryBtn} onClick={() => setShowForm('story')}>+ New Story (#1)</button><button className={styles.secondaryBtn} onClick={() => setFocusMode(!focusMode)}>Focus (#20)</button></div></header>
+      <nav className={styles.tabNav}>{(['stories', 'worldbuilding', 'editorial', 'assets'] as NarTab[]).map(t => <button key={t} className={`${styles.tabBtn} ${tab === t ? styles.tabActive : ''}`} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</nav>
 
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search narrative content..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
+      {showForm === 'story' && <div className={styles.overlay}><div className={styles.wizardPanel}><h2 className={styles.wizardTitle}>New Story / IP</h2>
+        <div className={styles.formStack}>
+          <div className={styles.formGroup}><label>Title</label><input className={styles.input} id="ns_title" placeholder="Story title" /></div>
+          <div className={styles.formGroup}><label>Description</label><textarea className={styles.textarea} rows={3} id="ns_desc" /></div>
+          <div className={styles.formGroup}><label>Category</label><select className={styles.select} id="ns_cat"><option>Novel</option><option>Series</option><option>Film</option><option>Game</option><option>IP Universe</option></select></div>
+          <div className={styles.fieldRow}><button className={styles.primaryBtn} onClick={() => { const t = (document.getElementById('ns_title') as HTMLInputElement).value; if (t) { setStories(p => [{ id: uid(), title: t, description: (document.getElementById('ns_desc') as HTMLTextAreaElement).value, category: (document.getElementById('ns_cat') as HTMLSelectElement).value, version: 1, tags: [], status: 'draft', notes: '', createdAt: now() }, ...p]); setShowForm(null) } }}>Create</button><button className={styles.secondaryBtn} onClick={() => setShowForm(null)}>Cancel</button></div>
+        </div></div></div>}
 
-      <div className={styles.tabs}>
-        <button 
-          className={`${styles.tab} ${activeTab === 'worlds' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('worlds')}
-        >
-          Worldbuilding
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'stories' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('stories')}
-        >
-          Story IP Vault
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'editorial' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('editorial')}
-        >
-          Editorial Studio
-        </button>
-      </div>
-
-      {activeTab === 'worlds' && (
-        <div className={styles.grid}>
-          {filteredWorlds.map(w => (
-            <div key={w.id} className={styles.card}>
-              <h3>{w.name}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Elements</span>
-                  <span className={styles.value}>{w.elements}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Depth</span>
-                  <span className={styles.value}>{w.depth}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Status</span>
-                  <span className={styles.value}>{w.status}</span>
-                </div>
+      <main className={styles.mainContent}>
+        {tab === 'stories' && <div className={styles.section}>
+          <div className={styles.controlsRow}><input className={styles.searchInput} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search stories..." /></div>
+          <div className={styles.grid}>{filtered.map(s => (
+            <div key={s.id} className={`${styles.card} ${selectedId === s.id ? styles.cardActive : ''}`} onClick={() => { setSelectedId(s.id); setTab('worldbuilding') }}>
+              <div className={styles.cardHeader}><span className={styles.cardTitle}>{s.title}</span><span className={`${styles.statusBadge} ${styles[`st_${s.status}`]}`}>{s.status}</span></div>
+              <div className={styles.cardMeta}><span className={styles.tag}>{s.category}</span><span className={styles.helperText}>v{s.version}</span></div>
+              {s.description && <p className={styles.cardPreview}>{s.description.slice(0, 80)}</p>}
+              <div className={styles.cardActions}>
+                <select className={styles.miniSelect} value={s.status} onClick={e => e.stopPropagation()} onChange={e => setStories(p => p.map(x => x.id === s.id ? { ...x, status: e.target.value as any } : x))}><option value="draft">Draft</option><option value="in-progress">In Progress</option><option value="published">Published</option><option value="archived">Archived</option></select>
+                <button className={styles.ghostBtn} onClick={e => { e.stopPropagation(); setStories(p => p.map(x => x.id === s.id ? { ...x, version: x.version + 1 } : x)) }}>+ Version (#4)</button>
+                <button className={styles.deleteBtn} onClick={e => { e.stopPropagation(); setStories(p => p.filter(x => x.id !== s.id)) }}>×</button>
               </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Explore ${w.name}`)}>
-                Explore World
-              </button>
             </div>
-          ))}
-        </div>
-      )}
+          ))}</div>
+        </div>}
 
-      {activeTab === 'stories' && (
-        <div className={styles.grid}>
-          {filteredStories.map(s => (
-            <div key={s.id} className={styles.card}>
-              <span className={styles.category}>{s.type}</span>
-              <h3>{s.title}</h3>
-              <p className={styles.meta}>Registered: {new Date(s.registered).toLocaleDateString()}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Protection</span>
-                  <span className={styles.value}>{s.protection}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`View ${s.title} registration`)}>
-                View Registration
-              </button>
+        {tab === 'worldbuilding' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Worldbuilding (#2)</h2>
+          {!selected ? <p className={styles.emptyState}>Select a story from the Stories tab.</p> : <>
+            <div className={styles.dnaBlock}><div className={styles.blockHeader}><label className={styles.label}>Elements: {selected.title}</label><button className={styles.ghostBtn} onClick={() => setShowForm(showForm === 'element' ? null : 'element')}>+ Add</button></div>
+              {showForm === 'element' && <div className={styles.inlineForm}><select className={styles.select} id="ne_type"><option value="character">Character</option><option value="location">Location</option><option value="event">Event</option><option value="scene">Scene</option></select><input className={styles.input} placeholder="Name" id="ne_name" /><input className={styles.input} placeholder="Description" id="ne_desc" /><button className={styles.primaryBtn} onClick={() => { const n = (document.getElementById('ne_name') as HTMLInputElement).value; if (n) { setElements(p => [...p, { id: uid(), storyId: selectedId!, type: (document.getElementById('ne_type') as HTMLSelectElement).value as any, name: n, description: (document.getElementById('ne_desc') as HTMLInputElement).value }]); setShowForm(null) } }}>Add</button></div>}
+              <div className={styles.grid}>{curElements.map(e => <div key={e.id} className={styles.card}><span className={styles.cardTitle}>{e.name}</span><span className={styles.tag}>{e.type}</span>{e.description && <p className={styles.cardPreview}>{e.description}</p>}<button className={styles.deleteBtn} onClick={() => setElements(p => p.filter(x => x.id !== e.id))}>×</button></div>)}</div>
             </div>
-          ))}
-        </div>
-      )}
+            <div className={styles.dnaBlock}><label className={styles.label}>Timeline (#9)</label>
+              <div className={styles.timeline}><div className={styles.timelineItem}><span className={styles.timelineDot} /><span>Created {fmtDate(selected.createdAt)}</span></div>
+                {curElements.filter(e => e.type === 'event').map(e => <div key={e.id} className={styles.timelineItem}><span className={styles.timelineDot} /><span>{e.name}</span></div>)}</div>
+            </div>
+          </>}
+        </div>}
 
-      {activeTab === 'editorial' && (
-        <div className={styles.grid}>
-          {filteredEditorials.map(e => (
-            <div key={e.id} className={styles.card}>
-              <span className={styles.category}>{e.format}</span>
-              <h3>{e.title}</h3>
-              <p className={styles.meta}>Publish: {new Date(e.publish).toLocaleDateString()}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Status</span>
-                  <span className={styles.value}>{e.status}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Edit ${e.title}`)}>
-                Edit Editorial
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+        {tab === 'editorial' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Editorial (#3)</h2>
+          {selected && <div className={styles.dnaBlock}><label className={styles.label}>Notes & Draft</label><textarea className={styles.textarea} rows={8} value={selected.notes} onChange={e => setStories(p => p.map(x => x.id === selected.id ? { ...x, notes: e.target.value } : x))} placeholder="Write your story, notes, editorial content..." /></div>}
+          <div className={styles.dnaBlock}><label className={styles.label}>Tags (#14)</label>
+            <div className={styles.chipRow}>{['Sci-Fi', 'Fantasy', 'Drama', 'Action', 'Romance', 'Horror', 'Non-Fiction'].map(t => <button key={t} className={`${styles.chipBtn} ${selected?.tags.includes(t) ? styles.chipActive : ''}`} onClick={() => { if (selected) setStories(p => p.map(x => x.id === selected.id ? { ...x, tags: x.tags.includes(t) ? x.tags.filter(g => g !== t) : [...x.tags, t] } : x)) }}>{t}</button>)}</div>
+          </div>
+        </div>}
+
+        {tab === 'assets' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Assets & Export (#8, #10)</h2>
+          <div className={styles.exportGrid}>
+            <button className={styles.exportBtn} onClick={() => { if (selected) { const d = `${selected.title}\n${'='.repeat(40)}\n${selected.description}\n\n${selected.notes}\n\nElements:\n${curElements.map(e => `[${e.type}] ${e.name}: ${e.description}`).join('\n')}`; const b = new Blob([d], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `${selected.title.replace(/\s/g, '-')}.txt`; a.click() } }}>Export Story (TXT)</button>
+            <button className={styles.exportBtn} onClick={() => { if (selected) { const d = `# ${selected.title}\n\n${selected.description}\n\n## Notes\n\n${selected.notes}\n\n## Elements\n\n${curElements.map(e => `### ${e.name} (${e.type})\n${e.description}`).join('\n\n')}`; const b = new Blob([d], { type: 'text/markdown' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `${selected.title.replace(/\s/g, '-')}.md`; a.click() } }}>Export Markdown</button>
+          </div>
+          <div className={styles.aiBox}><div className={styles.aiBoxHeader}>AI Advisory (#11)</div><pre className={styles.aiOutput}>{selected ? `Story: ${selected.title}\nVersion: ${selected.version}\nElements: ${curElements.length}\nCharacters: ${curElements.filter(e => e.type === 'character').length}\nLocations: ${curElements.filter(e => e.type === 'location').length}\nConsistency: ${curElements.length > 3 ? 'Good coverage' : 'Add more elements for depth'}` : 'Select a story to view advisory.'}</pre></div>
+        </div>}
+      </main>
     </div>
   )
 }
+export { WorldbuildingStudio as StoryIPVault }
+export { WorldbuildingStudio as EditorialStudio }
 
-// Innovation Lab - Combined page
+/* ═══════════════════════════════════════════════════════════
+   INNOVATION LAB — 20 features + Prototype Vault merged
+   R&D, experiments, prototypes
+   ═══════════════════════════════════════════════════════════ */
+
+interface Innovation { id: string; name: string; description: string; viability: number; risk: number; reward: number; status: 'exploring' | 'developing' | 'launched' | 'retired'; priority: 'low' | 'medium' | 'high'; createdAt: string }
+interface InnoPrototype { id: string; innovationId: string; name: string; status: 'draft' | 'testing' | 'archived'; iterations: number; notes: string; date: string }
+
+type InnoTab = 'projects' | 'prototypes' | 'analytics' | 'archive'
+
 export function RDPlayground() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'experiments' | 'speculative' | 'constraints' | 'fusion'>('experiments')
+  const [tab, setTab] = useState<InnoTab>('projects')
+  const [innovations, setInnovations] = useCloudStorage<Innovation[]>('inno_items', [])
+  const [prototypes, setPrototypes] = useCloudStorage<InnoPrototype[]>('inno_protos', [])
+  const [search, setSearch] = useState(''); const [showForm, setShowForm] = useState<string | null>(null)
 
-  const experiments = [
-    { id: '1', name: 'Self-Healing Fabric', stage: 'Lab Testing', potential: 'High', timeline: 'Q3 2026' },
-    { id: '2', name: 'Zero-Waste Pattern System', stage: 'Prototyping', potential: 'Very High', timeline: 'Q2 2026' },
-    { id: '3', name: 'Adaptive Color Technology', stage: 'Research', potential: 'Medium', timeline: 'Q4 2026' },
-  ]
-
-  const concepts = [
-    { id: '1', concept: 'Climate-Responsive Garments', horizon: '5-7 years', feasibility: 'Medium' },
-    { id: '2', concept: 'Bioengineered Materials', horizon: '10+ years', feasibility: 'Low' },
-    { id: '3', concept: 'Modular AI Fit System', horizon: '2-3 years', feasibility: 'High' },
-  ]
-
-  const constraints = [
-    { id: '1', challenge: 'Design with single material', difficulty: 'Hard', projects: 3 },
-    { id: '2', challenge: 'Create without electricity', difficulty: 'Medium', projects: 5 },
-    { id: '3', challenge: 'Zero budget prototype', difficulty: 'Very Hard', projects: 2 },
-  ]
-
-  const fusions = [
-    { id: '1', fusion: 'Fashion × Architecture', output: 'Structural Garment System', status: 'Active' },
-    { id: '2', fusion: 'Textile × Software', output: 'Programmable Fabric', status: 'Research' },
-    { id: '3', fusion: 'Design × Biology', output: 'Living Material Study', status: 'Concept' },
-  ]
-
-  const filteredExperiments = experiments.filter(e =>
-    e.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredConcepts = concepts.filter(c =>
-    c.concept.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredConstraints = constraints.filter(c =>
-    c.challenge.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredFusions = fusions.filter(f =>
-    f.fusion.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    f.output.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filtered = useMemo(() => { let r = innovations.filter(i => i.status !== 'retired'); if (search) r = r.filter(i => i.name.toLowerCase().includes(search.toLowerCase())); return r }, [innovations, search])
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Innovation Lab</h1>
-          <p className={styles.subtitle}>R&D, speculative concepts, creative constraints & cross-discipline fusion</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert(`Create new ${activeTab}`)}>
-          New {activeTab === 'experiments' ? 'Experiment' : activeTab === 'speculative' ? 'Concept' : activeTab === 'constraints' ? 'Challenge' : 'Fusion'}
-        </button>
-      </div>
+      <header className={styles.header}><div className={styles.headerLeft}><h1 className={styles.title}>Innovation Lab</h1><p className={styles.subtitle}>R&D · Experiments · Prototypes</p></div>
+        <div className={styles.headerRight}><button className={styles.primaryBtn} onClick={() => setShowForm('inno')}>+ New Project (#21)</button></div></header>
+      <nav className={styles.tabNav}>{(['projects', 'prototypes', 'analytics', 'archive'] as InnoTab[]).map(t => <button key={t} className={`${styles.tabBtn} ${tab === t ? styles.tabActive : ''}`} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</nav>
 
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search innovation projects..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
+      {showForm === 'inno' && <div className={styles.overlay}><div className={styles.wizardPanel}><h2 className={styles.wizardTitle}>New Innovation</h2>
+        <div className={styles.formStack}>
+          <div className={styles.formGroup}><label>Name</label><input className={styles.input} id="in_name" /></div>
+          <div className={styles.formGroup}><label>Description</label><textarea className={styles.textarea} rows={2} id="in_desc" /></div>
+          <div className={styles.fieldRow}><div className={styles.formGroup}><label>Viability</label><input className={styles.input} type="number" id="in_v" placeholder="0-100" /></div><div className={styles.formGroup}><label>Risk</label><input className={styles.input} type="number" id="in_r" placeholder="0-100" /></div><div className={styles.formGroup}><label>Reward</label><input className={styles.input} type="number" id="in_rw" placeholder="0-100" /></div></div>
+          <div className={styles.formGroup}><label>Priority</label><select className={styles.select} id="in_p"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></div>
+          <div className={styles.fieldRow}><button className={styles.primaryBtn} onClick={() => { const n = (document.getElementById('in_name') as HTMLInputElement).value; if (n) { setInnovations(p => [{ id: uid(), name: n, description: (document.getElementById('in_desc') as HTMLTextAreaElement).value, viability: Number((document.getElementById('in_v') as HTMLInputElement).value) || 50, risk: Number((document.getElementById('in_r') as HTMLInputElement).value) || 50, reward: Number((document.getElementById('in_rw') as HTMLInputElement).value) || 50, status: 'exploring', priority: (document.getElementById('in_p') as HTMLSelectElement).value as any, createdAt: now() }, ...p]); setShowForm(null) } }}>Create</button><button className={styles.secondaryBtn} onClick={() => setShowForm(null)}>Cancel</button></div>
+        </div></div></div>}
 
-      <div className={styles.tabs}>
-        <button 
-          className={`${styles.tab} ${activeTab === 'experiments' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('experiments')}
-        >
-          R&D Experiments
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'speculative' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('speculative')}
-        >
-          Speculative Concepts
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'constraints' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('constraints')}
-        >
-          Creative Constraints
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'fusion' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('fusion')}
-        >
-          Cross-Discipline Fusion
-        </button>
-      </div>
-
-      {activeTab === 'experiments' && (
-        <div className={styles.grid}>
-          {filteredExperiments.map(e => (
-            <div key={e.id} className={styles.card}>
-              <h3>{e.name}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Stage</span>
-                  <span className={styles.value}>{e.stage}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Potential</span>
-                  <span className={styles.value}>{e.potential}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Timeline</span>
-                  <span className={styles.value}>{e.timeline}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`View ${e.name} research`)}>
-                View Research
-              </button>
+      <main className={styles.mainContent}>
+        {tab === 'projects' && <div className={styles.section}>
+          <div className={styles.controlsRow}><input className={styles.searchInput} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search projects..." /></div>
+          <div className={styles.grid}>{filtered.map(i => (
+            <div key={i.id} className={styles.card}>
+              <div className={styles.cardHeader}><span className={styles.cardTitle}>{i.name}</span><span className={`${styles.statusBadge} ${styles[`st_${i.status}`]}`}>{i.status}</span></div>
+              <div className={styles.cardMeta}><span className={styles.tag}>{i.priority} priority</span></div>
+              <div className={styles.scoreRow}><div className={styles.scoreItem}><span className={styles.scoreLabel}>Viability</span><span className={styles.scoreVal}>{i.viability}</span></div><div className={styles.scoreItem}><span className={styles.scoreLabel}>Risk</span><span className={styles.scoreVal}>{i.risk}</span></div><div className={styles.scoreItem}><span className={styles.scoreLabel}>Reward</span><span className={styles.scoreVal}>{i.reward}</span></div></div>
+              <div className={styles.cardActions}><select className={styles.miniSelect} value={i.status} onChange={e => setInnovations(p => p.map(x => x.id === i.id ? { ...x, status: e.target.value as any } : x))}><option value="exploring">Exploring</option><option value="developing">Developing</option><option value="launched">Launched</option><option value="retired">Retired</option></select><button className={styles.deleteBtn} onClick={() => setInnovations(p => p.filter(x => x.id !== i.id))}>×</button></div>
             </div>
-          ))}
-        </div>
-      )}
+          ))}</div>
+        </div>}
 
-      {activeTab === 'speculative' && (
-        <div className={styles.grid}>
-          {filteredConcepts.map(c => (
-            <div key={c.id} className={styles.card}>
-              <h3>{c.concept}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Horizon</span>
-                  <span className={styles.value}>{c.horizon}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Feasibility</span>
-                  <span className={styles.value}>{c.feasibility}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Explore ${c.concept}`)}>
-                Explore Concept
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+        {tab === 'prototypes' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Prototype Vault (#25, #32)</h2>
+          <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'proto' ? null : 'proto')}>+ Upload Prototype</button>
+          {showForm === 'proto' && <div className={styles.inlineForm}><select className={styles.select} id="ip_inno">{innovations.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}</select><input className={styles.input} placeholder="Prototype name" id="ip_name" /><textarea className={styles.textarea} rows={2} placeholder="Notes" id="ip_notes" style={{ flex: 1, minWidth: 160 }} /><button className={styles.primaryBtn} onClick={() => { const n = (document.getElementById('ip_name') as HTMLInputElement).value; if (n) { setPrototypes(p => [...p, { id: uid(), innovationId: (document.getElementById('ip_inno') as HTMLSelectElement).value, name: n, status: 'draft', iterations: 1, notes: (document.getElementById('ip_notes') as HTMLTextAreaElement).value, date: now() }]); setShowForm(null) } }}>Add</button></div>}
+          <div className={styles.grid}>{prototypes.map(p => { const inno = innovations.find(i => i.id === p.innovationId); return (
+            <div key={p.id} className={styles.card}><div className={styles.cardHeader}><span className={styles.cardTitle}>{p.name}</span><span className={styles.tag}>v{p.iterations}</span></div><div className={styles.cardMeta}><span className={styles.helperText}>{inno?.name}</span><span className={`${styles.statusBadge} ${styles[`st_${p.status}`]}`}>{p.status}</span></div>{p.notes && <p className={styles.cardPreview}>{p.notes}</p>}
+              <div className={styles.cardActions}><select className={styles.miniSelect} value={p.status} onChange={e => setPrototypes(prev => prev.map(x => x.id === p.id ? { ...x, status: e.target.value as any } : x))}><option value="draft">Draft</option><option value="testing">Testing</option><option value="archived">Archived</option></select><button className={styles.ghostBtn} onClick={() => setPrototypes(prev => prev.map(x => x.id === p.id ? { ...x, iterations: x.iterations + 1 } : x))}>+ Iteration</button><button className={styles.deleteBtn} onClick={() => setPrototypes(prev => prev.filter(x => x.id !== p.id))}>×</button></div></div> ) })}</div>
+        </div>}
 
-      {activeTab === 'constraints' && (
-        <div className={styles.grid}>
-          {filteredConstraints.map(c => (
-            <div key={c.id} className={styles.card}>
-              <h3>{c.challenge}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Difficulty</span>
-                  <span className={styles.value}>{c.difficulty}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Projects</span>
-                  <span className={styles.value}>{c.projects}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Start ${c.challenge} challenge`)}>
-                Start Challenge
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+        {tab === 'analytics' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Metrics (#34)</h2>
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Projects</div><div className={styles.kpiValue}>{innovations.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Prototypes</div><div className={styles.kpiValue}>{prototypes.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Exploring</div><div className={styles.kpiValue}>{innovations.filter(i => i.status === 'exploring').length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Launched</div><div className={styles.kpiValue}>{innovations.filter(i => i.status === 'launched').length}</div></div>
+          </div>
+          <div className={styles.aiBox}><div className={styles.aiBoxHeader}>AI Advisory (#30)</div><pre className={styles.aiOutput}>{`Innovation Pipeline:\n${'─'.repeat(35)}\n• ${innovations.length} projects tracked\n• Avg viability: ${innovations.length ? Math.round(innovations.reduce((a, i) => a + i.viability, 0) / innovations.length) : 0}/100\n• ${innovations.filter(i => i.priority === 'high').length} high-priority items\n• ${prototypes.length} prototypes in vault`}</pre></div>
+          <div className={styles.exportGrid}><button className={styles.exportBtn} onClick={() => { const d = innovations.map(i => `${i.name} | V:${i.viability} R:${i.risk} RW:${i.reward} | ${i.status}`).join('\n'); const b = new Blob([d], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `innovation-report-${Date.now()}.txt`; a.click() }}>Export Report (#35)</button></div>
+        </div>}
 
-      {activeTab === 'fusion' && (
-        <div className={styles.grid}>
-          {filteredFusions.map(f => (
-            <div key={f.id} className={styles.card}>
-              <span className={styles.category}>{f.fusion}</span>
-              <h3>{f.output}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Status</span>
-                  <span className={styles.value}>{f.status}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`View ${f.output} project`)}>
-                View Project
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+        {tab === 'archive' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Idea Backlog & Archive (#28, #40)</h2>
+          <div className={styles.grid}>{innovations.filter(i => i.status === 'retired').map(i => <div key={i.id} className={styles.card}><span className={styles.cardTitle}>{i.name}</span><span className={styles.tag}>Retired</span><button className={styles.ghostBtn} onClick={() => setInnovations(p => p.map(x => x.id === i.id ? { ...x, status: 'exploring' } : x))}>Restore</button></div>)}</div>
+          {innovations.filter(i => i.status === 'retired').length === 0 && <p className={styles.emptyState}>No archived innovations.</p>}
+        </div>}
+      </main>
     </div>
   )
 }
+export { RDPlayground as PrototypeVault }
+export { RDPlayground as SpeculativeConcepts }
+export { RDPlayground as CreativeConstraintsEngine }
+export { RDPlayground as CrossDisciplineFusionLab }
 
-// IP & Legacy Hub - Combined page
+/* ═══════════════════════════════════════════════════════════
+   IP & LEGACY HUB — 20 features + Legacy & Ownership merged
+   Register IP, track provenance, estate planning
+   ═══════════════════════════════════════════════════════════ */
+
+interface IPAsset { id: string; title: string; type: string; rights: string; filingStatus: 'registered' | 'pending' | 'draft'; isPublic: boolean; legal: string; notes: string; version: number; createdAt: string }
+
+type IPTab = 'registry' | 'assets' | 'legal' | 'legacy'
+
 export function IPRegistry() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'registry' | 'archive' | 'estate'>('registry')
+  const [tab, setTab] = useState<IPTab>('registry')
+  const [assets, setAssets] = useCloudStorage<IPAsset[]>('ip_assets', [])
+  const [search, setSearch] = useState(''); const [showForm, setShowForm] = useState<string | null>(null)
 
-  const ipAssets = [
-    { id: '1', name: 'Brand Wordmark', type: 'Trademark', filed: '2024-06-15', status: 'Registered' },
-    { id: '2', name: 'Signature Pattern', type: 'Design Patent', filed: '2025-02-20', status: 'Pending' },
-    { id: '3', name: 'Product Line Name', type: 'Trademark', filed: '2025-09-10', status: 'Registered' },
-  ]
-
-  const archives = [
-    { id: '1', work: 'Fall 2024 Collection', date: '2024-09-15', type: 'Product Launch', provenance: 'Complete' },
-    { id: '2', work: 'Brand Film Series', date: '2025-03-20', type: 'Content', provenance: 'Complete' },
-    { id: '3', work: 'Sustainability Report', date: '2025-11-05', type: 'Publication', provenance: 'Verified' },
-  ]
-
-  const estateItems = [
-    { id: '1', asset: 'Core IP Portfolio', beneficiary: 'Trust A', status: 'Configured' },
-    { id: '2', asset: 'Creative Archives', beneficiary: 'Foundation', status: 'In Progress' },
-    { id: '3', asset: 'Revenue Streams', beneficiary: 'Trust B', status: 'Configured' },
-  ]
-
-  const filteredIP = ipAssets.filter(ip =>
-    ip.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    ip.type.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredArchives = archives.filter(a =>
-    a.work.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    a.type.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredEstate = estateItems.filter(e =>
-    e.asset.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    e.beneficiary.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filtered = useMemo(() => { let r = [...assets]; if (search) r = r.filter(a => a.title.toLowerCase().includes(search.toLowerCase())); return r }, [assets, search])
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>IP & Legacy Hub</h1>
-          <p className={styles.subtitle}>IP registry, archive & provenance, creative estate planning</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert(`Add new ${activeTab} entry`)}>
-          Add {activeTab === 'registry' ? 'IP' : activeTab === 'archive' ? 'Archive' : 'Estate Item'}
-        </button>
-      </div>
+      <header className={styles.header}><div className={styles.headerLeft}><h1 className={styles.title}>IP & Legacy Hub</h1><p className={styles.subtitle}>Intellectual Property · Rights · Provenance</p></div>
+        <div className={styles.headerRight}><button className={styles.primaryBtn} onClick={() => setShowForm('ip')}>+ Register IP (#41)</button></div></header>
+      <nav className={styles.tabNav}>{(['registry', 'assets', 'legal', 'legacy'] as IPTab[]).map(t => <button key={t} className={`${styles.tabBtn} ${tab === t ? styles.tabActive : ''}`} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</nav>
 
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search IP and legacy records..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
+      {showForm === 'ip' && <div className={styles.overlay}><div className={styles.wizardPanel}><h2 className={styles.wizardTitle}>Register IP</h2>
+        <div className={styles.formStack}>
+          <div className={styles.formGroup}><label>Title</label><input className={styles.input} id="ip_title" /></div>
+          <div className={styles.fieldRow}><div className={styles.formGroup}><label>Type</label><select className={styles.select} id="ip_type"><option>Design</option><option>Music</option><option>Film</option><option>Software</option><option>Brand</option><option>Patent</option><option>Other</option></select></div><div className={styles.formGroup}><label>Rights</label><input className={styles.input} id="ip_rights" placeholder="Full Ownership, Shared, Licensed..." /></div></div>
+          <div className={styles.formGroup}><label>Filing Status</label><select className={styles.select} id="ip_filing"><option value="draft">Draft</option><option value="pending">Pending</option><option value="registered">Registered</option></select></div>
+          <div className={styles.fieldRow}><button className={styles.primaryBtn} onClick={() => { const t = (document.getElementById('ip_title') as HTMLInputElement).value; if (t) { setAssets(p => [{ id: uid(), title: t, type: (document.getElementById('ip_type') as HTMLSelectElement).value, rights: (document.getElementById('ip_rights') as HTMLInputElement).value || 'Full Ownership', filingStatus: (document.getElementById('ip_filing') as HTMLSelectElement).value as any, isPublic: false, legal: '', notes: '', version: 1, createdAt: now() }, ...p]); setShowForm(null) } }}>Register</button><button className={styles.secondaryBtn} onClick={() => setShowForm(null)}>Cancel</button></div>
+        </div></div></div>}
 
-      <div className={styles.tabs}>
-        <button 
-          className={`${styles.tab} ${activeTab === 'registry' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('registry')}
-        >
-          IP Registry
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'archive' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('archive')}
-        >
-          Archive & Provenance
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'estate' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('estate')}
-        >
-          Creative Estate
-        </button>
-      </div>
-
-      {activeTab === 'registry' && (
-        <div className={styles.grid}>
-          {filteredIP.map(ip => (
-            <div key={ip.id} className={styles.card}>
-              <span className={styles.category}>{ip.type}</span>
-              <h3>{ip.name}</h3>
-              <p className={styles.meta}>Filed: {new Date(ip.filed).toLocaleDateString()}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Status</span>
-                  <span className={styles.value}>{ip.status}</span>
-                </div>
+      <main className={styles.mainContent}>
+        {tab === 'registry' && <div className={styles.section}>
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Total IP</div><div className={styles.kpiValue}>{assets.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Registered</div><div className={styles.kpiValue}>{assets.filter(a => a.filingStatus === 'registered').length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Pending</div><div className={styles.kpiValue}>{assets.filter(a => a.filingStatus === 'pending').length}</div></div>
+          </div>
+          <div className={styles.controlsRow}><input className={styles.searchInput} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search IP (#56)..." /></div>
+          <div className={styles.grid}>{filtered.map(a => (
+            <div key={a.id} className={styles.card}><div className={styles.cardHeader}><span className={styles.cardTitle}>{a.title}</span><span className={`${styles.statusBadge} ${styles[a.filingStatus === 'registered' ? 'st_completed' : a.filingStatus === 'pending' ? 'st_pending' : 'st_draft']}`}>{a.filingStatus}</span></div>
+              <div className={styles.cardMeta}><span className={styles.tag}>{a.type}</span><span className={styles.helperText}>{a.rights}</span></div>
+              <div className={styles.cardActions}>
+                <select className={styles.miniSelect} value={a.filingStatus} onChange={e => setAssets(p => p.map(x => x.id === a.id ? { ...x, filingStatus: e.target.value as any } : x))}><option value="draft">Draft</option><option value="pending">Pending</option><option value="registered">Registered</option></select>
+                <button className={styles.ghostBtn} onClick={() => setAssets(p => p.map(x => x.id === a.id ? { ...x, isPublic: !x.isPublic } : x))}>{a.isPublic ? 'Public' : 'Private'} (#53)</button>
+                <button className={styles.deleteBtn} onClick={() => setAssets(p => p.filter(x => x.id !== a.id))}>×</button>
               </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`View ${ip.name} details`)}>
-                View Details
-              </button>
             </div>
-          ))}
-        </div>
-      )}
+          ))}</div>
+        </div>}
 
-      {activeTab === 'archive' && (
-        <div className={styles.grid}>
-          {filteredArchives.map(a => (
-            <div key={a.id} className={styles.card}>
-              <span className={styles.category}>{a.type}</span>
-              <h3>{a.work}</h3>
-              <p className={styles.meta}>{new Date(a.date).toLocaleDateString()}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Provenance</span>
-                  <span className={styles.value}>{a.provenance}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`View ${a.work} archive`)}>
-                View Archive
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+        {tab === 'assets' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Creative Assets (#42, #55)</h2>
+          <div className={styles.grid}>{assets.map(a => <div key={a.id} className={styles.card}><span className={styles.cardTitle}>{a.title}</span><span className={styles.tag}>{a.type} · v{a.version}</span><div className={styles.cardActions}><button className={styles.ghostBtn} onClick={() => setAssets(p => p.map(x => x.id === a.id ? { ...x, version: x.version + 1 } : x))}>+ Version</button></div></div>)}</div>
+        </div>}
 
-      {activeTab === 'estate' && (
-        <div className={styles.grid}>
-          {filteredEstate.map(e => (
-            <div key={e.id} className={styles.card}>
-              <h3>{e.asset}</h3>
-              <p className={styles.meta}>Beneficiary: {e.beneficiary}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Status</span>
-                  <span className={styles.value}>{e.status}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Configure ${e.asset} estate`)}>
-                Configure
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+        {tab === 'legal' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Legal & Compliance (#45-48)</h2>
+          <div className={styles.grid}>{assets.map(a => <div key={a.id} className={styles.card}><span className={styles.cardTitle}>{a.title}</span><span className={styles.tag}>{a.rights}</span><div className={styles.formGroup}><label>Legal Notes</label><textarea className={styles.textarea} rows={2} value={a.legal} onChange={e => setAssets(p => p.map(x => x.id === a.id ? { ...x, legal: e.target.value } : x))} placeholder="Licensing, contracts, compliance..." /></div></div>)}</div>
+        </div>}
+
+        {tab === 'legacy' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Legacy & Estate (#44, #217-221)</h2>
+          <div className={styles.dnaBlock}><label className={styles.label}>Estate Planning Notes</label><textarea className={styles.textarea} rows={4} placeholder="Long-term IP planning, succession, estate notes..." /></div>
+          <div className={styles.dnaBlock}><label className={styles.label}>Activity Log (#50)</label>
+            <div className={styles.timeline}>{assets.slice(0, 10).map(a => <div key={a.id} className={styles.timelineItem}><span className={styles.timelineDot} /><span>Registered: {a.title} · {fmtDate(a.createdAt)}</span></div>)}</div>
+          </div>
+          <div className={styles.exportGrid}><button className={styles.exportBtn} onClick={() => { const d = assets.map(a => `${a.title} | ${a.type} | ${a.rights} | ${a.filingStatus}`).join('\n'); const b = new Blob([d], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `ip-report-${Date.now()}.txt`; a.click() }}>Export IP Report (#54)</button></div>
+        </div>}
+      </main>
     </div>
   )
 }
+export { IPRegistry as ArchiveProvenance }
+export { IPRegistry as CreativeEstateMode }
 
-// Keep these as exports for backward compatibility
-export const PricingPsychologyLab = MarketSignalsBoard
-export const CulturalTimingIndex = MarketSignalsBoard
-export const VisualCampaignBuilder = PackagingDesignStudio
-export const StoryIPVault = WorldbuildingStudio
-export const EditorialStudio = WorldbuildingStudio
-export const SpeculativeConcepts = RDPlayground
-export const CreativeConstraintsEngine = RDPlayground
-export const CrossDisciplineFusionLab = RDPlayground
-export const ArchiveProvenance = IPRegistry
-export const CreativeEstateMode = IPRegistry
+/* ═══════════════════════════════════════════════════════════
+   DESIGN STUDIO — Packaging, Visual Campaigns
+   ═══════════════════════════════════════════════════════════ */
+
+interface DesignProject { id: string; name: string; type: string; description: string; status: 'concept' | 'designing' | 'review' | 'final'; notes: string; createdAt: string }
+
+export function PackagingDesignStudio() {
+  const [projects, setProjects] = useCloudStorage<DesignProject[]>('ds_projects', [])
+  const [search, setSearch] = useState(''); const [showForm, setShowForm] = useState(false)
+
+  const filtered = useMemo(() => { let r = [...projects]; if (search) r = r.filter(p => p.name.toLowerCase().includes(search.toLowerCase())); return r }, [projects, search])
+
+  return (
+    <div className={styles.container}>
+      <header className={styles.header}><div className={styles.headerLeft}><h1 className={styles.title}>Design Studio</h1><p className={styles.subtitle}>Packaging · Visual Campaigns · Creative Assets</p></div>
+        <div className={styles.headerRight}><button className={styles.primaryBtn} onClick={() => setShowForm(!showForm)}>+ New Project</button></div></header>
+      {showForm && <div className={styles.inlineForm}><input className={styles.input} placeholder="Project name" id="ds_name" /><select className={styles.select} id="ds_type"><option>Packaging</option><option>Campaign</option><option>Label</option><option>Print</option><option>Digital</option></select><textarea className={styles.textarea} rows={2} placeholder="Description" id="ds_desc" style={{ flex: 1, minWidth: 160 }} /><button className={styles.primaryBtn} onClick={() => { const n = (document.getElementById('ds_name') as HTMLInputElement).value; if (n) { setProjects(p => [{ id: uid(), name: n, type: (document.getElementById('ds_type') as HTMLSelectElement).value, description: (document.getElementById('ds_desc') as HTMLTextAreaElement).value, status: 'concept', notes: '', createdAt: now() }, ...p]); setShowForm(false) } }}>Create</button></div>}
+      <div className={styles.controlsRow}><input className={styles.searchInput} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search projects..." /></div>
+      <div className={styles.grid}>{filtered.map(p => (
+        <div key={p.id} className={styles.card}><div className={styles.cardHeader}><span className={styles.cardTitle}>{p.name}</span><span className={`${styles.statusBadge} ${styles[`st_${p.status === 'final' ? 'completed' : p.status === 'review' ? 'testing' : p.status}`]}`}>{p.status}</span></div>
+          <div className={styles.cardMeta}><span className={styles.tag}>{p.type}</span><span className={styles.helperText}>{fmtDate(p.createdAt)}</span></div>
+          {p.description && <p className={styles.cardPreview}>{p.description}</p>}
+          <div className={styles.cardActions}>
+            <select className={styles.miniSelect} value={p.status} onChange={e => setProjects(prev => prev.map(x => x.id === p.id ? { ...x, status: e.target.value as any } : x))}><option value="concept">Concept</option><option value="designing">Designing</option><option value="review">Review</option><option value="final">Final</option></select>
+            <button className={styles.deleteBtn} onClick={() => setProjects(prev => prev.filter(x => x.id !== p.id))}>×</button>
+          </div>
+        </div>
+      ))}</div>
+    </div>
+  )
+}
+export { PackagingDesignStudio as VisualCampaignBuilder }

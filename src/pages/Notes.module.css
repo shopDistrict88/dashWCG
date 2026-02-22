@@ -918,88 +918,112 @@
 }
 
 @media (max-width: 768px) {
+  .container { padding: 8px; }
+
   .header {
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
   }
+
+  .header h1 { font-size: 20px; }
+  .header p { font-size: 12px; }
 
   .headerActions {
     width: 100%;
   }
 
-  .primaryBtn,
-  .secondaryBtn {
-    flex: 1;
-  }
+  .primaryBtn { width: 100%; }
 
   .controls {
     flex-direction: column;
   }
 
-  .focusContent {
-    padding: 0 20px;
-  }
+  .searchInput { width: 100%; }
 
-  .focusTitle {
-    font-size: 24px;
-  }
+  .layout { grid-template-columns: 1fr; }
+  .gridTwo { grid-template-columns: 1fr; }
 
-  .focusTextarea {
-    font-size: 16px;
-  }
+  .noteCard { padding: 12px; }
+  .noteDetail { padding: 16px; }
+
+  .kpiGrid { grid-template-columns: repeat(2, 1fr); }
+
+  .formRow { grid-template-columns: 1fr; }
+
+  .uncertaintyRow,
+  .reflectionRow,
+  .tradeoffRow { grid-template-columns: 1fr; }
+
+  .aiGrid { grid-template-columns: 1fr; }
+  .aiOutputGrid { grid-template-columns: 1fr; }
+  .linkGrid { grid-template-columns: 1fr; }
+  .graphGrid { grid-template-columns: 1fr; }
+
+  .panelTabs { gap: 6px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; flex-wrap: nowrap; }
+  .panelTabs::-webkit-scrollbar { display: none; }
+  .panelTab { white-space: nowrap; font-size: 11px; padding: 5px 10px; }
+
+  .ghostBtn { min-height: auto; min-width: auto; }
+  .dangerBtn { min-height: auto; min-width: auto; }
+
+  .resurfaced { padding: 12px; }
+  .resurfacedList { flex-direction: column; }
+
+  .detailMeta { padding: 12px; }
+  .versions { padding: 12px; }
+  .linked { padding: 12px; }
+  .linkSection { padding: 12px; }
+
+  .focusContent { padding: 0 20px; }
+  .focusTitle { font-size: 24px; }
+  .focusTextarea { font-size: 16px; }
+  .focusToolbar { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+
+  .quickCapture { padding: 16px; }
 }
 
-/* Extra Small Screens: 480px and below */
-@media (max-width: 480px) {
-  .header {
-    flex-direction: column;
-    gap: 12px;
-    padding: 12px;
-  }
+@media (max-width: 430px) {
+  .container { padding: 6px; }
+  .header h1 { font-size: 18px; }
 
-  .headerActions {
-    width: 100%;
-    flex-direction: column;
-    gap: 8px;
-  }
+  .panelTab { font-size: 11px; padding: 4px 8px; }
+
+  .noteCard { padding: 10px; }
+  .noteDetail { padding: 12px; }
+
+  .kpiGrid { grid-template-columns: 1fr 1fr; }
+  .kpiCard { padding: 10px; }
+
+  .aiCard { padding: 10px; }
+
+  .resurfaced { padding: 10px; }
+  .detailMeta { padding: 10px; }
+  .versions { padding: 10px; }
+  .linked { padding: 10px; }
+  .linkSection { padding: 10px; }
+
+  .focusContent { padding: 12px; }
+  .focusTitle { font-size: 18px; }
 
   .primaryBtn,
-  .secondaryBtn {
-    width: 100%;
-    min-height: 44px;
-    font-size: 13px;
-  }
-
-  .layout {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .gridTwo {
-    grid-template-columns: 1fr;
-  }
-
-  .focusContent {
-    padding: 12px;
-  }
-
-  .focusTitle {
-    font-size: 18px;
-  }
-
-  .focusTextarea {
-    font-size: 16px;
-    padding: 10px;
-  }
-
-  input, textarea, select {
-    font-size: 16px !important;
-  }
-
-  button {
-    min-height: 44px;
-    padding: 10px 12px;
-  }
+  .secondaryBtn { width: 100%; }
 }
 
+/* ── Quick Capture Widget ─────────── */
+.quickCaptureOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+.quickCapture { background: #111; border: 1px solid #333; border-radius: 12px; width: 100%; max-width: 500px; padding: 20px; }
+.quickCaptureHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; font-weight: 500; color: #ccc; }
+.quickCaptureActions { display: flex; gap: 8px; margin-top: 12px; }
 
+/* ── Focus Timer ─────────────────── */
+.focusToolbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #1a1a1a; }
+.focusTimerDisplay { display: flex; align-items: center; gap: 12px; }
+.timerValue { font-size: 20px; font-weight: 500; color: #fff; font-variant-numeric: tabular-nums; }
+.ghostBtn { padding: 6px 12px; background: transparent; color: #888; border: 1px solid #333; border-radius: 6px; font-size: 12px; cursor: pointer; transition: color 0.2s; }
+.ghostBtn:hover { color: #fff; }
+
+/* ── KPI Grid (Digest) ──────────── */
+.kpiGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.kpiCard { background: #111; border: 1px solid #222; border-radius: 8px; padding: 14px; text-align: center; }
+.kpiLabel { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+.kpiValue { font-size: 22px; font-weight: 600; color: #fff; }

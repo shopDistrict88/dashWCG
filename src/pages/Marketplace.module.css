@@ -197,7 +197,7 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 16px;
+    padding: 8px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -205,20 +205,71 @@
   }
 
   .title {
-    font-size: 24px;
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .statsBar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .stat {
+    padding: 12px;
+  }
+
+  .section {
+    padding: 12px;
   }
 
   .servicesList {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 12px;
+  }
+
+  .serviceCard {
+    padding: 12px;
   }
 
   .cardHeader {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 6px;
   }
 
   .status {
     align-self: flex-start;
+  }
+
+  .bookBtn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 6px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .statsBar {
+    grid-template-columns: 1fr;
+  }
+
+  .stat {
+    padding: 10px;
+  }
+
+  .section {
+    padding: 10px;
+  }
+
+  .serviceCard {
+    padding: 10px;
   }
 }

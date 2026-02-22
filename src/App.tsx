@@ -20,30 +20,23 @@ import { Growth } from './pages/Growth'
 import { PersonalBrand } from './pages/PersonalBrand'
 import { Education } from './pages/Education'
 import { Community } from './pages/Community'
-import { Marketplace } from './pages/Marketplace'
-import { Ideas } from './pages/Ideas'
 import CreativeHealth from './pages/CreativeHealth'
-import CollaborationHub from './pages/CollaborationHub'
-import MediaVault from './pages/MediaVault'
-import InsightsLab from './pages/InsightsLab'
-import LegacyOwnership from './pages/LegacyOwnership'
+import { CollaborationHub } from './pages/CollaborationHub'
 import { SocialMedia } from './pages/SocialMedia'
 import { MusicStudio } from './pages/MusicStudio'
 import { Settings } from './pages/Settings'
 import { Fashion } from './pages/Fashion'
 import { FitWearTesting } from './pages/FitWearTesting'
 import { ProductIdeationLab } from './pages/ProductIdeationLab'
+import { PrototypeVault } from './pages/PrototypeVault'
+import { ProblemSolutionMapper } from './pages/ProblemSolutionMapper'
+import { BusinessIntelligence, MarketSignalsBoard, PricingPsychologyLab, CulturalTimingIndex } from './pages/BusinessIntelligence'
 import { 
-  PrototypeVault, 
-  ProblemSolutionMapper, 
-  MarketSignalsBoard, 
-  PricingPsychologyLab,
   PackagingDesignStudio,
   WorldbuildingStudio,
   StoryIPVault,
   EditorialStudio,
   VisualCampaignBuilder,
-  CulturalTimingIndex,
   RDPlayground,
   SpeculativeConcepts,
   CreativeConstraintsEngine,
@@ -89,13 +82,13 @@ function AppRoutes() {
           <Route path="personal-brand" element={<PersonalBrand />} />
           <Route path="education" element={<Education />} />
           <Route path="community" element={<Community />} />
-          <Route path="marketplace" element={<Marketplace />} />
-          <Route path="ideas" element={<Ideas />} />
+          <Route path="marketplace" element={<Community />} />
+          <Route path="ideas" element={<CreativeIntelligence />} />
           <Route path="creative-health" element={<CreativeHealth />} />
           <Route path="collaboration-hub" element={<CollaborationHub />} />
-          <Route path="media-vault" element={<MediaVault />} />
-          <Route path="insights-lab" element={<InsightsLab />} />
-          <Route path="legacy-ownership" element={<LegacyOwnership />} />
+          <Route path="media-vault" element={<CollaborationHub />} />
+          <Route path="insights-lab" element={<CreativeIntelligence />} />
+          <Route path="legacy-ownership" element={<IPRegistry />} />
           <Route path="prototype-vault" element={<PrototypeVault />} />
           <Route path="problem-solution-mapper" element={<ProblemSolutionMapper />} />
           <Route path="market-signals-board" element={<MarketSignalsBoard />} />

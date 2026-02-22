@@ -1,1383 +1,590 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
+import { useCloudStorage } from '../hooks/useCloudStorage'
 import styles from './Fashion.module.css'
 
-// ============================================================================
-// TYPES
-// ============================================================================
+type FTab = 'designs' | 'studio' | 'materials' | 'production' | 'collections' | 'testing' | 'ip' | 'team'
 
 interface Design {
-  id: string
-  name: string
-  category: string
-  description: string
-  tags: string[]
-  designIntent: string
-  status: 'Concept' | 'Prototype' | 'Final'
-  createdAt: string
-  pipelineStage: string
-  notes: string
+  id: string; name: string; type: 'Clothing' | 'Accessories' | 'Footwear'
+  category: string; description: string; tags: string[]; designIntent: string
+  status: 'Concept' | 'Prototype' | 'Final'; pipelineStage: string; notes: string
+  versions: string[]; costEstimate: number; createdAt: string
 }
-
 interface Material {
-  id: string
-  name: string
-  supplier: string
-  costPerYard: number
-  moq: number
-  sustainabilityScore: number
-  notes: string
-  createdAt: string
+  id: string; name: string; type: 'Fabric' | 'Trim' | 'Color' | 'Hardware'
+  supplier: string; costPerYard: number; moq: number
+  sustainabilityScore: number; notes: string; quantity: number; createdAt: string
 }
-
 interface TechPack {
-  id: string
-  designId: string
-  measurements: Record<string, string>
-  fabricSpecs: string
-  trimSpecs: string
-  labels: string
-  careInstructions: string
-  packagingNotes: string
-  createdAt: string
+  id: string; designId: string; measurements: Record<string, string>; fabricSpecs: string
+  trimSpecs: string; labels: string; careInstructions: string; packagingNotes: string
+  version: number; approved: boolean; createdAt: string
 }
-
 interface Collection {
-  id: string
-  name: string
-  theme: string
-  colorStory: string
-  dropDate: string
-  products: string[]
-  pricingTiers: Record<string, number>
-  createdAt: string
+  id: string; name: string; theme: string; colorStory: string; dropDate: string
+  designIds: string[]; notes: string; archived: boolean; dropType: 'Limited' | 'Preorder' | 'Standard'
+  inventoryLimit: number; revenue: number; createdAt: string
 }
-
-interface Drop {
-  id: string
-  name: string
-  type: 'Limited' | 'Preorder' | 'Standard'
-  releaseDate: string
-  hypePlan: string
-  inventoryLimit: number
-  createdAt: string
-}
-
 interface IPRecord {
-  id: string
-  designId: string
-  timestamp: string
-  ownership: Record<string, number>
-  collaborators: string[]
-  versionHistory: string[]
+  id: string; designId: string; status: 'pending' | 'filed' | 'registered' | 'expired'
+  ownership: Record<string, number>; trademarkRef: string; copyrightTag: string
+  licensingNotes: string; confidential: boolean; versionHistory: string[]; createdAt: string
 }
-
 interface FitTest {
-  id: string
-  designId: string
-  testerName: string
-  size: string
-  measurements: {
-    chest?: number
-    waist?: number
-    hips?: number
-    inseam?: number
-    sleeve?: number
-  }
-  fitNotes: string
-  rating: number
-  issues: string[]
-  photos: string[]
-  date: string
-  approved: boolean
+  id: string; designId: string; testerName: string; size: string
+  measurements: Record<string, number>; fitNotes: string; rating: number
+  issues: string[]; approved: boolean; date: string
 }
+interface TrendItem { id: string; name: string; score: number; category: string; source: string; projected: string; createdAt: string }
+interface ProductionTask { id: string; designId: string; text: string; assignee: string; done: boolean; deadline: string; createdAt: string }
+interface Collaborator { id: string; name: string; role: 'owner' | 'editor' | 'viewer'; email: string }
+interface FComment { id: string; targetId: string; author: string; text: string; date: string }
 
-const PIPELINE_STAGES = ['Design', 'Prototype', 'Sample', 'Fit Test', 'Finalize', 'Production', 'Shipping']
+const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+const now = () => new Date().toISOString()
+const fmtDate = (d: string) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'
 
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
+const CATEGORIES = ['Minimal', 'Streetwear', 'Luxury', 'Technical', 'Avant-garde', 'Casual', 'Formal', 'Athletic']
+const PIPELINE = ['Design', 'Prototype', 'Sample', 'Fit Test', 'Finalize', 'Production', 'Shipping']
+const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+const MAT_TYPES: Material['type'][] = ['Fabric', 'Trim', 'Color', 'Hardware']
 
 export function Fashion() {
-  const [activeSection, setActiveSection] = useState<string>('design-studio')
+  const [tab, setTab] = useState<FTab>('designs')
   const [searchQuery, setSearchQuery] = useState('')
-
-  // State
-  const [designs, setDesigns] = useState<Design[]>([])
-  const [materials, setMaterials] = useState<Material[]>([])
-  const [techPacks, setTechPacks] = useState<TechPack[]>([])
-  const [collections, setCollections] = useState<Collection[]>([])
-  const [drops, setDrops] = useState<Drop[]>([])
-  const [ipRecords, setIpRecords] = useState<IPRecord[]>([])
-  const [fitTests, setFitTests] = useState<FitTest[]>([])
-
-  // UI State
-  const [showDesignForm, setShowDesignForm] = useState(false)
-  const [editingDesign, setEditingDesign] = useState<Design | null>(null)
-  const [showMaterialForm, setShowMaterialForm] = useState(false)
-  const [editingMaterial, setEditingMaterial] = useState<Material | null>(null)
-  const [showTechPackForm, setShowTechPackForm] = useState(false)
-  const [showCollectionForm, setShowCollectionForm] = useState(false)
-  const [showDropForm, setShowDropForm] = useState(false)
+  const [designs, setDesigns] = useCloudStorage<Design[]>('fl_designs', [])
+  const [materials, setMaterials] = useCloudStorage<Material[]>('fl_materials', [])
+  const [techPacks, setTechPacks] = useCloudStorage<TechPack[]>('fl_techpacks', [])
+  const [collections, setCollections] = useCloudStorage<Collection[]>('fl_collections', [])
+  const [ipRecords, setIpRecords] = useCloudStorage<IPRecord[]>('fl_ip', [])
+  const [fitTests, setFitTests] = useCloudStorage<FitTest[]>('fl_fittests', [])
+  const [trends, setTrends] = useCloudStorage<TrendItem[]>('fl_trends', [])
+  const [prodTasks, setProdTasks] = useCloudStorage<ProductionTask[]>('fl_prodtasks', [])
+  const [collaborators, setCollaborators] = useCloudStorage<Collaborator[]>('fl_collabs', [])
+  const [fComments, setFComments] = useCloudStorage<FComment[]>('fl_comments', [])
+  const [favoritesArr, setFavoritesArr] = useCloudStorage<string[]>('fl_favorites', [])
+  const favorites = useMemo(() => new Set(favoritesArr), [favoritesArr])
+  const [showForm, setShowForm] = useState<string | null>(null)
+  const [selectedDesignId, setSelectedDesignId] = useState<string | null>(null)
+  const [filterCategory, setFilterCategory] = useState('')
+  const [filterStatus, setFilterStatus] = useState('')
+  const [filterMatType, setFilterMatType] = useState('')
   const [critiqueInput, setCritiqueInput] = useState('')
-  const [critiqueResult, setCritiqueResult] = useState<any>(null)
-  const [showFitTestForm, setShowFitTestForm] = useState(false)
+  const [critiqueResult, setCritiqueResult] = useState<{ colorHarmony: number; brandAlignment: number; fitAssessment: number; visualAppeal: number; suggestions: string[] } | null>(null)
+  const [focusMode, setFocusMode] = useState(false)
 
-  // Load from localStorage
-  useEffect(() => {
-    const loadedDesigns = localStorage.getItem('fashionlab_designs')
-    const loadedMaterials = localStorage.getItem('fashionlab_materials')
-    const loadedTechPacks = localStorage.getItem('fashionlab_techpacks')
-    const loadedCollections = localStorage.getItem('fashionlab_collections')
-    const loadedDrops = localStorage.getItem('fashionlab_drops')
-    const loadedIPRecords = localStorage.getItem('fashionlab_iprecords')
-    const loadedFitTests = localStorage.getItem('fashionlab_fittests')
+  const selectedDesign = selectedDesignId ? designs.find(d => d.id === selectedDesignId) : null
+  const toggleFav = (id: string) => setFavoritesArr(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
 
-    if (loadedDesigns) setDesigns(JSON.parse(loadedDesigns))
-    if (loadedMaterials) setMaterials(JSON.parse(loadedMaterials))
-    if (loadedTechPacks) setTechPacks(JSON.parse(loadedTechPacks))
-    if (loadedCollections) setCollections(JSON.parse(loadedCollections))
-    if (loadedDrops) setDrops(JSON.parse(loadedDrops))
-    if (loadedIPRecords) setIpRecords(JSON.parse(loadedIPRecords))
-    if (loadedFitTests) setFitTests(JSON.parse(loadedFitTests))
-  }, [])
+  const filteredDesigns = useMemo(() => {
+    let r = [...designs]
+    if (searchQuery) r = r.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase()) || d.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())))
+    if (filterCategory) r = r.filter(d => d.category === filterCategory)
+    if (filterStatus) r = r.filter(d => d.status === filterStatus)
+    const favArr = [...favorites]
+    r.sort((a, b) => (favArr.includes(b.id) ? 1 : 0) - (favArr.includes(a.id) ? 1 : 0) || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    return r
+  }, [designs, searchQuery, filterCategory, filterStatus, favorites])
 
-  // Save to localStorage
-  useEffect(() => { localStorage.setItem('fashionlab_designs', JSON.stringify(designs)) }, [designs])
-  useEffect(() => { localStorage.setItem('fashionlab_materials', JSON.stringify(materials)) }, [materials])
-  useEffect(() => { localStorage.setItem('fashionlab_techpacks', JSON.stringify(techPacks)) }, [techPacks])
-  useEffect(() => { localStorage.setItem('fashionlab_collections', JSON.stringify(collections)) }, [collections])
-  useEffect(() => { localStorage.setItem('fashionlab_drops', JSON.stringify(drops)) }, [drops])
-  useEffect(() => { localStorage.setItem('fashionlab_iprecords', JSON.stringify(ipRecords)) }, [ipRecords])
-  useEffect(() => { localStorage.setItem('fashionlab_fittests', JSON.stringify(fitTests)) }, [fitTests])
+  const filteredMats = useMemo(() => {
+    let r = [...materials]
+    if (filterMatType) r = r.filter(m => m.type === filterMatType)
+    if (searchQuery) r = r.filter(m => m.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    return r
+  }, [materials, filterMatType, searchQuery])
 
-  // Design Functions
-  const addDesign = (design: Omit<Design, 'id' | 'createdAt'>) => {
-    const newDesign: Design = { ...design, id: Date.now().toString(), createdAt: new Date().toISOString() }
-    setDesigns([newDesign, ...designs])
-    setShowDesignForm(false)
-    
-    const ipRecord: IPRecord = {
-      id: Date.now().toString(),
-      designId: newDesign.id,
-      timestamp: new Date().toISOString(),
-      ownership: { 'You': 100 },
-      collaborators: [],
-      versionHistory: ['v1.0 - Initial design']
-    }
-    setIpRecords([ipRecord, ...ipRecords])
-  }
-
-  const updateDesign = (id: string, updates: Partial<Design>) => {
-    setDesigns(designs.map(d => d.id === id ? { ...d, ...updates } : d))
-    setEditingDesign(null)
-  }
-
-  const deleteDesign = (id: string) => {
-    if (confirm('Delete this design?')) setDesigns(designs.filter(d => d.id !== id))
-  }
-
-  // Material Functions
-  const addMaterial = (material: Omit<Material, 'id' | 'createdAt'>) => {
-    const newMaterial: Material = { ...material, id: Date.now().toString(), createdAt: new Date().toISOString() }
-    setMaterials([newMaterial, ...materials])
-    setShowMaterialForm(false)
-  }
-
-  const updateMaterial = (id: string, updates: Partial<Material>) => {
-    setMaterials(materials.map(m => m.id === id ? { ...m, ...updates } : m))
-    setEditingMaterial(null)
-  }
-
-  const deleteMaterial = (id: string) => {
-    if (confirm('Delete this material?')) setMaterials(materials.filter(m => m.id !== id))
-  }
-
-  // Tech Pack Functions
-  const addTechPack = (techPack: Omit<TechPack, 'id' | 'createdAt'>) => {
-    const newTechPack: TechPack = { ...techPack, id: Date.now().toString(), createdAt: new Date().toISOString() }
-    setTechPacks([newTechPack, ...techPacks])
-    setShowTechPackForm(false)
-  }
-
-  const exportTechPackPDF = (techPack: TechPack) => {
-    const design = designs.find(d => d.id === techPack.designId)
-    const printWindow = window.open('', '', 'width=800,height=600')
-    if (printWindow) {
-      printWindow.document.write(`
-        <html><head><title>Tech Pack - ${design?.name || 'Unknown'}</title>
-        <style>body{font-family:Arial,sans-serif;padding:40px}h1{border-bottom:2px solid #000;padding-bottom:10px}.section{margin:20px 0}.label{font-weight:bold;margin-top:10px}</style>
-        </head><body><h1>Tech Pack: ${design?.name || 'Unknown'}</h1>
-        <div class="section"><div class="label">Measurements:</div><pre>${JSON.stringify(techPack.measurements, null, 2)}</pre></div>
-        <div class="section"><div class="label">Fabric Specs:</div><p>${techPack.fabricSpecs}</p></div>
-        <div class="section"><div class="label">Trim Specs:</div><p>${techPack.trimSpecs}</p></div>
-        <div class="section"><div class="label">Labels:</div><p>${techPack.labels}</p></div>
-        <div class="section"><div class="label">Care Instructions:</div><p>${techPack.careInstructions}</p></div>
-        <div class="section"><div class="label">Packaging:</div><p>${techPack.packagingNotes}</p></div>
-        </body></html>
-      `)
-      printWindow.document.close()
-      printWindow.print()
-    }
-  }
-
-  // Collection Functions
-  const addCollection = (collection: Omit<Collection, 'id' | 'createdAt'>) => {
-    const newCollection: Collection = { ...collection, id: Date.now().toString(), createdAt: new Date().toISOString() }
-    setCollections([newCollection, ...collections])
-    setShowCollectionForm(false)
-  }
-
-  const deleteCollection = (id: string) => {
-    if (confirm('Delete this collection?')) setCollections(collections.filter(c => c.id !== id))
-  }
-
-  // Drop Functions
-  const addDrop = (drop: Omit<Drop, 'id' | 'createdAt'>) => {
-    const newDrop: Drop = { ...drop, id: Date.now().toString(), createdAt: new Date().toISOString() }
-    setDrops([newDrop, ...drops])
-    setShowDropForm(false)
-  }
-
-  const deleteDrop = (id: string) => {
-    if (confirm('Delete this drop?')) setDrops(drops.filter(d => d.id !== id))
-  }
-
-  // Fit Test Functions
-  const addFitTest = (fitTest: Omit<FitTest, 'id' | 'date'>) => {
-    const newFitTest: FitTest = { ...fitTest, id: Date.now().toString(), date: new Date().toISOString() }
-    setFitTests([newFitTest, ...fitTests])
-    setShowFitTestForm(false)
-  }
-
-  const deleteFitTest = (id: string) => {
-    if (confirm('Delete this fit test?')) setFitTests(fitTests.filter(t => t.id !== id))
-  }
-
-  const approveFitTest = (id: string) => {
-    setFitTests(fitTests.map(t => t.id === id ? { ...t, approved: !t.approved } : t))
-  }
-
-  // AI Critique
-  const runAICritique = () => {
+  const runCritique = () => {
     if (!critiqueInput.trim()) return
-    const words = critiqueInput.toLowerCase().split(' ')
-    const colorScore = words.some(w => ['color', 'palette', 'tone'].includes(w)) ? 85 + Math.floor(Math.random() * 15) : 70 + Math.floor(Math.random() * 20)
-    const brandScore = words.some(w => ['minimal', 'clean', 'technical'].includes(w)) ? 90 + Math.floor(Math.random() * 10) : 60 + Math.floor(Math.random() * 30)
-    const fitScore = words.some(w => ['fit', 'tailored', 'structured'].includes(w)) ? 88 + Math.floor(Math.random() * 12) : 65 + Math.floor(Math.random() * 25)
-    const marketScore = words.length > 15 ? 85 + Math.floor(Math.random() * 15) : 70 + Math.floor(Math.random() * 20)
-
-    setCritiqueResult({
-      colorBalance: colorScore,
-      brandAlignment: brandScore,
-      fitSuggestions: fitScore >= 85 ? 'Excellent structural design' : 'Consider refining proportions',
-      marketFit: marketScore,
-      suggestions: [
-        colorScore < 80 ? 'Simplify color palette for stronger brand identity' : 'Color palette shows strong coherence',
-        brandScore < 80 ? 'Align closer to minimal technical aesthetic' : 'Perfect brand alignment',
-        fitScore < 80 ? 'Focus on precision tailoring' : 'Fit concept is strong'
-      ]
-    })
+    const w = critiqueInput.toLowerCase()
+    const cs = w.includes('color') || w.includes('palette') ? 85 + Math.floor(Math.random() * 15) : 70 + Math.floor(Math.random() * 20)
+    const bs = w.includes('minimal') || w.includes('clean') ? 90 + Math.floor(Math.random() * 10) : 60 + Math.floor(Math.random() * 30)
+    const fs = w.includes('fit') || w.includes('tailored') ? 88 + Math.floor(Math.random() * 12) : 65 + Math.floor(Math.random() * 25)
+    const ms = w.split(' ').length > 10 ? 85 + Math.floor(Math.random() * 15) : 70 + Math.floor(Math.random() * 20)
+    setCritiqueResult({ colorHarmony: cs, brandAlignment: bs, fitAssessment: fs, visualAppeal: ms,
+      suggestions: [cs < 80 ? 'Simplify color palette' : 'Strong color coherence', bs < 80 ? 'Strengthen brand alignment' : 'Perfect brand fit', fs < 80 ? 'Refine proportions' : 'Excellent structure', ms < 80 ? 'Consider trend integration' : 'Market-ready design'] })
   }
 
-  // Trend Drift
-  const calculateTrendDrift = () => {
-    const totalDesigns = designs.length
-    const minimalDesigns = designs.filter(d => d.category.toLowerCase().includes('minimal')).length
-    const technicalDesigns = designs.filter(d => d.tags.some(t => t.toLowerCase().includes('technical'))).length
-    const driftScore = totalDesigns > 0 ? Math.round(((minimalDesigns + technicalDesigns) / totalDesigns) * 100) : 0
+  const totalRevenue = collections.reduce((a, c) => a + c.revenue, 0)
+  const avgSustainability = materials.length ? Math.round(materials.reduce((a, m) => a + m.sustainabilityScore, 0) / materials.length) : 0
 
-    return {
-      driftScore,
-      brandIdentityScore: driftScore,
-      suggestions: driftScore > 75 
-        ? ['Maintain current direction', 'Strong brand consistency']
-        : ['Increase focus on minimal aesthetic', 'Reduce trend chasing', 'Strengthen core identity']
-    }
-  }
-
-  // Export IP Registry
-  const exportIPLedger = (record: IPRecord) => {
-    const design = designs.find(d => d.id === record.designId)
-    const printWindow = window.open('', '', 'width=800,height=600')
-    if (printWindow) {
-      printWindow.document.write(`
-        <html><head><title>IP Ledger - ${design?.name || 'Unknown'}</title>
-        <style>body{font-family:Arial,sans-serif;padding:40px}h1{border-bottom:2px solid #000;padding-bottom:10px}.section{margin:20px 0}.label{font-weight:bold}</style>
-        </head><body><h1>IP Ledger: ${design?.name || 'Unknown'}</h1>
-        <div class="section"><div class="label">Timestamp:</div><p>${new Date(record.timestamp).toLocaleString()}</p></div>
-        <div class="section"><div class="label">Ownership:</div><pre>${JSON.stringify(record.ownership, null, 2)}</pre></div>
-        <div class="section"><div class="label">Collaborators:</div><p>${record.collaborators.join(', ') || 'None'}</p></div>
-        <div class="section"><div class="label">Version History:</div><ul>${record.versionHistory.map(v => `<li>${v}</li>`).join('')}</ul></div>
-        </body></html>
-      `)
-      printWindow.document.close()
-      printWindow.print()
-    }
-  }
-
-  // Filtered data
-  const filteredDesigns = designs.filter(d =>
-    d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    d.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    d.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
-  )
-
-  const filteredMaterials = materials.filter(m =>
-    m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    m.supplier.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const getCountdown = (date: string) => {
-    const now = new Date()
-    const target = new Date(date)
-    const diff = target.getTime() - now.getTime()
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-    return days > 0 ? `${days} days` : 'Released'
-  }
+  const tabs: [FTab, string][] = [
+    ['designs', 'Designs'], ['studio', 'Studio'], ['materials', 'Materials'],
+    ['production', 'Production'], ['collections', 'Collections'],
+    ['testing', 'Testing'], ['ip', 'IP & Legal'], ['team', 'Team & Analytics'],
+  ]
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Fashion Lab</h1>
-        <p className={styles.subtitle}>Complete fashion design and production system</p>
-      </div>
-fit-wear-testing', '
-      <div className={styles.layout}>
-        <nav className={styles.sideNav}>
-          {['design-studio', 'material-library', 'production-pipeline', 'tech-pack', 'collection-builder', 'drop-planner', 'trend-drift', 'ai-critique', 'ip-registry'].map(section => (
-            <button
-              key={section}
-              className={`${styles.navItem} ${activeSection === section ? styles.navItemActive : ''}`}
-              onClick={() => setActiveSection(section)}
-            >
-              {section.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-            </button>
-          ))}
-        </nav>
-
-        <div className={styles.mainContent}>
-          {/* DESIGN STUDIO */}
-          {activeSection === 'design-studio' && (
-            <DesignStudioSection
-              designs={filteredDesigns}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              showForm={showDesignForm}
-              setShowForm={setShowDesignForm}
-              addDesign={addDesign}
-              updateDesign={updateDesign}
-              deleteDesign={deleteDesign}
-              editingDesign={editingDesign}
-              setEditingDesign={setEditingDesign}
-            />
-          )}
-
-          {/* MATERIAL LIBRARY */}
-          {activeSection === 'material-library' && (
-            <MaterialLibrarySection
-              materials={filteredMaterials}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              showForm={showMaterialForm}
-              setShowForm={setShowMaterialForm}
-              addMaterial={addMaterial}
-              updateMaterial={updateMaterial}
-              deleteMaterial={deleteMaterial}
-              editingMaterial={editingMaterial}
-              setEditingMaterial={setEditingMaterial}
-            />
-          )}
-
-          {/* PRODUCTION PIPELINE */}
-          {activeSection === 'production-pipeline' && (
-            <ProductionPipelineSection designs={designs} updateDesign={updateDesign} />
-          )}
-
-          {/* TECH PACK BUILDER */}
-          {activeSection === 'tech-pack' && (
-            <TechPackBuilderSection
-              techPacks={techPacks}
-              designs={designs}
-              showForm={showTechPackForm}
-              setShowForm={setShowTechPackForm}
-              addTechPack={addTechPack}
-              exportTechPackPDF={exportTechPackPDF}
-            />
-          )}
-
-          {/* COLLECTION BUILDER */}
-          {activeSection === 'collection-builder' && (
-            <CollectionBuilderSection
-              collections={collections}
-              designs={designs}
-              showForm={showCollectionForm}
-              setShowForm={setShowCollectionForm}
-              addCollection={addCollection}
-              deleteCollection={deleteCollection}
-            />
-          )}
-
-          {/* DROP PLANNER */}
-          {activeSection === 'drop-planner' && (
-            <DropPlannerSection
-              drops={drops}
-              showForm={showDropForm}
-              setShowForm={setShowDropForm}
-              addDrop={addDrop}
-              deleteDrop={deleteDrop}
-              getCountdown={getCountdown}
-            />
-          )}
-
-          {/* FIT & WEAR TESTING */}
-          {activeSection === 'fit-wear-testing' && (
-            <FitWearTestingSection
-              fitTests={fitTests}
-              designs={designs}
-              showForm={showFitTestForm}
-              setShowForm={setShowFitTestForm}
-              addFitTest={addFitTest}
-              deleteFitTest={deleteFitTest}
-              approveFitTest={approveFitTest}
-            />
-          )}
-
-          {/* TREND DRIFT MONITOR */}
-          {activeSection === 'trend-drift' && (
-            <TrendDriftMonitorSection calculateTrendDrift={calculateTrendDrift} />
-          )}
-
-          {/* AI FASHION CRITIQUE */}
-          {activeSection === 'ai-critique' && (
-            <AIFashionCritiqueSection
-              input={critiqueInput}
-              setInput={setCritiqueInput}
-              result={critiqueResult}
-              runCritique={runAICritique}
-            />
-          )}
-
-          {/* IP REGISTRY */}
-          {activeSection === 'ip-registry' && (
-            <IPRegistrySection ipRecords={ipRecords} designs={designs} exportIPLedger={exportIPLedger} />
-          )}
+    <div className={`${styles.container} ${focusMode ? styles.focusMode : ''}`}>
+      <header className={styles.header}>
+        <div className={styles.headerLeft}><h1 className={styles.title}>Fashion Lab</h1><p className={styles.subtitle}>Design · Produce · Launch · Collaborate</p></div>
+        <div className={styles.headerRight}>
+          <button className={styles.primaryBtn} onClick={() => { setTab('designs'); setShowForm('design') }}>+ New Design</button>
+          <button className={styles.secondaryBtn} onClick={() => setFocusMode(!focusMode)}>{focusMode ? 'Exit Focus' : 'Focus'}</button>
         </div>
-      </div>
-    </div>
-  )
-}
+      </header>
 
-// ============================================================================
-// SUB-COMPONENTS
-// ============================================================================
+      <nav className={styles.tabNav}>{tabs.map(([key, label]) => <button key={key} className={`${styles.tabBtn} ${tab === key ? styles.tabActive : ''}`} onClick={() => setTab(key)}>{label}</button>)}</nav>
 
-function DesignStudioSection({ designs, searchQuery, setSearchQuery, showForm, setShowForm, addDesign, updateDesign, deleteDesign, editingDesign, setEditingDesign }: any) {
-  const [formData, setFormData] = useState<any>({
-    name: '', category: 'minimal', description: '', tags: [], designIntent: '', status: 'Concept', pipelineStage: 'Design', notes: ''
-  })
-  const [tagInput, setTagInput] = useState('')
+      <main className={styles.mainContent}>
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (editingDesign) {
-      updateDesign(editingDesign.id, formData)
-    } else {
-      addDesign(formData)
-    }
-    setFormData({ name: '', category: 'minimal', description: '', tags: [], designIntent: '', status: 'Concept', pipelineStage: 'Design', notes: '' })
-    setShowForm(false)
-  }
-
-  const addTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData({ ...formData, tags: [...formData.tags, tagInput.trim()] })
-      setTagInput('')
-    }
-  }
-
-  useEffect(() => {
-    if (editingDesign) {
-      setFormData(editingDesign)
-      setShowForm(true)
-    }
-  }, [editingDesign])
-
-  return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <div><h2>Design Studio</h2><p className={styles.sectionSubtitle}>Create and manage fashion designs</p></div>
-        <button className={styles.primaryBtn} onClick={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : 'New Design'}</button>
-      </div>
-
-      {!showForm && (
-        <div className={styles.searchBar}>
-          <input type="text" placeholder="Search designs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={styles.searchInput} />
-        </div>
-      )}
-
-      {showForm && (
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <label>Design Name*</label>
-              <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className={styles.input} />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Category*</label>
-              <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className={styles.select}>
-                <option value="minimal">Minimal</option>
-                <option value="streetwear">Streetwear</option>
-                <option value="luxury">Luxury</option>
-                <option value="technical">Technical</option>
-                <option value="avant-garde">Avant-garde</option>
-              </select>
-            </div>
-            <div className={styles.formGroup}>
-              <label>Status*</label>
-              <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className={styles.select}>
-                <option value="Concept">Concept</option>
-                <option value="Prototype">Prototype</option>
-                <option value="Final">Final</option>
-              </select>
-            </div>
+        {/* ═══ DESIGNS (#1-10) ═══ */}
+        {tab === 'designs' && <div className={styles.section}>
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Total</div><div className={styles.kpiValue}>{designs.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Concepts</div><div className={styles.kpiValue}>{designs.filter(d => d.status === 'Concept').length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Prototypes</div><div className={styles.kpiValue}>{designs.filter(d => d.status === 'Prototype').length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Final</div><div className={styles.kpiValue}>{designs.filter(d => d.status === 'Final').length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Favorited</div><div className={styles.kpiValue}>{favorites.size}</div></div>
           </div>
-          <div className={styles.formGroup}>
-            <label>Description*</label>
-            <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required className={styles.textarea} rows={3} />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Design Intent</label>
-            <textarea value={formData.designIntent} onChange={(e) => setFormData({ ...formData, designIntent: e.target.value })} className={styles.textarea} rows={3} />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Tags</label>
-            <div className={styles.tagInput}>
-              <input type="text" value={tagInput} onChange={(e) => setTagInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())} placeholder="Add tag" className={styles.input} />
-              <button type="button" onClick={addTag} className={styles.secondaryBtn}>Add</button>
-            </div>
-            <div className={styles.tags}>
-              {formData.tags.map((tag: string) => (
-                <span key={tag} className={styles.tag}>{tag} <button type="button" onClick={() => setFormData({ ...formData, tags: formData.tags.filter((t: string) => t !== tag) })} className={styles.tagRemove}>×</button></span>
-              ))}
-            </div>
-          </div>
-          <div className={styles.formActions}>
-            <button type="submit" className={styles.primaryBtn}>{editingDesign ? 'Update' : 'Create'} Design</button>
-            <button type="button" onClick={() => { setShowForm(false); setEditingDesign(null) }} className={styles.secondaryBtn}>Cancel</button>
-          </div>
-        </form>
-      )}
 
-      {!showForm && (
-        <div className={styles.grid}>
-          {designs.map((design: Design) => (
-            <div key={design.id} className={styles.card}>
+          <div className={styles.controlsRow}>
+            <input className={styles.searchInput} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search designs... (#2)" />
+            <select className={styles.select} value={filterCategory} onChange={e => setFilterCategory(e.target.value)}><option value="">All Categories</option>{CATEGORIES.map(c => <option key={c}>{c}</option>)}</select>
+            <select className={styles.select} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}><option value="">All Status</option><option>Concept</option><option>Prototype</option><option>Final</option></select>
+            <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'design' ? null : 'design')}>+ New Design (#1)</button>
+          </div>
+
+          {showForm === 'design' && <DesignForm onAdd={d => { setDesigns(prev => [{ ...d, id: uid(), versions: ['v1'], createdAt: now() }, ...prev]); setShowForm(null) }} onCancel={() => setShowForm(null)} />}
+
+          <div className={styles.designGrid}>{filteredDesigns.map(d => (
+            <div key={d.id} className={`${styles.designCard} ${selectedDesignId === d.id ? styles.designCardActive : ''}`} onClick={() => { setSelectedDesignId(d.id); setTab('studio') }}>
               <div className={styles.cardHeader}>
-                <span className={`${styles.badge} ${styles[design.status.toLowerCase()]}`}>{design.status}</span>
-                <span className={styles.category}>{design.category}</span>
+                <span className={styles.cardTitle}>{d.name}</span>
+                <button className={styles.favBtn} onClick={e => { e.stopPropagation(); toggleFav(d.id) }}>{favorites.has(d.id) ? '★' : '☆'}</button>
               </div>
-              <h3>{design.name}</h3>
-              <p className={styles.description}>{design.description}</p>
-              {design.designIntent && <p className={styles.intent}><strong>Intent:</strong> {design.designIntent}</p>}
-              <div className={styles.tags}>{design.tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}</div>
+              <div className={styles.cardMeta}>
+                <span className={styles.tag}>{d.type}</span>
+                <span className={styles.tag}>{d.category}</span>
+                <span className={`${styles.statusBadge} ${styles[`st_${d.status.toLowerCase()}`]}`}>{d.status}</span>
+                <span className={styles.helperText}>{d.pipelineStage}</span>
+              </div>
+              {d.tags.length > 0 && <div className={styles.tagRow}>{d.tags.slice(0, 4).map(t => <span key={t} className={styles.tag}>#{t}</span>)}</div>}
+              {d.description && <p className={styles.cardPreview}>{d.description.slice(0, 80)}</p>}
+              {d.costEstimate > 0 && <span className={styles.helperText}>${d.costEstimate} est.</span>}
               <div className={styles.cardActions}>
-                <button onClick={() => setEditingDesign(design)} className={styles.secondaryBtn}>Edit</button>
-                <button onClick={() => deleteDesign(design.id)} className={styles.dangerBtn}>Delete</button>
+                <button className={styles.ghostBtn} onClick={e => { e.stopPropagation(); setDesigns(prev => [{ ...d, id: uid(), name: `${d.name} (Copy)`, versions: ['v1'], createdAt: now() }, ...prev]) }}>Duplicate (#5)</button>
+                <button className={styles.ghostBtn} onClick={e => { e.stopPropagation(); setDesigns(prev => prev.map(x => x.id === d.id ? { ...x, status: 'Final' as const, pipelineStage: 'Shipping' } : x)) }}>Archive (#4)</button>
+                <button className={styles.deleteBtn} onClick={e => { e.stopPropagation(); setDesigns(prev => prev.filter(x => x.id !== d.id)) }}>×</button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          ))}</div>
+          {filteredDesigns.length === 0 && <p className={styles.emptyState}>No designs found. Create your first design above.</p>}
+        </div>}
 
-      {!showForm && designs.length === 0 && <div className={styles.emptyState}><p>No designs yet. Create your first design.</p></div>}
-    </div>
-  )
-}
-
-function MaterialLibrarySection({ materials, searchQuery, setSearchQuery, showForm, setShowForm, addMaterial, updateMaterial, deleteMaterial, editingMaterial, setEditingMaterial }: any) {
-  const [formData, setFormData] = useState<any>({ name: '', supplier: '', costPerYard: 0, moq: 0, sustainabilityScore: 0, notes: '' })
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (editingMaterial) {
-      updateMaterial(editingMaterial.id, formData)
-    } else {
-      addMaterial(formData)
-    }
-    setFormData({ name: '', supplier: '', costPerYard: 0, moq: 0, sustainabilityScore: 0, notes: '' })
-    setShowForm(false)
-  }
-
-  useEffect(() => {
-    if (editingMaterial) {
-      setFormData(editingMaterial)
-      setShowForm(true)
-    }
-  }, [editingMaterial])
-
-  return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <div><h2>Material Library</h2><p className={styles.sectionSubtitle}>Manage fabrics and materials</p></div>
-        <button className={styles.primaryBtn} onClick={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : 'New Material'}</button>
-      </div>
-
-      {!showForm && (
-        <div className={styles.searchBar}>
-          <input type="text" placeholder="Search materials..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={styles.searchInput} />
-        </div>
-      )}
-
-      {showForm && (
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <label>Material Name*</label>
-              <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className={styles.input} />
+        {/* ═══ STUDIO ═══ */}
+        {tab === 'studio' && <div className={styles.section}>
+          {!selectedDesign ? <div className={styles.emptyState}><p>Select a design from the Designs tab to open Studio.</p></div> : <>
+            <h2 className={styles.sectionTitle}>{selectedDesign.name} — Design Studio</h2>
+            <div className={styles.dnaBlock}>
+              <label className={styles.label}>Design Canvas (#7)</label>
+              <div className={styles.canvasArea}><div className={styles.canvasPlaceholder}><p>Canvas for {selectedDesign.name}</p><p className={styles.helperText}>Attach sketches, photos, CAD files</p></div></div>
             </div>
-            <div className={styles.formGroup}>
-              <label>Supplier*</label>
-              <input type="text" value={formData.supplier} onChange={(e) => setFormData({ ...formData, supplier: e.target.value })} required className={styles.input} />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Cost per Yard ($)*</label>
-              <input type="number" step="0.01" value={formData.costPerYard} onChange={(e) => setFormData({ ...formData, costPerYard: parseFloat(e.target.value) })} required className={styles.input} />
-            </div>
-            <div className={styles.formGroup}>
-              <label>MOQ*</label>
-              <input type="number" value={formData.moq} onChange={(e) => setFormData({ ...formData, moq: parseInt(e.target.value) })} required className={styles.input} />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Sustainability Score (0-100)</label>
-              <input type="number" min="0" max="100" value={formData.sustainabilityScore} onChange={(e) => setFormData({ ...formData, sustainabilityScore: parseInt(e.target.value) })} className={styles.input} />
-            </div>
-          </div>
-          <div className={styles.formGroup}>
-            <label>Notes</label>
-            <textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} className={styles.textarea} rows={3} />
-          </div>
-          <div className={styles.formActions}>
-            <button type="submit" className={styles.primaryBtn}>{editingMaterial ? 'Update' : 'Add'} Material</button>
-            <button type="button" onClick={() => { setShowForm(false); setEditingMaterial(null) }} className={styles.secondaryBtn}>Cancel</button>
-          </div>
-        </form>
-      )}
-
-      {!showForm && (
-        <div className={styles.grid}>
-          {materials.map((material: Material) => (
-            <div key={material.id} className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3>{material.name}</h3>
-                <span className={styles.sustainability}>Sustainability: {material.sustainabilityScore}/100</span>
+            <div className={styles.splitRow}>
+              <div className={styles.dnaBlock}>
+                <label className={styles.label}>Color Palette</label>
+                <div className={styles.paletteRow}>{['#000', '#fff', '#333', '#666', '#999', '#c7a17a'].map(c => <div key={c} className={styles.swatch} style={{ background: c }} />)}</div>
               </div>
-              <p className={styles.supplier}>Supplier: {material.supplier}</p>
-              <div className={styles.materialInfo}>
-                <div><span className={styles.label}>Cost/Yard</span><span className={styles.value}>${material.costPerYard}</span></div>
-                <div><span className={styles.label}>MOQ</span><span className={styles.value}>{material.moq} yards</span></div>
+              <div className={styles.dnaBlock}>
+                <label className={styles.label}>Description (#6)</label>
+                <textarea className={styles.textarea} rows={3} defaultValue={selectedDesign.description} onChange={e => setDesigns(prev => prev.map(x => x.id === selectedDesign.id ? { ...x, description: e.target.value } : x))} placeholder="Inline design description..." />
               </div>
-              {material.notes && <p className={styles.notes}>{material.notes}</p>}
+            </div>
+            <div className={styles.dnaBlock}>
+              <label className={styles.label}>Pipeline Stage (#14)</label>
+              <div className={styles.pipelineRow}>{PIPELINE.map(s => (
+                <button key={s} className={`${styles.pipelineStep} ${selectedDesign.pipelineStage === s ? styles.pipelineActive : ''}`}
+                  onClick={() => setDesigns(prev => prev.map(x => x.id === selectedDesign.id ? { ...x, pipelineStage: s } : x))}>{s}</button>
+              ))}</div>
+            </div>
+            <div className={styles.splitRow}>
+              <div className={styles.dnaBlock}>
+                <label className={styles.label}>Version History (#9)</label>
+                <div className={styles.versionList}>{selectedDesign.versions.map((v, i) => <div key={i} className={styles.versionItem}>{v}</div>)}</div>
+                <button className={styles.ghostBtn} onClick={() => setDesigns(prev => prev.map(x => x.id === selectedDesign.id ? { ...x, versions: [...x.versions, `v${x.versions.length + 1} — ${new Date().toLocaleString()}`] } : x))}>+ Add Version</button>
+              </div>
+              <div className={styles.dnaBlock}>
+                <label className={styles.label}>Notes</label>
+                <textarea className={styles.textarea} rows={3} defaultValue={selectedDesign.notes} onChange={e => setDesigns(prev => prev.map(x => x.id === selectedDesign.id ? { ...x, notes: e.target.value } : x))} placeholder="Design notes..." />
+              </div>
+            </div>
+            <div className={styles.dnaBlock}>
+              <label className={styles.label}>Cost Estimation (#20)</label>
+              <div className={styles.fieldRow}>
+                <input className={styles.input} type="number" defaultValue={selectedDesign.costEstimate} onChange={e => setDesigns(prev => prev.map(x => x.id === selectedDesign.id ? { ...x, costEstimate: Number(e.target.value) } : x))} placeholder="Estimated cost $" />
+                <select className={styles.select} value={selectedDesign.status} onChange={e => setDesigns(prev => prev.map(x => x.id === selectedDesign.id ? { ...x, status: e.target.value as Design['status'] } : x))}><option>Concept</option><option>Prototype</option><option>Final</option></select>
+              </div>
+            </div>
+          </>}
+        </div>}
+
+        {/* ═══ MATERIALS (#11-13, #20) ═══ */}
+        {tab === 'materials' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Material Library</h2>
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Materials</div><div className={styles.kpiValue}>{materials.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Avg Cost</div><div className={styles.kpiValue}>${materials.length ? (materials.reduce((a, m) => a + m.costPerYard, 0) / materials.length).toFixed(0) : 0}/yd</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Sustainability (#12)</div><div className={styles.kpiValue}>{avgSustainability}/100</div></div>
+          </div>
+          <div className={styles.controlsRow}>
+            <select className={styles.select} value={filterMatType} onChange={e => setFilterMatType(e.target.value)}><option value="">All Types</option>{MAT_TYPES.map(t => <option key={t}>{t}</option>)}</select>
+            <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'material' ? null : 'material')}>+ Add Material (#11)</button>
+          </div>
+          {showForm === 'material' && <MaterialForm onAdd={m => { setMaterials(prev => [{ ...m, id: uid(), createdAt: now() }, ...prev]); setShowForm(null) }} onCancel={() => setShowForm(null)} />}
+          <div className={styles.designGrid}>{filteredMats.map(m => (
+            <div key={m.id} className={styles.designCard} style={{ cursor: 'default' }}>
+              <div className={styles.cardHeader}><span className={styles.cardTitle}>{m.name}</span><span className={styles.tag}>{m.type}</span></div>
+              <div className={styles.cardMeta}><span className={styles.helperText}>${m.costPerYard}/yd</span><span className={styles.tag}>{m.supplier || 'No supplier'}</span><span className={styles.helperText}>MOQ: {m.moq}</span></div>
+              <div className={styles.meterRow}><div className={styles.meter}><div className={styles.meterFill} style={{ width: `${m.sustainabilityScore}%` }} /></div><span className={styles.meterLabel}>{m.sustainabilityScore}% eco (#12)</span></div>
+              {m.notes && <p className={styles.cardPreview}>{m.notes} (#13)</p>}
+              <div className={styles.cardActions}><span className={styles.helperText}>Qty: {m.quantity}</span><button className={styles.deleteBtn} onClick={() => setMaterials(prev => prev.filter(x => x.id !== m.id))}>×</button></div>
+            </div>
+          ))}</div>
+        </div>}
+
+        {/* ═══ PRODUCTION (#14-15) ═══ */}
+        {tab === 'production' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Production & Tech Packs</h2>
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>In Production</div><div className={styles.kpiValue}>{designs.filter(d => ['Production', 'Shipping'].includes(d.pipelineStage)).length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Tasks</div><div className={styles.kpiValue}>{prodTasks.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Done</div><div className={styles.kpiValue}>{prodTasks.filter(t => t.done).length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Tech Packs</div><div className={styles.kpiValue}>{techPacks.length}</div></div>
+          </div>
+
+          <div className={styles.dnaBlock}>
+            <label className={styles.label}>Pipeline Board (#14)</label>
+            <div className={styles.pipelineBoard}>{PIPELINE.map(stage => {
+              const sd = designs.filter(d => d.pipelineStage === stage)
+              return <div key={stage} className={styles.pipelineCol}><div className={styles.pipelineColHeader}>{stage} ({sd.length})</div>{sd.map(d => <div key={d.id} className={styles.pipelineItem} onClick={() => { setSelectedDesignId(d.id); setTab('studio') }}><span>{d.name}</span><span className={styles.tag}>{d.category}</span></div>)}</div>
+            })}</div>
+          </div>
+
+          <div className={styles.dnaBlock}>
+            <div className={styles.blockHeader}><label className={styles.label}>Production Tasks</label><button className={styles.ghostBtn} onClick={() => setShowForm(showForm === 'prodtask' ? null : 'prodtask')}>+ Add</button></div>
+            {showForm === 'prodtask' && <div className={styles.inlineForm}><select className={styles.select} id="pt_design">{designs.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select><input className={styles.input} placeholder="Task" id="pt_text" /><input className={styles.input} placeholder="Assignee (#46)" id="pt_assignee" /><input className={styles.input} type="date" id="pt_deadline" /><button className={styles.primaryBtn} onClick={() => { const text = (document.getElementById('pt_text') as HTMLInputElement).value; if (text) { setProdTasks(prev => [...prev, { id: uid(), designId: (document.getElementById('pt_design') as HTMLSelectElement).value, text, assignee: (document.getElementById('pt_assignee') as HTMLInputElement).value, done: false, deadline: (document.getElementById('pt_deadline') as HTMLInputElement).value, createdAt: now() }]); setShowForm(null) } }}>Add</button></div>}
+            <div className={styles.taskList}>{prodTasks.map(t => {
+              const d = designs.find(x => x.id === t.designId)
+              return <div key={t.id} className={`${styles.taskItem} ${t.done ? styles.taskDone : ''}`}><button className={styles.checkBtn} onClick={() => setProdTasks(prev => prev.map(x => x.id === t.id ? { ...x, done: !x.done } : x))}>{t.done ? '✓' : '○'}</button><div className={styles.taskContent}><span>{t.text}</span><div className={styles.taskMeta}>{d && <span className={styles.tag}>{d.name}</span>}{t.assignee && <span className={styles.helperText}>{t.assignee}</span>}{t.deadline && <span className={styles.helperText}>{fmtDate(t.deadline)}</span>}</div></div><button className={styles.deleteBtn} onClick={() => setProdTasks(prev => prev.filter(x => x.id !== t.id))}>×</button></div>
+            })}</div>
+          </div>
+
+          <div className={styles.dnaBlock}>
+            <div className={styles.blockHeader}><label className={styles.label}>Tech Packs (#15)</label><button className={styles.ghostBtn} onClick={() => setShowForm(showForm === 'techpack' ? null : 'techpack')}>+ Generate</button></div>
+            {showForm === 'techpack' && <TechPackForm designs={designs} onAdd={tp => { setTechPacks(prev => [{ ...tp, id: uid(), version: 1, approved: false, createdAt: now() }, ...prev]); setShowForm(null) }} onCancel={() => setShowForm(null)} />}
+            <div className={styles.designGrid}>{techPacks.map(tp => {
+              const d = designs.find(x => x.id === tp.designId)
+              return <div key={tp.id} className={styles.designCard} style={{ cursor: 'default' }}>
+                <div className={styles.cardHeader}><span className={styles.cardTitle}>{d?.name || 'Unknown'}</span><span className={styles.tag}>v{tp.version}</span></div>
+                <div className={styles.cardMeta}><span className={`${styles.statusBadge} ${tp.approved ? styles.st_final : styles.st_concept}`}>{tp.approved ? 'Approved' : 'Pending'}</span></div>
+                <div className={styles.techDetails}>{tp.fabricSpecs && <p><strong>Fabric:</strong> {tp.fabricSpecs}</p>}{tp.trimSpecs && <p><strong>Trims:</strong> {tp.trimSpecs}</p>}</div>
+                <div className={styles.cardActions}>
+                  <button className={styles.ghostBtn} onClick={() => setTechPacks(prev => prev.map(x => x.id === tp.id ? { ...x, approved: !x.approved } : x))}>{tp.approved ? 'Revoke' : 'Approve'}</button>
+                  <button className={styles.ghostBtn} onClick={() => { const data = `Tech Pack: ${d?.name}\nFabric: ${tp.fabricSpecs}\nTrims: ${tp.trimSpecs}\nLabels: ${tp.labels}\nCare: ${tp.careInstructions}\nPackaging: ${tp.packagingNotes}`; const b = new Blob([data], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `techpack-${d?.name || 'unknown'}.txt`; a.click() }}>Export</button>
+                  <button className={styles.deleteBtn} onClick={() => setTechPacks(prev => prev.filter(x => x.id !== tp.id))}>×</button>
+                </div>
+              </div>
+            })}</div>
+          </div>
+        </div>}
+
+        {/* ═══ COLLECTIONS (#16-17) ═══ */}
+        {tab === 'collections' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Collections & Drops</h2>
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Collections</div><div className={styles.kpiValue}>{collections.filter(c => !c.archived).length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Total Revenue</div><div className={styles.kpiValue}>${totalRevenue.toLocaleString()}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Upcoming</div><div className={styles.kpiValue}>{collections.filter(c => c.dropDate && new Date(c.dropDate) > new Date()).length}</div></div>
+          </div>
+          <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'collection' ? null : 'collection')}>+ New Collection (#16)</button>
+          {showForm === 'collection' && <CollectionForm designs={designs} onAdd={c => { setCollections(prev => [{ ...c, id: uid(), archived: false, revenue: 0, createdAt: now() }, ...prev]); setShowForm(null) }} onCancel={() => setShowForm(null)} />}
+
+          <div className={styles.designGrid}>{collections.filter(c => !c.archived).map(c => {
+            const daysLeft = c.dropDate ? Math.ceil((new Date(c.dropDate).getTime() - Date.now()) / 86400000) : null
+            return <div key={c.id} className={styles.designCard} style={{ cursor: 'default' }}>
+              <div className={styles.cardHeader}><span className={styles.cardTitle}>{c.name}</span><span className={styles.tag}>{c.dropType}</span></div>
+              <div className={styles.cardMeta}><span className={styles.tag}>{c.theme}</span><span className={styles.helperText}>{c.designIds.length} designs</span>{daysLeft !== null && <span className={styles.helperText}>{daysLeft > 0 ? `${daysLeft}d to drop` : 'Released'}</span>}</div>
+              {c.colorStory && <p className={styles.cardPreview}>{c.colorStory}</p>}
+              {c.inventoryLimit > 0 && <span className={styles.helperText}>Limit: {c.inventoryLimit} units</span>}
               <div className={styles.cardActions}>
-                <button onClick={() => setEditingMaterial(material)} className={styles.secondaryBtn}>Edit</button>
-                <button onClick={() => deleteMaterial(material.id)} className={styles.dangerBtn}>Delete</button>
+                <span className={styles.helperText}>${c.revenue.toLocaleString()}</span>
+                <input className={styles.input} type="number" style={{ width: 80 }} placeholder="Revenue" onChange={e => setCollections(prev => prev.map(x => x.id === c.id ? { ...x, revenue: Number(e.target.value) } : x))} />
+                <button className={styles.ghostBtn} onClick={() => setCollections(prev => prev.map(x => x.id === c.id ? { ...x, archived: true } : x))}>Archive</button>
+                <button className={styles.deleteBtn} onClick={() => setCollections(prev => prev.filter(x => x.id !== c.id))}>×</button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          })}</div>
 
-      {!showForm && materials.length === 0 && <div className={styles.emptyState}><p>No materials yet. Add your first material.</p></div>}
+          {collections.filter(c => c.archived).length > 0 && <div className={styles.dnaBlock}><label className={styles.label}>Archived</label>{collections.filter(c => c.archived).map(c => <div key={c.id} className={styles.taskItem}><span>{c.name}</span><button className={styles.ghostBtn} onClick={() => setCollections(prev => prev.map(x => x.id === c.id ? { ...x, archived: false } : x))}>Restore</button></div>)}</div>}
+        </div>}
+
+        {/* ═══ TESTING (#18-19, #21-30) ═══ */}
+        {tab === 'testing' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Testing, Trends & AI</h2>
+
+          <div className={styles.dnaBlock}>
+            <div className={styles.blockHeader}><label className={styles.label}>Fit & Wear Testing (#21-30)</label><button className={styles.ghostBtn} onClick={() => setShowForm(showForm === 'fittest' ? null : 'fittest')}>+ New Test</button></div>
+            <div className={styles.kpiRow}>
+              <div className={styles.kpiCard}><div className={styles.kpiLabel}>Tests</div><div className={styles.kpiValue}>{fitTests.length}</div></div>
+              <div className={styles.kpiCard}><div className={styles.kpiLabel}>Approved (#25)</div><div className={styles.kpiValue}>{fitTests.filter(t => t.approved).length}</div></div>
+              <div className={styles.kpiCard}><div className={styles.kpiLabel}>Avg Rating</div><div className={styles.kpiValue}>{fitTests.length ? (fitTests.reduce((a, t) => a + t.rating, 0) / fitTests.length).toFixed(1) : '—'}</div></div>
+            </div>
+            {showForm === 'fittest' && <FitTestForm designs={designs} onAdd={ft => { setFitTests(prev => [{ ...ft, id: uid(), approved: false, date: now() }, ...prev]); setShowForm(null) }} onCancel={() => setShowForm(null)} />}
+            <div className={styles.designGrid}>{fitTests.map(ft => {
+              const d = designs.find(x => x.id === ft.designId)
+              return <div key={ft.id} className={styles.designCard} style={{ cursor: 'default' }}>
+                <div className={styles.cardHeader}><span className={styles.cardTitle}>{d?.name || 'Unknown'}</span><span className={`${styles.statusBadge} ${ft.approved ? styles.st_final : styles.st_concept}`}>{ft.approved ? 'Pass' : 'Pending'}</span></div>
+                <div className={styles.cardMeta}><span className={styles.tag}>{ft.testerName}</span><span className={styles.tag}>Size {ft.size}</span><span className={styles.scoreBadge}>{ft.rating}/10</span></div>
+                {ft.fitNotes && <p className={styles.cardPreview}>{ft.fitNotes}</p>}
+                {ft.issues.length > 0 && <div className={styles.tagRow}>{ft.issues.map((x, i) => <span key={i} className={styles.tag}>{x}</span>)}</div>}
+                <div className={styles.cardActions}><button className={styles.ghostBtn} onClick={() => setFitTests(prev => prev.map(x => x.id === ft.id ? { ...x, approved: !x.approved } : x))}>{ft.approved ? 'Revoke' : 'Approve'}</button><button className={styles.ghostBtn} onClick={() => { const report = `Fit Report: ${d?.name}\nTester: ${ft.testerName}\nSize: ${ft.size}\nRating: ${ft.rating}/10\nNotes: ${ft.fitNotes}\nIssues: ${ft.issues.join(', ')}`; const b = new Blob([report], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `fit-report-${d?.name || 'unknown'}.txt`; a.click() }}>Export (#30)</button><button className={styles.deleteBtn} onClick={() => setFitTests(prev => prev.filter(x => x.id !== ft.id))}>×</button></div>
+              </div>
+            })}</div>
+          </div>
+
+          <div className={styles.dnaBlock}>
+            <div className={styles.blockHeader}><label className={styles.label}>Trend Drift (#18)</label><button className={styles.ghostBtn} onClick={() => setShowForm(showForm === 'trend' ? null : 'trend')}>+ Track</button></div>
+            {showForm === 'trend' && <div className={styles.inlineForm}><input className={styles.input} placeholder="Trend name" id="tr_name" /><input className={styles.input} placeholder="Category" id="tr_cat" /><input className={styles.input} placeholder="Source" id="tr_src" /><input className={styles.input} type="number" placeholder="Score" id="tr_score" /><input className={styles.input} placeholder="Projected direction" id="tr_proj" /><button className={styles.primaryBtn} onClick={() => { const n = (document.getElementById('tr_name') as HTMLInputElement).value; if (n) { setTrends(prev => [{ id: uid(), name: n, category: (document.getElementById('tr_cat') as HTMLInputElement).value, source: (document.getElementById('tr_src') as HTMLInputElement).value, score: Number((document.getElementById('tr_score') as HTMLInputElement).value) || 50, projected: (document.getElementById('tr_proj') as HTMLInputElement).value, createdAt: now() }, ...prev]); setShowForm(null) } }}>Add</button></div>}
+            <div className={styles.designGrid}>{trends.map(t => <div key={t.id} className={styles.designCard} style={{ cursor: 'default' }}><div className={styles.cardHeader}><span className={styles.cardTitle}>{t.name}</span><span className={styles.scoreBadge}>{t.score}/100</span></div><div className={styles.cardMeta}><span className={styles.tag}>{t.category}</span>{t.source && <span className={styles.helperText}>{t.source}</span>}{t.projected && <span className={styles.helperText}>{t.projected}</span>}</div><button className={styles.deleteBtn} onClick={() => setTrends(prev => prev.filter(x => x.id !== t.id))}>×</button></div>)}</div>
+          </div>
+
+          <div className={styles.dnaBlock}>
+            <label className={styles.label}>AI Design Critique (#19)</label>
+            <textarea className={styles.textarea} rows={3} value={critiqueInput} onChange={e => setCritiqueInput(e.target.value)} placeholder="Describe design for AI review: colors, materials, silhouette, intent..." />
+            <button className={styles.primaryBtn} onClick={runCritique} style={{ marginTop: 8 }}>Run Critique</button>
+            {critiqueResult && <div style={{ marginTop: 12 }}>
+              <div className={styles.kpiRow}>
+                <div className={styles.kpiCard}><div className={styles.kpiLabel}>Color Harmony</div><div className={styles.kpiValue}>{critiqueResult.colorHarmony}</div></div>
+                <div className={styles.kpiCard}><div className={styles.kpiLabel}>Brand Alignment</div><div className={styles.kpiValue}>{critiqueResult.brandAlignment}</div></div>
+                <div className={styles.kpiCard}><div className={styles.kpiLabel}>Fit Assessment</div><div className={styles.kpiValue}>{critiqueResult.fitAssessment}</div></div>
+                <div className={styles.kpiCard}><div className={styles.kpiLabel}>Visual Appeal</div><div className={styles.kpiValue}>{critiqueResult.visualAppeal}</div></div>
+              </div>
+              {critiqueResult.suggestions.map((s, i) => <p key={i} className={styles.suggestionItem}>{s}</p>)}
+            </div>}
+          </div>
+        </div>}
+
+        {/* ═══ IP & LEGAL (#31-40) ═══ */}
+        {tab === 'ip' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>IP & Legal Registry</h2>
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Total IP</div><div className={styles.kpiValue}>{ipRecords.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Registered</div><div className={styles.kpiValue}>{ipRecords.filter(r => r.status === 'registered').length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Pending</div><div className={styles.kpiValue}>{ipRecords.filter(r => r.status === 'pending').length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Confidential</div><div className={styles.kpiValue}>{ipRecords.filter(r => r.confidential).length}</div></div>
+          </div>
+          <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'ip' ? null : 'ip')}>+ Register Design (#31)</button>
+          {showForm === 'ip' && <div className={styles.inlineForm}>
+            <select className={styles.select} id="ip_design">{designs.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select>
+            <select className={styles.select} id="ip_status"><option value="pending">Pending</option><option value="filed">Filed</option><option value="registered">Registered</option></select>
+            <input className={styles.input} placeholder="Trademark Ref" id="ip_tm" />
+            <input className={styles.input} placeholder="Copyright Tag" id="ip_cr" />
+            <input className={styles.input} placeholder="Licensing notes (#34)" id="ip_lic" />
+            <button className={styles.primaryBtn} onClick={() => { const designId = (document.getElementById('ip_design') as HTMLSelectElement).value; if (designId) { setIpRecords(prev => [...prev, { id: uid(), designId, status: (document.getElementById('ip_status') as HTMLSelectElement).value as IPRecord['status'], ownership: { 'You': 100 }, trademarkRef: (document.getElementById('ip_tm') as HTMLInputElement).value, copyrightTag: (document.getElementById('ip_cr') as HTMLInputElement).value, licensingNotes: (document.getElementById('ip_lic') as HTMLInputElement).value, confidential: false, versionHistory: ['Initial filing'], createdAt: now() }]); setShowForm(null) } }}>Register</button>
+          </div>}
+          <div className={styles.designGrid}>{ipRecords.map(r => {
+            const d = designs.find(x => x.id === r.designId)
+            return <div key={r.id} className={styles.designCard} style={{ cursor: 'default' }}>
+              <div className={styles.cardHeader}><span className={styles.cardTitle}>{d?.name || 'Unknown'}</span><span className={`${styles.statusBadge} ${styles[`st_${r.status === 'registered' ? 'final' : r.status === 'filed' ? 'prototype' : 'concept'}`]}`}>{r.status}</span></div>
+              <div className={styles.cardMeta}>{r.trademarkRef && <span className={styles.tag}>TM: {r.trademarkRef}</span>}{r.copyrightTag && <span className={styles.tag}>©: {r.copyrightTag}</span>}{r.confidential && <span className={styles.tag}>Confidential</span>}</div>
+              <p className={styles.helperText}>Ownership: {Object.entries(r.ownership).map(([k, v]) => `${k}: ${v}%`).join(', ')}</p>
+              {r.licensingNotes && <p className={styles.cardPreview}>Licensing: {r.licensingNotes}</p>}
+              <div className={styles.cardActions}>
+                <button className={styles.ghostBtn} onClick={() => setIpRecords(prev => prev.map(x => x.id === r.id ? { ...x, confidential: !x.confidential } : x))}>{r.confidential ? 'Declassify' : 'Classify'}</button>
+                <button className={styles.ghostBtn} onClick={() => setIpRecords(prev => prev.map(x => x.id === r.id ? { ...x, versionHistory: [...x.versionHistory, `Update — ${new Date().toLocaleString()}`] } : x))}>+ Version (#32)</button>
+                <button className={styles.ghostBtn} onClick={() => { const data = `IP Record: ${d?.name}\nStatus: ${r.status}\nTM: ${r.trademarkRef}\n©: ${r.copyrightTag}\nLicensing: ${r.licensingNotes}\nOwnership: ${JSON.stringify(r.ownership)}\nHistory: ${r.versionHistory.join('; ')}`; const b = new Blob([data], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `ip-${d?.name || 'unknown'}.txt`; a.click() }}>Export (#38)</button>
+                <button className={styles.deleteBtn} onClick={() => setIpRecords(prev => prev.filter(x => x.id !== r.id))}>×</button>
+              </div>
+            </div>
+          })}</div>
+          <div className={styles.aiBox}><div className={styles.aiBoxHeader}>AI IP Risk Advisory (#40)</div>
+            <pre className={styles.aiOutput}>{`IP Portfolio Summary\n${'─'.repeat(35)}\n• ${ipRecords.length} records total\n• ${ipRecords.filter(r => r.status === 'registered').length} registered, ${ipRecords.filter(r => r.status === 'pending').length} pending\n• ${ipRecords.filter(r => r.confidential).length} classified as confidential\n• ${ipRecords.filter(r => r.status === 'expired').length > 0 ? 'WARNING: Expired records detected' : 'No expired records'}\n• Recommendation: ${ipRecords.filter(r => r.status === 'pending').length > 2 ? 'Prioritize pending filings.' : 'Portfolio in good standing.'}`}</pre>
+          </div>
+        </div>}
+
+        {/* ═══ TEAM & ANALYTICS (#41-60) ═══ */}
+        {tab === 'team' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Team, Analytics & Export</h2>
+
+          <div className={styles.dnaBlock}>
+            <div className={styles.blockHeader}><label className={styles.label}>Team Members (#41-42)</label><button className={styles.ghostBtn} onClick={() => setShowForm(showForm === 'collab' ? null : 'collab')}>+ Invite</button></div>
+            {showForm === 'collab' && <div className={styles.inlineForm}><input className={styles.input} placeholder="Name" id="fc_name" /><input className={styles.input} placeholder="Email" id="fc_email" /><select className={styles.select} id="fc_role"><option value="editor">Editor</option><option value="viewer">Viewer</option><option value="owner">Owner</option></select><button className={styles.primaryBtn} onClick={() => { const n = (document.getElementById('fc_name') as HTMLInputElement).value; if (n) { setCollaborators(prev => [...prev, { id: uid(), name: n, email: (document.getElementById('fc_email') as HTMLInputElement).value, role: (document.getElementById('fc_role') as HTMLSelectElement).value as Collaborator['role'] }]); setShowForm(null) } }}>Add</button></div>}
+            <div className={styles.teamGrid}>{collaborators.map(c => <div key={c.id} className={styles.teamCard}><span className={styles.fontName}>{c.name}</span><span className={styles.tag}>{c.role}</span><span className={styles.helperText}>{c.email}</span><button className={styles.deleteBtn} onClick={() => setCollaborators(prev => prev.filter(x => x.id !== c.id))}>×</button></div>)}</div>
+          </div>
+
+          <div className={styles.dnaBlock}>
+            <label className={styles.label}>Discussion (#43-44)</label>
+            <div className={styles.commentList}>{fComments.slice(0, 15).map(c => <div key={c.id} className={styles.commentItem}><span className={styles.fontName}>{c.author}</span><span>{c.text}</span><span className={styles.helperText}>{fmtDate(c.date)}</span></div>)}</div>
+            <div className={styles.inlineForm}><input className={styles.input} placeholder="Add comment..." id="fcom_input" /><button className={styles.ghostBtn} onClick={() => { const text = (document.getElementById('fcom_input') as HTMLInputElement).value; if (text) { setFComments(prev => [{ id: uid(), targetId: '', author: 'You', text, date: now() }, ...prev]); (document.getElementById('fcom_input') as HTMLInputElement).value = '' } }}>Post</button></div>
+          </div>
+
+          <div className={styles.dnaBlock}>
+            <label className={styles.label}>Analytics & Insights (#51-60)</label>
+            <div className={styles.kpiRow}>
+              <div className={styles.kpiCard}><div className={styles.kpiLabel}>Sustainability (#51)</div><div className={styles.kpiValue}>{avgSustainability}%</div></div>
+              <div className={styles.kpiCard}><div className={styles.kpiLabel}>Pipeline Health (#52)</div><div className={styles.kpiValue}>{designs.filter(d => d.pipelineStage !== 'Design').length}/{designs.length}</div></div>
+              <div className={styles.kpiCard}><div className={styles.kpiLabel}>Trend Score (#53)</div><div className={styles.kpiValue}>{trends.length ? Math.round(trends.reduce((a, t) => a + t.score, 0) / trends.length) : 0}</div></div>
+              <div className={styles.kpiCard}><div className={styles.kpiLabel}>Revenue (#55)</div><div className={styles.kpiValue}>${totalRevenue.toLocaleString()}</div></div>
+              <div className={styles.kpiCard}><div className={styles.kpiLabel}>Fit Pass Rate (#57)</div><div className={styles.kpiValue}>{fitTests.length ? Math.round(fitTests.filter(t => t.approved).length / fitTests.length * 100) : 0}%</div></div>
+            </div>
+            <div className={styles.aiBox}><pre className={styles.aiOutput}>{`Cross-Collection Comparison (#60)\n${'─'.repeat(35)}\n${collections.filter(c => !c.archived).map(c => `• ${c.name}: ${c.designIds.length} designs, $${c.revenue.toLocaleString()} revenue, ${c.dropType}`).join('\n') || '• No active collections'}\n\nCategory Breakdown:\n${[...new Set(designs.map(d => d.category))].map(cat => `• ${cat}: ${designs.filter(d => d.category === cat).length} designs`).join('\n') || '• No designs'}\n\nHistorical Performance (#56):\n• ${designs.length} total designs created\n• ${designs.filter(d => d.status === 'Final').length} finalized\n• Avg cost: $${designs.length ? Math.round(designs.reduce((a, d) => a + d.costEstimate, 0) / designs.length) : 0}`}</pre></div>
+          </div>
+
+          <div className={styles.dnaBlock}>
+            <label className={styles.label}>Export & Reports (#59)</label>
+            <div className={styles.exportGrid}>
+              <button className={styles.exportBtn} onClick={() => { const d = `Fashion Lab Report\n${'='.repeat(40)}\nDesigns: ${designs.length}\nMaterials: ${materials.length}\nCollections: ${collections.length}\nTech Packs: ${techPacks.length}\nFit Tests: ${fitTests.length}\nIP Records: ${ipRecords.length}\nTeam: ${collaborators.length}\nRevenue: $${totalRevenue.toLocaleString()}\nSustainability: ${avgSustainability}%\n\n${'─'.repeat(40)}\nDesigns:\n${designs.map(x => `  ${x.name} | ${x.type} | ${x.category} | ${x.status} | $${x.costEstimate}`).join('\n')}\n\nGenerated: ${new Date().toLocaleDateString()}`; const b = new Blob([d], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `fashion-lab-${Date.now()}.txt`; a.click() }}>Full Report</button>
+              <button className={styles.exportBtn} onClick={() => { const csv = `Name,Type,Category,Status,Pipeline,Cost,Tags\n${designs.map(d => `"${d.name}",${d.type},${d.category},${d.status},${d.pipelineStage},${d.costEstimate},"${d.tags.join(';')}"`).join('\n')}`; const b = new Blob([csv], { type: 'text/csv' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `designs-${Date.now()}.csv`; a.click() }}>Export CSV</button>
+              <button className={styles.exportBtn} onClick={() => { const d = collections.map(c => `${c.name} | ${c.theme} | ${c.designIds.length} designs | ${c.dropType} | $${c.revenue}`).join('\n'); const b = new Blob([d || 'No collections'], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `collections-${Date.now()}.txt`; a.click() }}>Collections</button>
+              <button className={styles.exportBtn} onClick={() => { const d = trends.map(t => `${t.name} | Score: ${t.score} | ${t.category} | ${t.projected}`).join('\n'); const b = new Blob([d || 'No trends'], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `trends-${Date.now()}.txt`; a.click() }}>Trends</button>
+            </div>
+          </div>
+        </div>}
+
+      </main>
     </div>
   )
 }
 
-function ProductionPipelineSection({ designs, updateDesign }: any) {
-  const [selectedDesign, setSelectedDesign] = useState<Design | null>(null)
-  const [notes, setNotes] = useState('')
+// ═══ SUB-COMPONENT FORMS ═══
 
-  const handleStageChange = (newStage: string) => {
-    if (selectedDesign) {
-      updateDesign(selectedDesign.id, { pipelineStage: newStage })
-      setSelectedDesign({ ...selectedDesign, pipelineStage: newStage })
-    }
-  }
-
-  const handleAddNote = () => {
-    if (selectedDesign && notes.trim()) {
-      const updatedNotes = selectedDesign.notes + '\n' + `[${new Date().toLocaleString()}] ${notes}`
-      updateDesign(selectedDesign.id, { notes: updatedNotes })
-      setSelectedDesign({ ...selectedDesign, notes: updatedNotes })
-      setNotes('')
-    }
-  }
-
+function DesignForm({ onAdd, onCancel }: { onAdd: (d: Omit<Design, 'id' | 'createdAt' | 'versions'>) => void; onCancel: () => void }) {
+  const [name, setName] = useState(''); const [type, setType] = useState<Design['type']>('Clothing')
+  const [category, setCategory] = useState('Minimal'); const [desc, setDesc] = useState('')
+  const [tags, setTags] = useState<string[]>([]); const [tagInput, setTagInput] = useState('')
+  const [intent, setIntent] = useState(''); const [status, setStatus] = useState<Design['status']>('Concept')
+  const [cost, setCost] = useState(0)
   return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <div><h2>Production Pipeline</h2><p className={styles.sectionSubtitle}>Track design progression through production stages</p></div>
-      </div>
-
-      <div className={styles.pipelineContainer}>
-        <div className={styles.designList}>
-          <h3>Designs</h3>
-          {designs.map((design: Design) => (
-            <div key={design.id} className={`${styles.pipelineDesignItem} ${selectedDesign?.id === design.id ? styles.active : ''}`} onClick={() => setSelectedDesign(design)}>
-              <div className={styles.pipelineDesignName}>{design.name}</div>
-              <div className={styles.pipelineDesignStage}>{design.pipelineStage || 'Design'}</div>
-            </div>
-          ))}
-          {designs.length === 0 && <p className={styles.emptyMessage}>No designs available</p>}
+    <div className={styles.formPanel}>
+      <div className={styles.formStack}>
+        <div className={styles.fieldRow}>
+          <div className={styles.formGroup}><label>Name</label><input className={styles.input} value={name} onChange={e => setName(e.target.value)} placeholder="Design name" /></div>
+          <div className={styles.formGroup}><label>Type (#1)</label><select className={styles.select} value={type} onChange={e => setType(e.target.value as Design['type'])}><option>Clothing</option><option>Accessories</option><option>Footwear</option></select></div>
+          <div className={styles.formGroup}><label>Category</label><select className={styles.select} value={category} onChange={e => setCategory(e.target.value)}>{CATEGORIES.map(c => <option key={c}>{c}</option>)}</select></div>
+          <div className={styles.formGroup}><label>Status</label><select className={styles.select} value={status} onChange={e => setStatus(e.target.value as Design['status'])}><option>Concept</option><option>Prototype</option><option>Final</option></select></div>
         </div>
-
-        {selectedDesign && (
-          <div className={styles.pipelineDetails}>
-            <h3>{selectedDesign.name}</h3>
-            <p className={styles.description}>{selectedDesign.description}</p>
-            <div className={styles.stageSelector}>
-              <label>Current Stage:</label>
-              <div className={styles.stages}>
-                {PIPELINE_STAGES.map((stage) => (
-                  <button key={stage} className={`${styles.stageBtn} ${selectedDesign.pipelineStage === stage ? styles.active : ''}`} onClick={() => handleStageChange(stage)}>{stage}</button>
-                ))}
-              </div>
-            </div>
-            <div className={styles.notesSection}>
-              <h4>Pipeline Notes</h4>
-              <div className={styles.notesList}>
-                {selectedDesign.notes ? <pre className={styles.notesDisplay}>{selectedDesign.notes}</pre> : <p className={styles.emptyMessage}>No notes yet</p>}
-              </div>
-              <div className={styles.addNote}>
-                <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add a note..." className={styles.textarea} rows={3} />
-                <button onClick={handleAddNote} className={styles.primaryBtn}>Add Note</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!selectedDesign && designs.length > 0 && <div className={styles.pipelineDetails}><p className={styles.emptyMessage}>Select a design to view pipeline details</p></div>}
-      </div>
-    </div>
-  )
-}
-
-function TechPackBuilderSection({ techPacks, designs, showForm, setShowForm, addTechPack, exportTechPackPDF }: any) {
-  const [formData, setFormData] = useState<any>({ designId: '', measurements: {}, fabricSpecs: '', trimSpecs: '', labels: '', careInstructions: '', packagingNotes: '' })
-  const [measurementKey, setMeasurementKey] = useState('')
-  const [measurementValue, setMeasurementValue] = useState('')
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    addTechPack(formData)
-    setFormData({ designId: '', measurements: {}, fabricSpecs: '', trimSpecs: '', labels: '', careInstructions: '', packagingNotes: '' })
-  }
-
-  const addMeasurement = () => {
-    if (measurementKey.trim() && measurementValue.trim()) {
-      setFormData({ ...formData, measurements: { ...formData.measurements, [measurementKey]: measurementValue } })
-      setMeasurementKey('')
-      setMeasurementValue('')
-    }
-  }
-
-  return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <div><h2>Tech Pack Builder</h2><p className={styles.sectionSubtitle}>Create technical specification documents</p></div>
-        <button className={styles.primaryBtn} onClick={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : 'New Tech Pack'}</button>
-      </div>
-
-      {showForm && (
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label>Select Design*</label>
-            <select value={formData.designId} onChange={(e) => setFormData({ ...formData, designId: e.target.value })} required className={styles.select}>
-              <option value="">Choose a design</option>
-              {designs.map((design: Design) => <option key={design.id} value={design.id}>{design.name}</option>)}
-            </select>
-          </div>
-          <div className={styles.formGroup}>
-            <label>Measurements</label>
-            <div className={styles.measurementInput}>
-              <input type="text" value={measurementKey} onChange={(e) => setMeasurementKey(e.target.value)} placeholder="e.g., Chest" className={styles.input} />
-              <input type="text" value={measurementValue} onChange={(e) => setMeasurementValue(e.target.value)} placeholder="e.g., 40 inches" className={styles.input} />
-              <button type="button" onClick={addMeasurement} className={styles.secondaryBtn}>Add</button>
-            </div>
-            <div className={styles.measurements}>
-              {Object.entries(formData.measurements).map(([key, value]) => (
-                <div key={key} className={styles.measurementItem}>
-                  <span><strong>{key}:</strong> {value as string}</span>
-                  <button type="button" onClick={() => { const { [key]: removed, ...rest } = formData.measurements; setFormData({ ...formData, measurements: rest }) }} className={styles.removeBtn}>×</button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className={styles.formGroup}><label>Fabric Specifications</label><textarea value={formData.fabricSpecs} onChange={(e) => setFormData({ ...formData, fabricSpecs: e.target.value })} className={styles.textarea} rows={3} /></div>
-          <div className={styles.formGroup}><label>Trim Specifications</label><textarea value={formData.trimSpecs} onChange={(e) => setFormData({ ...formData, trimSpecs: e.target.value })} className={styles.textarea} rows={3} /></div>
-          <div className={styles.formGroup}><label>Labels</label><textarea value={formData.labels} onChange={(e) => setFormData({ ...formData, labels: e.target.value })} className={styles.textarea} rows={2} /></div>
-          <div className={styles.formGroup}><label>Care Instructions</label><textarea value={formData.careInstructions} onChange={(e) => setFormData({ ...formData, careInstructions: e.target.value })} className={styles.textarea} rows={2} /></div>
-          <div className={styles.formGroup}><label>Packaging Notes</label><textarea value={formData.packagingNotes} onChange={(e) => setFormData({ ...formData, packagingNotes: e.target.value })} className={styles.textarea} rows={2} /></div>
-          <div className={styles.formActions}>
-            <button type="submit" className={styles.primaryBtn}>Create Tech Pack</button>
-            <button type="button" onClick={() => setShowForm(false)} className={styles.secondaryBtn}>Cancel</button>
-          </div>
-        </form>
-      )}
-
-      {!showForm && (
-        <div className={styles.grid}>
-          {techPacks.map((pack: TechPack) => {
-            const design = designs.find((d: Design) => d.id === pack.designId)
-            return (
-              <div key={pack.id} className={styles.card}>
-                <h3>Tech Pack: {design?.name || 'Unknown Design'}</h3>
-                <p className={styles.meta}>Created: {new Date(pack.createdAt).toLocaleDateString()}</p>
-                <div className={styles.techPackInfo}>
-                  <div><span className={styles.label}>Measurements</span><span className={styles.value}>{Object.keys(pack.measurements).length} items</span></div>
-                  <div><span className={styles.label}>Fabric Specs</span><span className={styles.value}>{pack.fabricSpecs ? 'Yes' : 'No'}</span></div>
-                </div>
-                <div className={styles.cardActions}>
-                  <button onClick={() => exportTechPackPDF(pack)} className={styles.primaryBtn}>Export PDF</button>
-                </div>
-              </div>
-            )
-          })}
+        <div className={styles.formGroup}><label>Description (#6)</label><textarea className={styles.textarea} rows={2} value={desc} onChange={e => setDesc(e.target.value)} placeholder="Design description..." /></div>
+        <div className={styles.fieldRow}>
+          <div className={styles.formGroup}><label>Intent</label><input className={styles.input} value={intent} onChange={e => setIntent(e.target.value)} placeholder="Design intent..." /></div>
+          <div className={styles.formGroup}><label>Cost Estimate (#20)</label><input className={styles.input} type="number" value={cost} onChange={e => setCost(Number(e.target.value))} placeholder="$" /></div>
         </div>
-      )}
-
-      {!showForm && techPacks.length === 0 && <div className={styles.emptyState}><p>No tech packs yet. Create your first tech pack.</p></div>}
-    </div>
-  )
-}
-
-function CollectionBuilderSection({ collections, designs, showForm, setShowForm, addCollection, deleteCollection }: any) {
-  const [formData, setFormData] = useState<any>({ name: '', theme: '', colorStory: '', dropDate: '', products: [], pricingTiers: {} })
-  const [tierName, setTierName] = useState('')
-  const [tierPrice, setTierPrice] = useState(0)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    addCollection(formData)
-    setFormData({ name: '', theme: '', colorStory: '', dropDate: '', products: [], pricingTiers: {} })
-  }
-
-  const toggleProduct = (productId: string) => {
-    if (formData.products.includes(productId)) {
-      setFormData({ ...formData, products: formData.products.filter((p: string) => p !== productId) })
-    } else {
-      setFormData({ ...formData, products: [...formData.products, productId] })
-    }
-  }
-
-  const addPricingTier = () => {
-    if (tierName.trim() && tierPrice > 0) {
-      setFormData({ ...formData, pricingTiers: { ...formData.pricingTiers, [tierName]: tierPrice } })
-      setTierName('')
-      setTierPrice(0)
-    }
-  }
-
-  return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <div><h2>Collection Builder</h2><p className={styles.sectionSubtitle}>Organize designs into collections</p></div>
-        <button className={styles.primaryBtn} onClick={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : 'New Collection'}</button>
-      </div>
-
-      {showForm && (
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}><label>Collection Name*</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className={styles.input} /></div>
-            <div className={styles.formGroup}><label>Drop Date</label><input type="date" value={formData.dropDate} onChange={(e) => setFormData({ ...formData, dropDate: e.target.value })} className={styles.input} /></div>
-          </div>
-          <div className={styles.formGroup}><label>Theme</label><input type="text" value={formData.theme} onChange={(e) => setFormData({ ...formData, theme: e.target.value })} className={styles.input} /></div>
-          <div className={styles.formGroup}><label>Color Story</label><input type="text" value={formData.colorStory} onChange={(e) => setFormData({ ...formData, colorStory: e.target.value })} className={styles.input} /></div>
-          <div className={styles.formGroup}>
-            <label>Select Products</label>
-            <div className={styles.productSelector}>
-              {designs.map((design: Design) => (
-                <label key={design.id} className={styles.checkboxLabel}>
-                  <input type="checkbox" checked={formData.products.includes(design.id)} onChange={() => toggleProduct(design.id)} /> {design.name}
-                </label>
-              ))}
-            </div>
-          </div>
-          <div className={styles.formGroup}>
-            <label>Pricing Tiers</label>
-            <div className={styles.measurementInput}>
-              <input type="text" value={tierName} onChange={(e) => setTierName(e.target.value)} placeholder="Tier name" className={styles.input} />
-              <input type="number" step="0.01" value={tierPrice} onChange={(e) => setTierPrice(parseFloat(e.target.value))} placeholder="Price" className={styles.input} />
-              <button type="button" onClick={addPricingTier} className={styles.secondaryBtn}>Add</button>
-            </div>
-            <div className={styles.measurements}>
-              {(Object.entries(formData.pricingTiers) as [string, number][]).map(([name, price]) => (
-                <div key={name} className={styles.measurementItem}>
-                  <span><strong>{name}:</strong> ${price.toFixed(2)}</span>
-                  <button type="button" onClick={() => { const { [name]: removed, ...rest } = formData.pricingTiers; setFormData({ ...formData, pricingTiers: rest }) }} className={styles.removeBtn}>×</button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className={styles.formActions}>
-            <button type="submit" className={styles.primaryBtn}>Create Collection</button>
-            <button type="button" onClick={() => setShowForm(false)} className={styles.secondaryBtn}>Cancel</button>
-          </div>
-        </form>
-      )}
-
-      {!showForm && (
-        <div className={styles.grid}>
-          {collections.map((collection: Collection) => (
-            <div key={collection.id} className={styles.card}>
-              <h3>{collection.name}</h3>
-              {collection.theme && <p className={styles.theme}>Theme: {collection.theme}</p>}
-              {collection.colorStory && <p className={styles.colorStory}>Colors: {collection.colorStory}</p>}
-              <div className={styles.collectionInfo}>
-                <div><span className={styles.label}>Products</span><span className={styles.value}>{collection.products.length}</span></div>
-                <div><span className={styles.label}>Drop Date</span><span className={styles.value}>{collection.dropDate ? new Date(collection.dropDate).toLocaleDateString() : 'TBD'}</span></div>
-              </div>
-              {Object.keys(collection.pricingTiers).length > 0 && (
-                <div className={styles.pricingTiers}>
-                  <strong>Pricing:</strong>
-                  {Object.entries(collection.pricingTiers).map(([name, price]) => <div key={name}>{name}: ${price}</div>)}
-                </div>
-              )}
-              <div className={styles.cardActions}><button onClick={() => deleteCollection(collection.id)} className={styles.dangerBtn}>Delete</button></div>
-            </div>
-          ))}
+        <div className={styles.formGroup}><label>Tags (#8)</label>
+          <input className={styles.input} value={tagInput} onChange={e => setTagInput(e.target.value)} placeholder="Add tag (Enter)" onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (tagInput.trim()) { setTags(prev => [...prev, tagInput.trim()]); setTagInput('') } } }} />
+          <div className={styles.tagRow}>{tags.map(t => <span key={t} className={styles.tag} onClick={() => setTags(prev => prev.filter(x => x !== t))}>#{t} ×</span>)}</div>
         </div>
-      )}
-
-      {!showForm && collections.length === 0 && <div className={styles.emptyState}><p>No collections yet. Create your first collection.</p></div>}
-    </div>
-  )
-}
-
-function DropPlannerSection({ drops, showForm, setShowForm, addDrop, deleteDrop, getCountdown }: any) {
-  const [formData, setFormData] = useState<any>({ name: '', type: 'Standard', releaseDate: '', hypePlan: '', inventoryLimit: 0 })
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    addDrop(formData)
-    setFormData({ name: '', type: 'Standard', releaseDate: '', hypePlan: '', inventoryLimit: 0 })
-  }
-
-  return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <div><h2>Drop Planner</h2><p className={styles.sectionSubtitle}>Schedule and manage product drops</p></div>
-        <button className={styles.primaryBtn} onClick={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : 'New Drop'}</button>
-      </div>
-
-      {showForm && (
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}><label>Drop Name*</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className={styles.input} /></div>
-            <div className={styles.formGroup}>
-              <label>Drop Type*</label>
-              <select value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} className={styles.select}>
-                <option value="Standard">Standard</option>
-                <option value="Limited">Limited</option>
-                <option value="Preorder">Preorder</option>
-              </select>
-            </div>
-            <div className={styles.formGroup}><label>Release Date*</label><input type="date" value={formData.releaseDate} onChange={(e) => setFormData({ ...formData, releaseDate: e.target.value })} required className={styles.input} /></div>
-            <div className={styles.formGroup}><label>Inventory Limit</label><input type="number" value={formData.inventoryLimit} onChange={(e) => setFormData({ ...formData, inventoryLimit: parseInt(e.target.value) })} className={styles.input} placeholder="0 = unlimited" /></div>
-          </div>
-          <div className={styles.formGroup}><label>Hype Plan</label><textarea value={formData.hypePlan} onChange={(e) => setFormData({ ...formData, hypePlan: e.target.value })} className={styles.textarea} rows={4} /></div>
-          <div className={styles.formActions}>
-            <button type="submit" className={styles.primaryBtn}>Create Drop</button>
-            <button type="button" onClick={() => setShowForm(false)} className={styles.secondaryBtn}>Cancel</button>
-          </div>
-        </form>
-      )}
-
-      {!showForm && (
-        <div className={styles.grid}>
-          {drops.map((drop: Drop) => (
-            <div key={drop.id} className={styles.card}>
-              <div className={styles.cardHeader}>
-                <span className={`${styles.badge} ${styles[drop.type.toLowerCase()]}`}>{drop.type}</span>
-                <span className={styles.countdown}>{getCountdown(drop.releaseDate)}</span>
-              </div>
-              <h3>{drop.name}</h3>
-              <p className={styles.releaseDate}>Release: {new Date(drop.releaseDate).toLocaleDateString()}</p>
-              {drop.inventoryLimit > 0 && <p className={styles.inventory}>Limited to {drop.inventoryLimit} units</p>}
-              {drop.hypePlan && <p className={styles.hypePlan}>{drop.hypePlan}</p>}
-              <div className={styles.cardActions}><button onClick={() => deleteDrop(drop.id)} className={styles.dangerBtn}>Delete</button></div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {!showForm && drops.length === 0 && <div className={styles.emptyState}><p>No drops scheduled. Create your first drop.</p></div>}
-    </div>
-  )
-}
-
-function FitWearTestingSection({ fitTests, designs, showForm, setShowForm, addFitTest, deleteFitTest, approveFitTest }: any) {
-  const [formData, setFormData] = useState({
-    designId: '',
-    testerName: '',
-    size: '',
-    measurements: { chest: 0, waist: 0, hips: 0, inseam: 0, sleeve: 0 },
-    fitNotes: '',
-    rating: 7,
-    issues: [] as string[],
-    photos: [] as string[],
-    approved: false
-  })
-
-  const issueOptions = ['Too Tight', 'Too Loose', 'Wrong Length', 'Poor Construction', 'Material Issue', 'Comfort Issue', 'Zipper/Button Problem', 'Stitching Issue']
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!formData.designId || !formData.testerName || !formData.size) return
-    addFitTest(formData)
-    setFormData({ designId: '', testerName: '', size: '', measurements: { chest: 0, waist: 0, hips: 0, inseam: 0, sleeve: 0 }, fitNotes: '', rating: 7, issues: [], photos: [], approved: false })
-  }
-
-  const toggleIssue = (issue: string) => {
-    setFormData({
-      ...formData,
-      issues: formData.issues.includes(issue) ? formData.issues.filter(i => i !== issue) : [...formData.issues, issue]
-    })
-  }
-
-  const avgRating = fitTests.length > 0 ? (fitTests.reduce((sum: number, t: FitTest) => sum + t.rating, 0) / fitTests.length).toFixed(1) : 'N/A'
-  const approvedCount = fitTests.filter((t: FitTest) => t.approved).length
-  const pendingCount = fitTests.length - approvedCount
-
-  return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <div>
-          <h2>Fit & Wear Testing</h2>
-          <p className={styles.sectionSubtitle}>Professional garment testing and quality validation</p>
-        </div>
-        <button onClick={() => setShowForm(!showForm)} className={styles.primaryBtn}>
-          {showForm ? 'Cancel' : '+ New Fit Test'}
-        </button>
-      </div>
-
-      {/* Stats Dashboard */}
-      <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <div className={styles.statLabel}>Total Tests</div>
-          <div className={styles.statValue}>{fitTests.length}</div>
-        </div>
-        <div className={styles.statCard}>
-          <div className={styles.statLabel}>Avg Rating</div>
-          <div className={styles.statValue}>{avgRating}/10</div>
-        </div>
-        <div className={styles.statCard}>
-          <div className={styles.statLabel}>Approved</div>
-          <div className={styles.statValue}>{approvedCount}</div>
-        </div>
-        <div className={styles.statCard}>
-          <div className={styles.statLabel}>Pending</div>
-          <div className={styles.statValue}>{pendingCount}</div>
-        </div>
-      </div>
-
-      {/* Fit Test Form */}
-      {showForm && (
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <h3>New Fit Test</h3>
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <label>Design</label>
-              <select value={formData.designId} onChange={(e) => setFormData({ ...formData, designId: e.target.value })} className={styles.select} required>
-                <option value="">Select Design</option>
-                {designs.map((design: Design) => <option key={design.id} value={design.id}>{design.name}</option>)}
-              </select>
-            </div>
-            <div className={styles.formGroup}>
-              <label>Tester Name</label>
-              <input type="text" value={formData.testerName} onChange={(e) => setFormData({ ...formData, testerName: e.target.value })} className={styles.input} required />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Size</label>
-              <select value={formData.size} onChange={(e) => setFormData({ ...formData, size: e.target.value })} className={styles.select} required>
-                <option value="">Select Size</option>
-                <option value="XS">XS</option>
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-                <option value="XL">XL</option>
-                <option value="XXL">XXL</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Measurements */}
-          <div className={styles.measurementGrid}>
-            <div className={styles.formGroup}>
-              <label>Chest (inches)</label>
-              <input type="number" value={formData.measurements.chest || ''} onChange={(e) => setFormData({ ...formData, measurements: { ...formData.measurements, chest: parseFloat(e.target.value) || 0 } })} className={styles.input} step="0.5" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Waist (inches)</label>
-              <input type="number" value={formData.measurements.waist || ''} onChange={(e) => setFormData({ ...formData, measurements: { ...formData.measurements, waist: parseFloat(e.target.value) || 0 } })} className={styles.input} step="0.5" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Hips (inches)</label>
-              <input type="number" value={formData.measurements.hips || ''} onChange={(e) => setFormData({ ...formData, measurements: { ...formData.measurements, hips: parseFloat(e.target.value) || 0 } })} className={styles.input} step="0.5" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Inseam (inches)</label>
-              <input type="number" value={formData.measurements.inseam || ''} onChange={(e) => setFormData({ ...formData, measurements: { ...formData.measurements, inseam: parseFloat(e.target.value) || 0 } })} className={styles.input} step="0.5" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Sleeve (inches)</label>
-              <input type="number" value={formData.measurements.sleeve || ''} onChange={(e) => setFormData({ ...formData, measurements: { ...formData.measurements, sleeve: parseFloat(e.target.value) || 0 } })} className={styles.input} step="0.5" />
-            </div>
-          </div>
-
-          {/* Fit Rating */}
-          <div className={styles.formGroup}>
-            <label>Fit Rating: {formData.rating}/10</label>
-            <input type="range" min="1" max="10" value={formData.rating} onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })} className={styles.ratingSlider} />
-          </div>
-
-          {/* Issues Checklist */}
-          <div className={styles.formGroup}>
-            <label>Issues (check all that apply)</label>
-            <div className={styles.issuesChecklist}>
-              {issueOptions.map(issue => (
-                <label key={issue} className={styles.checkboxItem}>
-                  <input type="checkbox" checked={formData.issues.includes(issue)} onChange={() => toggleIssue(issue)} />
-                  <span>{issue}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Fit Notes */}
-          <div className={styles.formGroup}>
-            <label>Fit Notes</label>
-            <textarea value={formData.fitNotes} onChange={(e) => setFormData({ ...formData, fitNotes: e.target.value })} className={styles.textarea} rows={4} placeholder="Detailed feedback about fit, comfort, quality..." />
-          </div>
-
-          <div className={styles.formActions}>
-            <button type="submit" className={styles.primaryBtn}>Save Fit Test</button>
-            <button type="button" onClick={() => setShowForm(false)} className={styles.secondaryBtn}>Cancel</button>
-          </div>
-        </form>
-      )}
-
-      {/* Fit Tests Grid */}
-      {!showForm && fitTests.length > 0 && (
-        <div className={styles.grid}>
-          {fitTests.map((test: FitTest) => {
-            const design = designs.find((d: Design) => d.id === test.designId)
-            return (
-              <div key={test.id} className={`${styles.card} ${test.approved ? styles.approvedCard : ''}`}>
-                <div className={styles.cardHeader}>
-                  <h3>{design?.name || 'Unknown Design'}</h3>
-                  <span className={`${styles.statusBadge} ${test.approved ? styles.approvedBadge : styles.pendingBadge}`}>
-                    {test.approved ? 'Approved' : 'Pending'}
-                  </span>
-                </div>
-                <div className={styles.testInfo}>
-                  <div className={styles.infoRow}>
-                    <span className={styles.label}>Tester:</span>
-                    <span>{test.testerName}</span>
-                  </div>
-                  <div className={styles.infoRow}>
-                    <span className={styles.label}>Size:</span>
-                    <span>{test.size}</span>
-                  </div>
-                  <div className={styles.infoRow}>
-                    <span className={styles.label}>Date:</span>
-                    <span>{new Date(test.date).toLocaleDateString()}</span>
-                  </div>
-                </div>
-
-                {/* Rating */}
-                <div className={styles.ratingDisplay}>
-                  <span className={styles.label}>Fit Rating:</span>
-                  <span className={styles.ratingValue}>{test.rating}/10</span>
-                  <div className={styles.ratingBar}>
-                    <div className={styles.ratingBarFill} style={{ width: `${test.rating * 10}%` }} />
-                  </div>
-                </div>
-
-                {/* Measurements */}
-                {(test.measurements.chest || test.measurements.waist || test.measurements.hips) && (
-                  <div className={styles.measurements}>
-                    <span className={styles.label}>Measurements:</span>
-                    <div className={styles.measurementsList}>
-                      {test.measurements.chest && test.measurements.chest > 0 && <span>Chest: {test.measurements.chest}"</span>}
-                      {test.measurements.waist && test.measurements.waist > 0 && <span>Waist: {test.measurements.waist}"</span>}
-                      {test.measurements.hips && test.measurements.hips > 0 && <span>Hips: {test.measurements.hips}"</span>}
-                      {test.measurements.inseam && test.measurements.inseam > 0 && <span>Inseam: {test.measurements.inseam}"</span>}
-                      {test.measurements.sleeve && test.measurements.sleeve > 0 && <span>Sleeve: {test.measurements.sleeve}"</span>}
-                    </div>
-                  </div>
-                )}
-
-                {/* Issues */}
-                {test.issues.length > 0 && (
-                  <div className={styles.issues}>
-                    <span className={styles.label}>Issues:</span>
-                    <div className={styles.issuesList}>
-                      {test.issues.map((issue, idx) => (
-                        <span key={idx} className={styles.issueBadge}>{issue}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Fit Notes */}
-                {test.fitNotes && (
-                  <div className={styles.fitNotes}>
-                    <span className={styles.label}>Notes:</span>
-                    <p>{test.fitNotes}</p>
-                  </div>
-                )}
-
-                {/* Actions */}
-                <div className={styles.cardActions}>
-                  <button onClick={() => approveFitTest(test.id)} className={test.approved ? styles.secondaryBtn : styles.primaryBtn}>
-                    {test.approved ? 'Unapprove' : 'Approve'}
-                  </button>
-                  <button onClick={() => deleteFitTest(test.id)} className={styles.dangerBtn}>Delete</button>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
-
-      {!showForm && fitTests.length === 0 && (
-        <div className={styles.emptyState}>
-          <p>No fit tests recorded. Start your first test to validate garment quality.</p>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function TrendDriftMonitorSection({ calculateTrendDrift }: any) {
-  const driftData = calculateTrendDrift()
-
-  return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <div><h2>Trend Drift Monitor</h2><p className={styles.sectionSubtitle}>Analyze brand consistency vs trend alignment</p></div>
-      </div>
-
-      <div className={styles.driftDashboard}>
-        <div className={styles.driftScores}>
-          <div className={styles.scoreCard}>
-            <h3>Trend Drift Score</h3>
-            <div className={styles.bigScore}>{driftData.driftScore}/100</div>
-            <p className={styles.scoreDescription}>
-              {driftData.driftScore > 75 ? 'Strong brand identity' : driftData.driftScore > 50 ? 'Moderate alignment' : 'High trend drift'}
-            </p>
-          </div>
-          <div className={styles.scoreCard}>
-            <h3>Brand Identity Score</h3>
-            <div className={styles.bigScore}>{driftData.brandIdentityScore}/100</div>
-            <p className={styles.scoreDescription}>Consistency with core aesthetic</p>
-          </div>
-        </div>
-
-        <div className={styles.suggestions}>
-          <h3>Recommendations</h3>
-          <ul className={styles.suggestionList}>
-            {driftData.suggestions.map((suggestion: string, index: number) => <li key={index}>{suggestion}</li>)}
-          </ul>
-        </div>
-
-        <div className={styles.driftInfo}>
-          <p>This monitor compares your design output against your brand's core identity. Higher scores indicate stronger brand consistency.</p>
+        <div className={styles.fieldRow}>
+          <button className={styles.primaryBtn} onClick={() => { if (name) onAdd({ name, type, category, description: desc, tags, designIntent: intent, status, pipelineStage: 'Design', notes: '', costEstimate: cost }) }}>Create Design</button>
+          <button className={styles.secondaryBtn} onClick={onCancel}>Cancel</button>
         </div>
       </div>
     </div>
   )
 }
 
-function AIFashionCritiqueSection({ input, setInput, result, runCritique }: any) {
+function MaterialForm({ onAdd, onCancel }: { onAdd: (m: Omit<Material, 'id' | 'createdAt'>) => void; onCancel: () => void }) {
+  const [name, setName] = useState(''); const [type, setType] = useState<Material['type']>('Fabric')
+  const [supplier, setSupplier] = useState(''); const [cost, setCost] = useState(0)
+  const [moq, setMoq] = useState(0); const [eco, setEco] = useState(50); const [notes, setNotes] = useState(''); const [qty, setQty] = useState(0)
   return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <div><h2>AI Fashion Critique</h2><p className={styles.sectionSubtitle}>Get intelligent design analysis and suggestions</p></div>
-      </div>
-
-      <div className={styles.critiqueContainer}>
-        <div className={styles.critiqueInput}>
-          <label>Describe Your Design</label>
-          <textarea value={input} onChange={(e) => setInput(e.target.value)} className={styles.textarea} rows={6} placeholder="Describe your design in detail: silhouette, materials, color palette, intended use, target audience..." />
-          <button onClick={runCritique} className={styles.primaryBtn}>Run Critique</button>
+    <div className={styles.formPanel}>
+      <div className={styles.formStack}>
+        <div className={styles.fieldRow}>
+          <div className={styles.formGroup}><label>Name</label><input className={styles.input} value={name} onChange={e => setName(e.target.value)} placeholder="Material name" /></div>
+          <div className={styles.formGroup}><label>Type (#11)</label><select className={styles.select} value={type} onChange={e => setType(e.target.value as Material['type'])}>{MAT_TYPES.map(t => <option key={t}>{t}</option>)}</select></div>
+          <div className={styles.formGroup}><label>Supplier (#13)</label><input className={styles.input} value={supplier} onChange={e => setSupplier(e.target.value)} placeholder="Supplier" /></div>
         </div>
-
-        {result && (
-          <div className={styles.critiqueResults}>
-            <h3>Analysis Results</h3>
-            <div className={styles.critiqueScores}>
-              <div className={styles.critiqueScore}>
-                <span className={styles.scoreLabel}>Color Balance</span>
-                <span className={styles.scoreValue}>{result.colorBalance}/100</span>
-                <div className={styles.scoreBar}><div className={styles.scoreBarFill} style={{ width: `${result.colorBalance}%` }} /></div>
-              </div>
-              <div className={styles.critiqueScore}>
-                <span className={styles.scoreLabel}>Brand Alignment</span>
-                <span className={styles.scoreValue}>{result.brandAlignment}/100</span>
-                <div className={styles.scoreBar}><div className={styles.scoreBarFill} style={{ width: `${result.brandAlignment}%` }} /></div>
-              </div>
-              <div className={styles.critiqueScore}>
-                <span className={styles.scoreLabel}>Market Fit</span>
-                <span className={styles.scoreValue}>{result.marketFit}/100</span>
-                <div className={styles.scoreBar}><div className={styles.scoreBarFill} style={{ width: `${result.marketFit}%` }} /></div>
-              </div>
-            </div>
-            <div className={styles.fitSuggestions}><h4>Fit Suggestions</h4><p>{result.fitSuggestions}</p></div>
-            <div className={styles.suggestions}>
-              <h4>Recommendations</h4>
-              <ul className={styles.suggestionList}>{result.suggestions.map((suggestion: string, index: number) => <li key={index}>{suggestion}</li>)}</ul>
-            </div>
-          </div>
-        )}
+        <div className={styles.fieldRow}>
+          <div className={styles.formGroup}><label>Cost/Yard ($)</label><input className={styles.input} type="number" value={cost} onChange={e => setCost(Number(e.target.value))} /></div>
+          <div className={styles.formGroup}><label>MOQ</label><input className={styles.input} type="number" value={moq} onChange={e => setMoq(Number(e.target.value))} /></div>
+          <div className={styles.formGroup}><label>Quantity</label><input className={styles.input} type="number" value={qty} onChange={e => setQty(Number(e.target.value))} /></div>
+        </div>
+        <div className={styles.formGroup}><label>Sustainability (#12): {eco}%</label><input type="range" min={0} max={100} value={eco} onChange={e => setEco(Number(e.target.value))} className={styles.range} /></div>
+        <div className={styles.formGroup}><label>Notes</label><textarea className={styles.textarea} rows={2} value={notes} onChange={e => setNotes(e.target.value)} /></div>
+        <div className={styles.fieldRow}>
+          <button className={styles.primaryBtn} onClick={() => { if (name) onAdd({ name, type, supplier, costPerYard: cost, moq, sustainabilityScore: eco, notes, quantity: qty }) }}>Add Material</button>
+          <button className={styles.secondaryBtn} onClick={onCancel}>Cancel</button>
+        </div>
       </div>
     </div>
   )
 }
 
-function IPRegistrySection({ ipRecords, designs, exportIPLedger }: any) {
+function TechPackForm({ designs, onAdd, onCancel }: { designs: Design[]; onAdd: (tp: Omit<TechPack, 'id' | 'version' | 'approved' | 'createdAt'>) => void; onCancel: () => void }) {
+  const [designId, setDesignId] = useState(designs[0]?.id || ''); const [fabric, setFabric] = useState('')
+  const [trims, setTrims] = useState(''); const [labels, setLabels] = useState(''); const [care, setCare] = useState('')
+  const [packaging, setPackaging] = useState('')
   return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <div><h2>IP Registry</h2><p className={styles.sectionSubtitle}>Design ownership and version tracking</p></div>
+    <div className={styles.formPanel}>
+      <div className={styles.formStack}>
+        <div className={styles.formGroup}><label>Design</label><select className={styles.select} value={designId} onChange={e => setDesignId(e.target.value)}>{designs.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select></div>
+        <div className={styles.fieldRow}>
+          <div className={styles.formGroup}><label>Fabric Specs</label><input className={styles.input} value={fabric} onChange={e => setFabric(e.target.value)} placeholder="100% Cotton..." /></div>
+          <div className={styles.formGroup}><label>Trim Specs</label><input className={styles.input} value={trims} onChange={e => setTrims(e.target.value)} placeholder="YKK zippers..." /></div>
+        </div>
+        <div className={styles.fieldRow}>
+          <div className={styles.formGroup}><label>Labels</label><input className={styles.input} value={labels} onChange={e => setLabels(e.target.value)} /></div>
+          <div className={styles.formGroup}><label>Care Instructions</label><input className={styles.input} value={care} onChange={e => setCare(e.target.value)} /></div>
+        </div>
+        <div className={styles.formGroup}><label>Packaging</label><input className={styles.input} value={packaging} onChange={e => setPackaging(e.target.value)} /></div>
+        <div className={styles.fieldRow}>
+          <button className={styles.primaryBtn} onClick={() => onAdd({ designId, fabricSpecs: fabric, trimSpecs: trims, labels, careInstructions: care, packagingNotes: packaging, measurements: {} })}>Generate</button>
+          <button className={styles.secondaryBtn} onClick={onCancel}>Cancel</button>
+        </div>
       </div>
+    </div>
+  )
+}
 
-      <div className={styles.grid}>
-        {ipRecords.map((record: IPRecord) => {
-          const design = designs.find((d: Design) => d.id === record.designId)
-          return (
-            <div key={record.id} className={styles.card}>
-              <h3>{design?.name || 'Unknown Design'}</h3>
-              <p className={styles.timestamp}>Registered: {new Date(record.timestamp).toLocaleString()}</p>
-              <div className={styles.ownership}>
-                <h4>Ownership</h4>
-                {Object.entries(record.ownership).map(([owner, percentage]) => (
-                  <div key={owner} className={styles.ownershipItem}><span>{owner}</span><span>{percentage}%</span></div>
-                ))}
-              </div>
-              {record.collaborators.length > 0 && (
-                <div className={styles.collaborators}><h4>Collaborators</h4><p>{record.collaborators.join(', ')}</p></div>
-              )}
-              <div className={styles.versionHistory}>
-                <h4>Version History</h4>
-                <ul>{record.versionHistory.map((version, index) => <li key={index}>{version}</li>)}</ul>
-              </div>
-              <div className={styles.cardActions}><button onClick={() => exportIPLedger(record)} className={styles.primaryBtn}>Export Ledger</button></div>
-            </div>
-          )
-        })}
+function CollectionForm({ designs, onAdd, onCancel }: { designs: Design[]; onAdd: (c: Omit<Collection, 'id' | 'archived' | 'revenue' | 'createdAt'>) => void; onCancel: () => void }) {
+  const [name, setName] = useState(''); const [theme, setTheme] = useState(''); const [colorStory, setColorStory] = useState('')
+  const [dropDate, setDropDate] = useState(''); const [designIds, setDesignIds] = useState<string[]>([])
+  const [notes, setNotes] = useState(''); const [dropType, setDropType] = useState<Collection['dropType']>('Standard')
+  const [inventoryLimit, setInventoryLimit] = useState(0)
+  return (
+    <div className={styles.formPanel}>
+      <div className={styles.formStack}>
+        <div className={styles.fieldRow}>
+          <div className={styles.formGroup}><label>Name</label><input className={styles.input} value={name} onChange={e => setName(e.target.value)} placeholder="Collection name" /></div>
+          <div className={styles.formGroup}><label>Theme</label><input className={styles.input} value={theme} onChange={e => setTheme(e.target.value)} placeholder="Theme" /></div>
+          <div className={styles.formGroup}><label>Drop Type (#17)</label><select className={styles.select} value={dropType} onChange={e => setDropType(e.target.value as Collection['dropType'])}><option>Limited</option><option>Preorder</option><option>Standard</option></select></div>
+        </div>
+        <div className={styles.formGroup}><label>Color Story</label><textarea className={styles.textarea} rows={2} value={colorStory} onChange={e => setColorStory(e.target.value)} placeholder="Describe color narrative..." /></div>
+        <div className={styles.fieldRow}>
+          <div className={styles.formGroup}><label>Drop Date</label><input className={styles.input} type="date" value={dropDate} onChange={e => setDropDate(e.target.value)} /></div>
+          <div className={styles.formGroup}><label>Inventory Limit</label><input className={styles.input} type="number" value={inventoryLimit} onChange={e => setInventoryLimit(Number(e.target.value))} /></div>
+        </div>
+        <div className={styles.formGroup}><label>Designs (#16)</label><div className={styles.chipRow}>{designs.map(d => <button key={d.id} type="button" className={`${styles.chipBtn} ${designIds.includes(d.id) ? styles.chipActive : ''}`} onClick={() => setDesignIds(prev => prev.includes(d.id) ? prev.filter(x => x !== d.id) : [...prev, d.id])}>{d.name}</button>)}</div></div>
+        <div className={styles.fieldRow}>
+          <button className={styles.primaryBtn} onClick={() => { if (name) onAdd({ name, theme, colorStory, dropDate, designIds, notes, dropType, inventoryLimit }) }}>Create</button>
+          <button className={styles.secondaryBtn} onClick={onCancel}>Cancel</button>
+        </div>
       </div>
+    </div>
+  )
+}
 
-      {ipRecords.length === 0 && <div className={styles.emptyState}><p>No IP records yet. Create a design to auto-generate IP records.</p></div>}
+function FitTestForm({ designs, onAdd, onCancel }: { designs: Design[]; onAdd: (ft: Omit<FitTest, 'id' | 'approved' | 'date'>) => void; onCancel: () => void }) {
+  const [designId, setDesignId] = useState(designs[0]?.id || ''); const [tester, setTester] = useState('')
+  const [size, setSize] = useState('M'); const [rating, setRating] = useState(7); const [notes, setNotes] = useState('')
+  const [issues, setIssues] = useState<string[]>([]); const [issueInput, setIssueInput] = useState('')
+  return (
+    <div className={styles.formPanel}>
+      <div className={styles.formStack}>
+        <div className={styles.fieldRow}>
+          <div className={styles.formGroup}><label>Design</label><select className={styles.select} value={designId} onChange={e => setDesignId(e.target.value)}>{designs.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select></div>
+          <div className={styles.formGroup}><label>Tester</label><input className={styles.input} value={tester} onChange={e => setTester(e.target.value)} placeholder="Model/tester name" /></div>
+          <div className={styles.formGroup}><label>Size</label><select className={styles.select} value={size} onChange={e => setSize(e.target.value)}>{SIZES.map(s => <option key={s}>{s}</option>)}</select></div>
+        </div>
+        <div className={styles.formGroup}><label>Rating: {rating}/10</label><input type="range" min={1} max={10} value={rating} onChange={e => setRating(Number(e.target.value))} className={styles.range} /></div>
+        <div className={styles.formGroup}><label>Fit Notes (#25)</label><textarea className={styles.textarea} rows={2} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Fit observations..." /></div>
+        <div className={styles.formGroup}><label>Issues</label>
+          <input className={styles.input} value={issueInput} onChange={e => setIssueInput(e.target.value)} placeholder="Add issue (Enter)" onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (issueInput.trim()) { setIssues(prev => [...prev, issueInput.trim()]); setIssueInput('') } } }} />
+          <div className={styles.tagRow}>{issues.map((x, i) => <span key={i} className={styles.tag} onClick={() => setIssues(prev => prev.filter((_, j) => j !== i))}>{x} ×</span>)}</div>
+        </div>
+        <div className={styles.fieldRow}>
+          <button className={styles.primaryBtn} onClick={() => { if (tester) onAdd({ designId, testerName: tester, size, rating, fitNotes: notes, issues, measurements: {} }) }}>Submit Test</button>
+          <button className={styles.secondaryBtn} onClick={onCancel}>Cancel</button>
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,0 +1,222 @@
+.container{background:#000;color:#fff;min-height:100vh;padding:32px 40px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.focusMode .tabNav,.focusMode .header{opacity:.4;pointer-events:none}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.headerLeft{display:flex;flex-direction:column;gap:4px}
+.headerRight{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.title{font-size:28px;font-weight:700;letter-spacing:-.5px;margin:0}
+.subtitle{color:#888;font-size:14px;margin:0}
+.alertBadge{background:#f55;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;min-width:18px;text-align:center}
+.tabNav{display:flex;gap:4px;margin-bottom:24px;overflow-x:auto;border-bottom:1px solid #222}
+.tabBtn{background:transparent;border:none;color:#777;font-size:13px;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.tabBtn:hover{color:#ccc}
+.tabActive{color:#fff;border-bottom-color:#fff}
+.mainContent{animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.section{display:flex;flex-direction:column;gap:20px}
+.sectionTitle{font-size:18px;font-weight:600;margin:0}
+
+/* Buttons */
+.primaryBtn{background:#fff;color:#000;border:none;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.primaryBtn:hover{background:#ddd;transform:scale(1.02)}
+.secondaryBtn{background:transparent;border:1px solid #333;color:#ccc;padding:8px 18px;border-radius:8px;font-size:13px;cursor:pointer;transition:all .2s}
+.secondaryBtn:hover{border-color:#666;color:#fff}
+.ghostBtn{background:transparent;border:none;color:#888;font-size:12px;cursor:pointer;transition:color .2s;padding:4px 8px}
+.ghostBtn:hover{color:#fff}
+.deleteBtn{background:transparent;border:none;color:#555;font-size:14px;cursor:pointer;transition:color .2s}
+.deleteBtn:hover{color:#f55}
+.exportBtn{background:#111;border:1px solid #333;color:#ccc;padding:10px 20px;border-radius:8px;font-size:13px;cursor:pointer;transition:all .2s}
+.exportBtn:hover{border-color:#666;color:#fff}
+.favBtn{background:transparent;border:none;color:#555;font-size:16px;cursor:pointer;transition:color .2s;padding:0 4px}
+.favBtn:hover{color:#fa3}
+.favActive{color:#fa3}
+.checkBtn{background:transparent;border:none;color:#555;font-size:14px;cursor:pointer;transition:color .2s}
+.checkBtn:hover{color:#fff}
+
+/* KPI */
+.kpiRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.kpiCard{background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:16px;transition:border-color .2s}
+.kpiCard:hover{border-color:#333}
+.kpiLabel{color:#888;font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.kpiValue{font-size:22px;font-weight:700}
+
+/* Controls */
+.controlsRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.searchInput{background:#111;border:1px solid #222;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;flex:1;min-width:160px;transition:border-color .2s}
+.searchInput:focus{outline:none;border-color:#555}
+.select{background:#111;border:1px solid #222;color:#ccc;padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer}
+.select:focus{outline:none;border-color:#555}
+.input{background:#111;border:1px solid #222;color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;width:100%;box-sizing:border-box;transition:border-color .2s}
+.input:focus{outline:none;border-color:#555}
+.textarea{background:#111;border:1px solid #222;color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;width:100%;box-sizing:border-box;resize:vertical;transition:border-color .2s}
+.textarea:focus{outline:none;border-color:#555}
+.miniSelect{background:#111;border:1px solid #222;color:#ccc;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer}
+.range{accent-color:#fff;cursor:pointer;flex:1}
+
+/* Form */
+.formPanel{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:20px;animation:fadeIn .2s}
+.formStack{display:flex;flex-direction:column;gap:12px}
+.fieldRow{display:flex;gap:12px;flex-wrap:wrap}
+.fieldRow>*{flex:1;min-width:140px}
+.formGroup{display:flex;flex-direction:column;gap:4px}
+.formGroup label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.inlineForm{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.label{font-size:13px;font-weight:600;color:#ccc}
+
+/* Tags & Badges */
+.tag{background:#1a1a1a;color:#aaa;padding:3px 10px;border-radius:20px;font-size:11px;display:inline-block;white-space:nowrap}
+.tagSmall{background:#111;color:#666;padding:2px 7px;border-radius:12px;font-size:10px}
+.typeBadge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.tp_market{background:#111a2a;color:#6af}
+.tp_pricing{background:#1a2a11;color:#af6}
+.tp_cultural{background:#2a1a2a;color:#f6a}
+.tp_competitive{background:#2a2211;color:#fa6}
+.tp_trend{background:#112a2a;color:#6fa}
+.trajBadge{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.tr_rising{background:#112a11;color:#5c5}
+.tr_stable{background:#1a1a2a;color:#88f}
+.tr_falling{background:#2a1111;color:#f55}
+.srcTag{color:#555;font-size:11px;font-style:italic}
+
+/* Cards */
+.cardGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card{background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:8px}
+.card:hover{border-color:#333;transform:translateY(-1px)}
+.cardSelected{border-color:#555;background:#161616}
+.cardHeader{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cardTitle{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cardMeta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.cardPreview{color:#888;font-size:12px;line-height:1.5;margin:0}
+.cardActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px}
+.miniCard{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;transition:border-color .2s}
+.miniCard:hover{border-color:#333}
+
+/* Meters */
+.meterRow{display:flex;gap:16px}
+.meterGroup{display:flex;align-items:center;gap:6px;flex:1}
+.meterLabel{color:#666;font-size:9px;text-transform:uppercase;letter-spacing:.5px;min-width:28px}
+.meter{flex:1;height:4px;background:#1a1a1a;border-radius:4px;overflow:hidden}
+.meterFill{height:100%;background:linear-gradient(90deg,#444,#fff);border-radius:4px;transition:width .3s}
+.meterFillAlt{height:100%;background:linear-gradient(90deg,#333,#88f);border-radius:4px;transition:width .3s}
+.meterVal{color:#aaa;font-size:11px;min-width:24px;text-align:right}
+
+/* Detail panel */
+.detailPanel{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px;animation:fadeIn .2s}
+.detailTitle{font-size:16px;font-weight:600;margin:0}
+.detailDesc{color:#888;font-size:13px;line-height:1.6;margin:0}
+
+/* Blocks */
+.dnaBlock{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.blockHeader{display:flex;justify-content:space-between;align-items:center}
+
+/* Tables */
+.tableWrap{display:flex;flex-direction:column;gap:0;overflow-x:auto}
+.tableRow{display:grid;gap:0;border-bottom:1px solid #1a1a1a;align-items:center}
+.tableRow4{grid-template-columns:1fr 100px 100px 120px}
+.tableRow5{grid-template-columns:40px 1fr 100px 90px 90px}
+.tableHeader{color:#666;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;font-weight:600;background:#080808}
+.tableCell{padding:10px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Hints */
+.positiveHint{color:#5c5;font-size:12px}
+.negativeHint{color:#f55;font-size:12px}
+
+/* Heatmap */
+.heatmapGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.heatCell{background:#111;border:1px solid #1a1a1a;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:4px;transition:all .2s}
+.heatCell:hover{border-color:#333}
+.heatLabel{font-size:11px;font-weight:600;color:#ccc}
+.heatVal{font-size:13px;font-weight:700}
+.heatSub{font-size:11px;color:#666}
+
+/* Bars */
+.barGroup{display:flex;flex-direction:column;gap:10px}
+.barRow{display:flex;align-items:center;gap:12px}
+.barLabel{color:#888;font-size:12px;min-width:60px}
+.bar{flex:1;height:8px;background:#1a1a1a;border-radius:8px;overflow:hidden}
+.barFill{height:100%;border-radius:8px;transition:width .4s}
+.bf_rising{background:linear-gradient(90deg,#1a3a1a,#5c5)}
+.bf_stable{background:linear-gradient(90deg,#1a1a3a,#88f)}
+.bf_falling{background:linear-gradient(90deg,#3a1a1a,#f55)}
+.barVal{color:#aaa;font-size:12px;min-width:70px;text-align:right}
+
+/* Alerts */
+.alertItem{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#111;border-radius:8px;font-size:13px;border-left:3px solid #fa3}
+.alertDot{width:8px;height:8px;border-radius:50%;background:#fa3;flex-shrink:0}
+.alertList{display:flex;flex-direction:column;gap:6px}
+.alertRow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;background:#111;border-radius:8px;cursor:pointer;transition:all .2s}
+.alertRow:hover{background:#1a1a1a}
+.alertRead{opacity:.5}
+
+/* Team */
+.teamGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.teamCard{background:#111;border:1px solid #1a1a1a;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;transition:border-color .2s}
+.teamCard:hover{border-color:#333}
+.fontName{font-size:13px;font-weight:600}
+
+/* Comments */
+.commentList{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto}
+.commentItem{display:flex;flex-direction:column;gap:2px;padding:10px;background:#111;border-radius:8px;font-size:13px}
+
+/* Tasks */
+.taskList{display:flex;flex-direction:column;gap:6px}
+.taskItem{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#111;border-radius:8px;transition:all .2s}
+.taskItem:hover{background:#1a1a1a}
+.taskDone{opacity:.5}
+.taskDone .taskContent{text-decoration:line-through}
+.taskContent{flex:1;font-size:13px;display:flex;gap:8px;align-items:center}
+
+/* Misc */
+.helperText{color:#555;font-size:12px}
+.emptyState{color:#555;font-size:14px;text-align:center;padding:40px}
+.aiBox{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.aiBoxHeader{color:#888;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.aiOutput{color:#ccc;font-size:12px;line-height:1.8;font-family:'SF Mono',SFMono-Regular,Menlo,monospace;white-space:pre-wrap;margin:0;padding:12px;background:#080808;border-radius:8px;border:1px solid #111}
+.exportGrid{display:flex;gap:10px;flex-wrap:wrap}
+
+@media(max-width:768px){
+  .container{padding:8px}
+  .header{flex-direction:column;gap:8px;margin-bottom:16px}
+  .headerRight{width:100%}
+  .title{font-size:20px}
+  .subtitle{font-size:12px}
+  .sectionTitle{font-size:16px;margin-bottom:12px}
+  .tabNav{gap:0;margin-bottom:16px;scrollbar-width:none;-ms-overflow-style:none}
+  .tabNav::-webkit-scrollbar{display:none}
+  .tabBtn{font-size:12px;padding:8px 10px}
+  .kpiRow{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:12px}
+  .kpiCard{min-width:0;padding:10px 8px}
+  .kpiValue{font-size:18px}
+  .kpiLabel{font-size:10px}
+  .cardGrid{grid-template-columns:1fr}
+  .heatmapGrid{grid-template-columns:repeat(2,1fr)}
+  .teamGrid{grid-template-columns:1fr}
+  .fieldRow{flex-direction:column;gap:8px}
+  .fieldRow>*{min-width:0}
+  .controlsRow{flex-direction:column;gap:6px}
+  .searchInput{max-width:100%;width:100%}
+  .inlineForm{flex-direction:column;gap:6px;padding:10px}
+  .inlineForm>*{width:100%}
+  .card{padding:12px}
+  .dnaBlock{padding:12px;margin-bottom:12px}
+  .blockHeader{flex-wrap:wrap;gap:6px}
+  .tableWrap{overflow-x:auto}
+  .tableRow{min-width:400px}
+  .tableRow4{grid-template-columns:1fr 70px 70px 80px}
+  .tableRow5{grid-template-columns:30px 1fr 70px 60px 60px}
+  .meterRow{gap:6px}
+  .aiBox{padding:12px}
+  .aiOutput{font-size:11px}
+  .ghostBtn,.deleteBtn,.favBtn,.checkBtn,.miniSelect{min-height:auto;min-width:auto}
+  .primaryBtn{padding:10px 16px;font-size:14px;width:100%}
+}
+
+@media(max-width:430px){
+  .container{padding:6px}
+  .title{font-size:18px}
+  .tabBtn{font-size:11px;padding:7px 8px}
+  .kpiRow{grid-template-columns:repeat(2,1fr);gap:4px}
+  .kpiCard{padding:8px 6px}
+  .kpiValue{font-size:16px}
+  .card{padding:10px}
+  .dnaBlock{padding:10px}
+}

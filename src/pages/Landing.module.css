@@ -90,8 +90,12 @@
 }
 
 @media (max-width: 768px) {
+  .container {
+    padding: 8px;
+  }
+
   .title {
-    font-size: 48px;
+    font-size: 20px;
   }
 
   .subtitle {
@@ -99,7 +103,18 @@
   }
 
   .button {
+    width: 100%;
     padding: 16px 48px;
     font-size: 14px;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 6px;
+  }
+
+  .title {
+    font-size: 18px;
   }
 }

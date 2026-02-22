@@ -1,335 +1,97 @@
 import { useState } from 'react'
-import styles from './Placeholder.module.css'
+import { useCloudStorage } from '../hooks/useCloudStorage'
+import styles from './SystemPages.module.css'
 
-// Creative Decision Systems
+const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+const now = () => new Date().toISOString()
+const fmtDate = (d: string) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'
+
+/* ═══════════════════════════════════════════════════════════
+   CREATIVE DECISIONS & STRATEGY — merged
+   Decision Frameworks + Strategy Tools + Problem-Solution Mapper
+   Features: 101-110
+   ═══════════════════════════════════════════════════════════ */
+
+type CDTab = 'decisions' | 'strategy' | 'problems' | 'history'
+
+interface Decision { id: string; title: string; framework: string; riskScore: number; rewardScore: number; priority: 'low' | 'medium' | 'high' | 'critical'; status: 'pending' | 'decided' | 'implemented'; outcome: string; votes: number; createdAt: string }
+interface ProblemSolution { id: string; problem: string; solution: string; status: 'planning' | 'testing' | 'implemented'; category: string }
+interface Scenario { id: string; title: string; description: string; probability: number; impact: string }
+
 export function CreativeDecisions() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'calibration' | 'bias' | 'replay' | 'intuition'>('calibration')
+  const [tab, setTab] = useState<CDTab>('decisions')
+  const [decisions, setDecisions] = useCloudStorage<Decision[]>('cd_decisions', [])
+  const [problems, setProblems] = useCloudStorage<ProblemSolution[]>('cd_problems', [])
+  const [scenarios, setScenarios] = useCloudStorage<Scenario[]>('cd_scenarios', [])
+  const [showForm, setShowForm] = useState<string | null>(null)
 
-  const tasteCalibrations = [
-    { id: '1', area: 'Visual Direction', calibration: 92, lastUpdate: '2026-01-20', alignment: 'High' },
-    { id: '2', area: 'Material Selection', calibration: 88, lastUpdate: '2026-01-15', alignment: 'High' },
-    { id: '3', area: 'Brand Messaging', calibration: 76, lastUpdate: '2026-01-10', alignment: 'Medium' },
-  ]
-
-  const biasDetections = [
-    { id: '1', bias: 'Novelty Bias', detected: 'Medium', decisions: 12, impact: 'Moderate' },
-    { id: '2', bias: 'Confirmation Bias', detected: 'Low', decisions: 5, impact: 'Low' },
-    { id: '3', bias: 'Recency Bias', detected: 'High', decisions: 18, impact: 'High' },
-  ]
-
-  const decisionReplays = [
-    { id: '1', decision: 'Collection pivot', date: '2025-12-10', outcome: 'Successful', wouldChange: false },
-    { id: '2', decision: 'Manufacturing partner', date: '2025-11-05', outcome: 'Mixed', wouldChange: true },
-    { id: '3', decision: 'Campaign direction', date: '2025-10-20', outcome: 'Successful', wouldChange: false },
-  ]
-
-  const intuitionTracking = [
-    { id: '1', intuition: 'Sustainability focus timing', confidence: 95, result: 'Correct', value: 'Very High' },
-    { id: '2', intuition: 'Product complexity level', confidence: 78, result: 'Correct', value: 'High' },
-    { id: '3', intuition: 'Launch timing decision', confidence: 82, result: 'Incorrect', value: 'Medium' },
-  ]
-
-  const filteredCalibration = tasteCalibrations.filter(t =>
-    t.area.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredBias = biasDetections.filter(b =>
-    b.bias.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredReplay = decisionReplays.filter(d =>
-    d.decision.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredIntuition = intuitionTracking.filter(i =>
-    i.intuition.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const FRAMEWORKS = ['Risk-Reward Matrix', 'Eisenhower Matrix', 'SWOT Analysis', 'Decision Tree', 'Pro-Con List', 'Weighted Scoring']
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Creative Decision Systems</h1>
-          <p className={styles.subtitle}>Taste calibration, bias detection, decision replay & intuition tracking</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert('Log decision')}>
-          Log Decision
-        </button>
-      </div>
+      <header className={styles.header}><div className={styles.headerLeft}><h1 className={styles.title}>Creative Decisions & Strategy</h1><p className={styles.subtitle}>Frameworks · Scenarios · Problem-Solution Mapping</p></div>
+        <div className={styles.headerRight}><button className={styles.primaryBtn} onClick={() => setShowForm('decision')}>+ New Decision (#101)</button></div></header>
+      <nav className={styles.tabNav}>{(['decisions', 'strategy', 'problems', 'history'] as CDTab[]).map(t => <button key={t} className={`${styles.tabBtn} ${tab === t ? styles.tabActive : ''}`} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</nav>
 
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search decisions..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
+      {showForm === 'decision' && <div className={styles.overlay}><div className={styles.wizardPanel}><h2 className={styles.wizardTitle}>New Decision</h2>
+        <div className={styles.formStack}>
+          <div className={styles.formGroup}><label>Decision Title</label><input className={styles.input} id="cd_title" /></div>
+          <div className={styles.formGroup}><label>Framework (#101)</label><select className={styles.select} id="cd_fw">{FRAMEWORKS.map(f => <option key={f}>{f}</option>)}</select></div>
+          <div className={styles.fieldRow}><div className={styles.formGroup}><label>Risk Score (#103)</label><input className={styles.input} type="number" id="cd_risk" placeholder="0-100" /></div><div className={styles.formGroup}><label>Reward Score</label><input className={styles.input} type="number" id="cd_reward" placeholder="0-100" /></div></div>
+          <div className={styles.formGroup}><label>Priority (#102)</label><select className={styles.select} id="cd_pri"><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option><option value="low">Low</option></select></div>
+          <div className={styles.fieldRow}><button className={styles.primaryBtn} onClick={() => { const t = (document.getElementById('cd_title') as HTMLInputElement).value; if (t) { setDecisions(p => [{ id: uid(), title: t, framework: (document.getElementById('cd_fw') as HTMLSelectElement).value, riskScore: Number((document.getElementById('cd_risk') as HTMLInputElement).value) || 50, rewardScore: Number((document.getElementById('cd_reward') as HTMLInputElement).value) || 50, priority: (document.getElementById('cd_pri') as HTMLSelectElement).value as any, status: 'pending', outcome: '', votes: 0, createdAt: now() }, ...p]); setShowForm(null) } }}>Create</button><button className={styles.secondaryBtn} onClick={() => setShowForm(null)}>Cancel</button></div>
+        </div></div></div>}
 
-      <div className={styles.tabs}>
-        <button 
-          className={`${styles.tab} ${activeTab === 'calibration' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('calibration')}
-        >
-          Taste Calibration
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'bias' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('bias')}
-        >
-          Bias Detection
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'replay' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('replay')}
-        >
-          Decision Replay
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'intuition' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('intuition')}
-        >
-          Intuition Tracker
-        </button>
-      </div>
-
-      {activeTab === 'calibration' && (
-        <div className={styles.grid}>
-          {filteredCalibration.map(t => (
-            <div key={t.id} className={styles.card}>
-              <h3>{t.area}</h3>
-              <p className={styles.meta}>Last updated: {new Date(t.lastUpdate).toLocaleDateString()}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Calibration</span>
-                  <span className={styles.value}>{t.calibration}%</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Alignment</span>
-                  <span className={styles.value}>{t.alignment}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Recalibrate ${t.area}`)}>
-                Recalibrate
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'bias' && (
-        <div className={styles.grid}>
-          {filteredBias.map(b => (
-            <div key={b.id} className={styles.card}>
-              <span className={styles.category}>{b.detected} Risk</span>
-              <h3>{b.bias}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Decisions</span>
-                  <span className={styles.value}>{b.decisions}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Impact</span>
-                  <span className={styles.value}>{b.impact}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Analyze ${b.bias}`)}>
-                Analyze
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'replay' && (
-        <div className={styles.grid}>
-          {filteredReplay.map(d => (
+      <main className={styles.mainContent}>
+        {tab === 'decisions' && <div className={styles.section}>
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Total</div><div className={styles.kpiValue}>{decisions.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Pending</div><div className={styles.kpiValue}>{decisions.filter(d => d.status === 'pending').length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Implemented</div><div className={styles.kpiValue}>{decisions.filter(d => d.status === 'implemented').length}</div></div>
+          </div>
+          <div className={styles.grid}>{decisions.map(d => (
             <div key={d.id} className={styles.card}>
-              <span className={styles.category}>{d.outcome}</span>
-              <h3>{d.decision}</h3>
-              <p className={styles.meta}>{new Date(d.date).toLocaleDateString()}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Would Change</span>
-                  <span className={styles.value}>{d.wouldChange ? 'Yes' : 'No'}</span>
-                </div>
+              <div className={styles.cardHeader}><span className={styles.cardTitle}>{d.title}</span><span className={`${styles.statusBadge} ${styles[`st_${d.status}`]}`}>{d.status}</span></div>
+              <div className={styles.cardMeta}><span className={styles.tag}>{d.framework}</span><span className={styles.tag}>{d.priority}</span></div>
+              <div className={styles.scoreRow}><div className={styles.scoreItem}><span className={styles.scoreLabel}>Risk</span><span className={styles.scoreVal}>{d.riskScore}</span></div><div className={styles.scoreItem}><span className={styles.scoreLabel}>Reward</span><span className={styles.scoreVal}>{d.rewardScore}</span></div></div>
+              <div className={styles.cardActions}>
+                <select className={styles.miniSelect} value={d.status} onChange={e => setDecisions(p => p.map(x => x.id === d.id ? { ...x, status: e.target.value as any } : x))}><option value="pending">Pending</option><option value="decided">Decided</option><option value="implemented">Implemented</option></select>
+                <button className={styles.ghostBtn} onClick={() => setDecisions(p => p.map(x => x.id === d.id ? { ...x, votes: x.votes + 1 } : x))}>Vote (#108) ({d.votes})</button>
+                <button className={styles.deleteBtn} onClick={() => setDecisions(p => p.filter(x => x.id !== d.id))}>×</button>
               </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Replay ${d.decision}`)}>
-                Replay Decision
-              </button>
             </div>
-          ))}
-        </div>
-      )}
+          ))}</div>
+        </div>}
 
-      {activeTab === 'intuition' && (
-        <div className={styles.grid}>
-          {filteredIntuition.map(i => (
-            <div key={i.id} className={styles.card}>
-              <span className={styles.category}>{i.result}</span>
-              <h3>{i.intuition}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Confidence</span>
-                  <span className={styles.value}>{i.confidence}%</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Value</span>
-                  <span className={styles.value}>{i.value}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Analyze ${i.intuition}`)}>
-                Analyze
-              </button>
+        {tab === 'strategy' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Scenario Simulation (#104)</h2>
+          <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'scenario' ? null : 'scenario')}>+ Add Scenario</button>
+          {showForm === 'scenario' && <div className={styles.inlineForm}><input className={styles.input} placeholder="Scenario" id="sc_title" /><input className={styles.input} placeholder="Description" id="sc_desc" /><input className={styles.input} type="number" placeholder="Probability %" id="sc_prob" /><select className={styles.select} id="sc_impact"><option>High</option><option>Medium</option><option>Low</option></select><button className={styles.primaryBtn} onClick={() => { const t = (document.getElementById('sc_title') as HTMLInputElement).value; if (t) { setScenarios(p => [...p, { id: uid(), title: t, description: (document.getElementById('sc_desc') as HTMLInputElement).value, probability: Number((document.getElementById('sc_prob') as HTMLInputElement).value) || 50, impact: (document.getElementById('sc_impact') as HTMLSelectElement).value }]); setShowForm(null) } }}>Add</button></div>}
+          <div className={styles.grid}>{scenarios.map(s => <div key={s.id} className={styles.card}><span className={styles.cardTitle}>{s.title}</span>{s.description && <p className={styles.cardPreview}>{s.description}</p>}<div className={styles.cardMeta}><span className={styles.scoreBadge}>{s.probability}% likely</span><span className={styles.tag}>{s.impact} impact</span></div><button className={styles.deleteBtn} onClick={() => setScenarios(p => p.filter(x => x.id !== s.id))}>×</button></div>)}</div>
+          <div className={styles.aiBox}><div className={styles.aiBoxHeader}>AI Advisory (#105)</div><pre className={styles.aiOutput}>{`Decision Intelligence:\n${'─'.repeat(35)}\n• ${decisions.length} decisions tracked\n• Avg risk: ${decisions.length ? Math.round(decisions.reduce((a, d) => a + d.riskScore, 0) / decisions.length) : 0}/100\n• Avg reward: ${decisions.length ? Math.round(decisions.reduce((a, d) => a + d.rewardScore, 0) / decisions.length) : 0}/100\n• ${decisions.filter(d => d.rewardScore > d.riskScore).length} favorable risk-reward ratio\n• ${scenarios.length} scenarios modeled`}</pre></div>
+        </div>}
+
+        {tab === 'problems' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Problem-Solution Mapper</h2>
+          <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'problem' ? null : 'problem')}>+ Map Challenge</button>
+          {showForm === 'problem' && <div className={styles.inlineForm}><input className={styles.input} placeholder="Problem / Challenge" id="ps_prob" /><input className={styles.input} placeholder="Solution" id="ps_sol" /><select className={styles.select} id="ps_cat"><option>Design</option><option>Technical</option><option>Market</option><option>Operations</option><option>Creative</option></select><button className={styles.primaryBtn} onClick={() => { const p = (document.getElementById('ps_prob') as HTMLInputElement).value; if (p) { setProblems(prev => [...prev, { id: uid(), problem: p, solution: (document.getElementById('ps_sol') as HTMLInputElement).value, status: 'planning', category: (document.getElementById('ps_cat') as HTMLSelectElement).value }]); setShowForm(null) } }}>Add</button></div>}
+          <div className={styles.grid}>{problems.map(p => (
+            <div key={p.id} className={styles.card}><div className={styles.cardHeader}><span className={styles.cardTitle}>{p.problem}</span><span className={`${styles.statusBadge} ${styles[`st_${p.status}`]}`}>{p.status}</span></div>
+              <div className={styles.cardMeta}><span className={styles.tag}>{p.category}</span></div>
+              {p.solution && <p className={styles.cardPreview}>{p.solution}</p>}
+              <div className={styles.cardActions}><select className={styles.miniSelect} value={p.status} onChange={e => setProblems(prev => prev.map(x => x.id === p.id ? { ...x, status: e.target.value as any } : x))}><option value="planning">Planning</option><option value="testing">Testing</option><option value="implemented">Implemented</option></select><button className={styles.deleteBtn} onClick={() => setProblems(prev => prev.filter(x => x.id !== p.id))}>×</button></div>
             </div>
-          ))}
-        </div>
-      )}
+          ))}</div>
+        </div>}
+
+        {tab === 'history' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Decision History (#107)</h2>
+          <div className={styles.timeline}>{decisions.map(d => <div key={d.id} className={styles.timelineItem}><span className={styles.timelineDot} /><div><strong>{d.title}</strong><span className={styles.helperText}> · {d.framework} · {d.status} · {fmtDate(d.createdAt)}</span></div></div>)}</div>
+          <div className={styles.exportGrid}><button className={styles.exportBtn} onClick={() => { const d = `Strategic Insights\n${'='.repeat(40)}\nDecisions:\n${decisions.map(d => `${d.title} | Risk:${d.riskScore} Reward:${d.rewardScore} | ${d.status}`).join('\n')}\n\nProblems:\n${problems.map(p => `${p.problem} → ${p.solution} (${p.status})`).join('\n')}\n\nGenerated: ${new Date().toLocaleDateString()}`; const b = new Blob([d], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `strategy-report-${Date.now()}.txt`; a.click() }}>Export (#110)</button></div>
+        </div>}
+      </main>
     </div>
   )
 }
 
-// Strategic Thinking Tools
-export function StrategyTools() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'models' | 'effects' | 'timing' | 'confidence'>('models')
-
-  const mentalModels = [
-    { id: '1', model: 'First Principles Thinking', uses: 24, effectiveness: 92, category: 'Problem Solving' },
-    { id: '2', model: 'Inversion', uses: 18, effectiveness: 88, category: 'Risk Management' },
-    { id: '3', model: 'Circle of Competence', uses: 31, effectiveness: 94, category: 'Decision Making' },
-  ]
-
-  const secondOrderEffects = [
-    { id: '1', action: 'Price increase', firstOrder: 'Revenue up', secondOrder: 'Brand positioning shift', risk: 'Medium' },
-    { id: '2', action: 'Expand product line', firstOrder: 'More options', secondOrder: 'Diluted identity', risk: 'High' },
-    { id: '3', action: 'Limit production', firstOrder: 'Scarcity', secondOrder: 'Exclusivity premium', risk: 'Low' },
-  ]
-
-  const filteredModels = mentalModels.filter(m =>
-    m.model.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredEffects = secondOrderEffects.filter(e =>
-    e.action.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Strategic Thinking Tools</h1>
-          <p className={styles.subtitle}>Mental models, second-order effects & long-term thinking</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert('Add mental model')}>
-          Add Model
-        </button>
-      </div>
-
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search models and effects..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
-
-      <div className={styles.tabs}>
-        <button 
-          className={`${styles.tab} ${activeTab === 'models' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('models')}
-        >
-          Mental Models
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'effects' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('effects')}
-        >
-          Second-Order Effects
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'timing' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('timing')}
-        >
-          Long-Term Thinking
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'confidence' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('confidence')}
-        >
-          Confidence Index
-        </button>
-      </div>
-
-      {activeTab === 'models' && (
-        <div className={styles.grid}>
-          {filteredModels.map(m => (
-            <div key={m.id} className={styles.card}>
-              <span className={styles.category}>{m.category}</span>
-              <h3>{m.model}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Uses</span>
-                  <span className={styles.value}>{m.uses}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Effectiveness</span>
-                  <span className={styles.value}>{m.effectiveness}%</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Apply ${m.model}`)}>
-                Apply Model
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'effects' && (
-        <div className={styles.grid}>
-          {filteredEffects.map(e => (
-            <div key={e.id} className={styles.card}>
-              <span className={styles.category}>{e.risk} Risk</span>
-              <h3>{e.action}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>First Order</span>
-                  <span className={styles.value}>{e.firstOrder}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Second Order</span>
-                  <span className={styles.value}>{e.secondOrder}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Simulate ${e.action}`)}>
-                Simulate
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'timing' && (
-        <div className={styles.emptyState}>
-          <p>Long-term thinking mode: 5-10 year horizon planning</p>
-          <button className={styles.secondaryBtn} onClick={() => alert('Start long-term planning')}>
-            Start Planning
-          </button>
-        </div>
-      )}
-
-      {activeTab === 'confidence' && (
-        <div className={styles.emptyState}>
-          <p>Track confidence levels across decisions over time</p>
-          <button className={styles.secondaryBtn} onClick={() => alert('View confidence trends')}>
-            View Trends
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
+export { CreativeDecisions as StrategyTools }

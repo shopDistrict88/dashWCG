@@ -301,7 +301,7 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 1rem;
+    padding: 8px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -310,20 +310,102 @@
 
   .header {
     flex-direction: column;
-    gap: 1rem;
+    gap: 8px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
   }
 
   .primaryBtn {
     width: 100%;
   }
 
+  .tabs {
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .metricsBar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
   .collectionsGrid {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 12px;
+  }
+
+  .collectionCard {
+    padding: 12px;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .scores {
+    padding: 12px;
+  }
+
+  .cardActions {
+    flex-direction: column;
+  }
+
+  .secondaryBtn {
+    width: 100%;
+  }
+
+  .analyticsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .analyticsCard {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 6px;
+  }
+
+  .header h1 {
+    font-size: 18px;
   }
 
   .metricsBar {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    padding: 10px;
+  }
+
+  .collectionCard {
+    padding: 10px;
+  }
+
+  .scores {
+    padding: 10px;
+  }
+
+  .analyticsCard {
+    padding: 10px;
   }
 }

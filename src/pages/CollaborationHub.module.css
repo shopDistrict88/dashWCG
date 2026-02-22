@@ -581,37 +581,19 @@
 }
 
 @media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    gap: 16px;
-  }
+  .container { padding: 8px; }
+  .header { flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .headerActions { width: 100%; }
+  .primaryBtn { padding: 10px 16px; font-size: 14px; width: 100%; }
+  .secondaryBtn { width: 100%; }
+  .controls { flex-direction: column; gap: 6px; }
+  .searchInput { max-width: 100%; width: 100%; }
+  .collaboratorGrid { grid-template-columns: 1fr; }
+  .scores { grid-template-columns: 1fr; }
+  .modalContent { padding: 20px; }
+  .modalActions { flex-direction: column; }
+}
 
-  .headerActions {
-    width: 100%;
-  }
-
-  .primaryBtn,
-  .secondaryBtn {
-    flex: 1;
-  }
-
-  .controls {
-    flex-direction: column;
-  }
-
-  .collaboratorGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .scores {
-    grid-template-columns: 1fr;
-  }
-
-  .modalContent {
-    padding: 20px;
-  }
-
-  .modalActions {
-    flex-direction: column;
-  }
+@media (max-width: 430px) {
+  .container { padding: 6px; }
 }

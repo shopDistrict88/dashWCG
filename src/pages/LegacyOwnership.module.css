@@ -4,21 +4,6 @@
   margin: 0 auto;
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow-x: hidden;
-  }
-  
-  .stats {
-    grid-template-columns: 1fr !important;
-    gap: 1rem;
-  }
-}
-
 .header {
   margin-bottom: 3rem;
 }
@@ -293,4 +278,123 @@
   font-size: 0.875rem;
   margin: 0;
   line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .header p {
+    font-size: 12px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .statCard {
+    padding: 12px;
+  }
+
+  .assetCard {
+    padding: 12px;
+  }
+
+  .assetHeader {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .assetActions {
+    flex-direction: column;
+  }
+
+  .buttonSecondary {
+    width: 100%;
+  }
+
+  .rightsCard {
+    padding: 12px;
+  }
+
+  .rightsItem {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .rightsStatus {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .archiveCard {
+    padding: 12px;
+  }
+
+  .archiveStats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  .ownershipCard {
+    padding: 12px;
+  }
+
+  .ownershipItem {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 6px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .statCard {
+    padding: 10px;
+  }
+
+  .assetCard {
+    padding: 10px;
+  }
+
+  .rightsCard {
+    padding: 10px;
+  }
+
+  .archiveCard {
+    padding: 10px;
+  }
+
+  .archiveStats {
+    grid-template-columns: 1fr;
+  }
+
+  .ownershipCard {
+    padding: 10px;
+  }
 }

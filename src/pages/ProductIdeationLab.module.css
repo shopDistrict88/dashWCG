@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════
-   Business Management — Performance Hub
+   Product Ideation Lab — Innovation Hub
    Black/white/grey, Apple-style precision
    ═══════════════════════════════════════════════════ */
 
@@ -21,29 +21,32 @@
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .sectionTitle { font-size: 20px; font-weight: 600; color: #fff; margin: 0 0 20px 0; }
 
-/* Health */
-.healthCard { background: #0d0d0d; border: 1px solid #222; border-radius: 14px; padding: 24px; margin-bottom: 20px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
-.healthScore { text-align: center; min-width: 100px; }
-.healthNum { font-size: 48px; font-weight: 700; color: #fff; line-height: 1; }
-.healthLabel { font-size: 13px; color: #888; margin-top: 4px; }
-
-/* KPI */
-.kpiRow { display: flex; gap: 12px; flex-wrap: wrap; flex: 1; }
+.kpiRow { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
 .kpiCard { background: #111; border: 1px solid #222; border-radius: 10px; padding: 14px 18px; min-width: 110px; flex: 1; text-align: center; transition: border-color 0.2s; }
 .kpiCard:hover { border-color: #444; }
 .kpiLabel { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
 .kpiValue { font-size: 22px; font-weight: 600; color: #fff; }
 
-/* Forms */
+.controlsRow { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.controlsRow .select { max-width: 160px; }
+.searchInput { background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 14px; padding: 10px 12px; outline: none; transition: border-color 0.2s; max-width: 240px; box-sizing: border-box; }
+.searchInput:focus { border-color: #666; }
+
 .formStack { display: flex; flex-direction: column; gap: 14px; }
-.fieldRow { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.fieldRow { display: flex; gap: 12px; flex-wrap: wrap; }
+.fieldRow > * { flex: 1; min-width: 160px; }
 .formGroup { display: flex; flex-direction: column; gap: 6px; }
 .formGroup label, .label { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
 .input, .select, .textarea { background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 14px; padding: 10px 12px; outline: none; transition: border-color 0.2s; width: 100%; box-sizing: border-box; }
-.input:focus, .select:focus { border-color: #666; }
+.input:focus, .select:focus, .textarea:focus { border-color: #666; }
+.textarea { resize: vertical; font-family: inherit; min-height: 60px; }
 .range { width: 100%; accent-color: #fff; }
 
-/* Buttons */
+.chipRow { display: flex; gap: 6px; flex-wrap: wrap; }
+.chipBtn { background: #1a1a1a; border: 1px solid #333; border-radius: 16px; color: #aaa; font-size: 12px; padding: 5px 12px; cursor: pointer; transition: all 0.2s; }
+.chipBtn:hover { border-color: #666; color: #fff; }
+.chipActive { background: #fff; color: #000; border-color: #fff; }
+
 .primaryBtn { background: #fff; color: #000; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; padding: 10px 20px; cursor: pointer; transition: all 0.2s; }
 .primaryBtn:hover { background: #e0e0e0; }
 .secondaryBtn { background: transparent; border: 1px solid #444; border-radius: 8px; color: #ccc; font-size: 13px; padding: 8px 16px; cursor: pointer; transition: all 0.2s; }
@@ -52,80 +55,83 @@
 .ghostBtn:hover { color: #fff; }
 .deleteBtn { background: transparent; border: none; color: #555; font-size: 16px; cursor: pointer; padding: 2px 6px; transition: color 0.2s; }
 .deleteBtn:hover { color: #ff6666; }
+.favBtn { background: transparent; border: none; color: #666; font-size: 16px; cursor: pointer; transition: color 0.2s; }
+.favBtn:hover { color: #ffcc00; }
 .exportBtn { background: #111; border: 1px solid #333; border-radius: 8px; color: #ccc; font-size: 13px; padding: 12px 20px; cursor: pointer; transition: all 0.2s; text-align: left; }
 .exportBtn:hover { border-color: #666; color: #fff; }
-.exportGrid { display: flex; gap: 12px; flex-wrap: wrap; }
+.exportGrid { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
 
-/* Table */
-.metricsTable { display: flex; flex-direction: column; gap: 2px; overflow-x: auto; }
-.tableRow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; min-width: 500px; }
-.tableHeader { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 10px; font-weight: 500; }
-.tableCell { padding: 6px 10px; font-size: 13px; color: #ccc; background: #111; border-radius: 4px; }
-.cellInput { background: transparent; border: none; color: #ccc; font-size: 13px; width: 100%; outline: none; padding: 4px 0; }
-.cellInput:focus { color: #fff; }
-.profitPositive { color: #78cf78; }
-.profitNegative { color: #cf7878; }
-
-/* Tags */
-.tag { font-size: 11px; color: #888; background: #1a1a1a; padding: 2px 8px; border-radius: 8px; }
-.miniSelect { background: #111; border: 1px solid #333; border-radius: 6px; color: #ccc; font-size: 11px; padding: 4px 8px; outline: none; cursor: pointer; }
-
-/* Meters */
-.meterRow { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
-.meter { flex: 1; height: 4px; background: #222; border-radius: 2px; overflow: hidden; }
-.meterFill { height: 100%; background: linear-gradient(90deg, #444, #fff); border-radius: 2px; transition: width 0.6s ease; }
-
-/* Status */
-.statusBadge { font-size: 10px; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
-.st_ontrack { background: #1a2e1a; color: #78cf78; }
-.st_atrisk { background: #2e2e1a; color: #cfcf78; }
-.st_offtrack { background: #2e1a1a; color: #cf7878; }
-.st_completed { background: #1a2e2e; color: #78cfcf; }
-
-/* Goals */
-.goalGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; margin-top: 12px; }
-.goalCard { background: #0d0d0d; border: 1px solid #222; border-radius: 10px; padding: 16px; transition: border-color 0.2s; }
-.goalCard:hover { border-color: #444; }
-.goalProgress { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin: 8px 0 2px 0; }
+.conceptGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin-top: 12px; }
+.conceptCard { background: #0d0d0d; border: 1px solid #222; border-radius: 10px; padding: 16px; transition: all 0.2s; cursor: pointer; }
+.conceptCard:hover { border-color: #444; transform: translateY(-1px); }
+.conceptCardActive { border-color: #666; }
 .cardHeader { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
 .cardTitle { font-size: 14px; font-weight: 500; color: #fff; }
 .cardMeta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; font-size: 12px; color: #888; }
+.cardPreview { font-size: 12px; color: #666; margin: 8px 0; line-height: 1.4; }
 .cardActions { display: flex; gap: 6px; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #1a1a1a; }
 
-/* Blocks */
+.scoreRow { display: flex; gap: 12px; margin: 6px 0; }
+.scoreItem { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.scoreLabel { font-size: 10px; color: #666; text-transform: uppercase; }
+.scoreVal { font-size: 16px; font-weight: 600; color: #ccc; }
+
+.statusBadge { font-size: 10px; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+.st_exploring { background: #1a1a2e; color: #7878cf; }
+.st_developing { background: #2e2e1a; color: #cfcf78; }
+.st_validated { background: #1a2e1a; color: #78cf78; }
+.st_launched { background: #1a2e2e; color: #78cfcf; }
+.st_shelved { background: #1a1a1a; color: #888; }
+
+.tag { font-size: 11px; color: #888; background: #1a1a1a; padding: 2px 8px; border-radius: 8px; }
+.tagRow { display: flex; gap: 4px; flex-wrap: wrap; }
+.scoreBadge { font-size: 11px; color: #aaa; background: #1a1a1a; padding: 2px 8px; border-radius: 8px; font-weight: 500; }
+.miniSelect { background: #111; border: 1px solid #333; border-radius: 6px; color: #ccc; font-size: 11px; padding: 4px 8px; outline: none; cursor: pointer; }
+
 .dnaBlock { margin-bottom: 20px; padding: 16px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 10px; }
 .blockHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.splitRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-/* Inline Form */
 .inlineForm { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; padding: 12px; background: #0d0d0d; border: 1px solid #222; border-radius: 10px; margin: 12px 0; }
-.inlineForm .input, .inlineForm .select { flex: 1; min-width: 100px; }
+.inlineForm .input, .inlineForm .select, .inlineForm .textarea { flex: 1; min-width: 120px; }
 
-/* Bar Chart */
-.barChart { display: flex; gap: 8px; align-items: flex-end; height: 140px; padding: 0 8px; }
-.barGroup { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
-.bar { background: linear-gradient(180deg, #fff, #444); border-radius: 4px 4px 0 0; width: 100%; min-width: 20px; max-width: 60px; transition: height 0.4s ease; }
-.barLabel { font-size: 10px; color: #666; }
+.versionList { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.versionItem { font-size: 12px; color: #aaa; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #333; }
 
-/* Team */
+.timeline { display: flex; flex-direction: column; gap: 8px; padding-left: 16px; border-left: 2px solid #222; }
+.timelineItem { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #ccc; }
+.timelineDot { width: 8px; height: 8px; border-radius: 50%; background: #555; flex-shrink: 0; }
+
+.taskList { display: flex; flex-direction: column; gap: 4px; }
+.taskItem { display: flex; align-items: center; gap: 8px; padding: 10px; background: #111; border-radius: 6px; transition: background 0.2s; }
+.taskItem:hover { background: #1a1a1a; }
+.taskDone { opacity: 0.5; }
+.taskContent { flex: 1; }
+.taskMeta { display: flex; gap: 6px; margin-top: 4px; align-items: center; flex-wrap: wrap; }
+.checkBtn { background: transparent; border: 1px solid #444; color: #888; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+.checkBtn:hover { border-color: #888; color: #fff; }
+
 .teamGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }
 .teamCard { background: #0d0d0d; border: 1px solid #222; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 4px; transition: border-color 0.2s; }
 .teamCard:hover { border-color: #444; }
 .fontName { font-size: 14px; font-weight: 500; color: #fff; }
 
-/* Comments */
 .commentList { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .commentItem { display: flex; gap: 8px; align-items: baseline; font-size: 13px; color: #ccc; padding: 8px; background: #111; border-radius: 6px; }
 
-/* Alerts */
-.alertList { display: flex; flex-direction: column; gap: 6px; }
-.alertItem { display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: #1a1010; border: 1px solid #2a1a1a; border-radius: 8px; font-size: 13px; color: #ccc; }
-.alertIcon { color: #ff6666; font-weight: 700; font-size: 14px; }
+.comparisonTable { display: flex; flex-direction: column; gap: 2px; }
+.compRow { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 8px; padding: 8px 12px; font-size: 13px; color: #ccc; background: #111; border-radius: 4px; align-items: center; }
+.compHeader { font-size: 11px; color: #777; text-transform: uppercase; font-weight: 500; }
 
-/* AI Box */
 .aiBox { background: #0a0a0a; border: 1px solid #222; border-radius: 10px; padding: 16px; margin-top: 16px; }
 .aiBoxHeader { font-size: 12px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
 .aiOutput { font-size: 12px; color: #aaa; line-height: 1.6; margin: 0; font-family: 'SF Mono', monospace; white-space: pre-wrap; }
 
+.overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+.wizardPanel { background: #111; border: 1px solid #333; border-radius: 14px; width: 100%; max-width: 600px; padding: 28px; }
+.wizardTitle { font-size: 22px; font-weight: 600; color: #fff; margin: 0 0 20px 0; }
+
+.emptyState { text-align: center; padding: 40px 20px; color: #555; font-size: 14px; }
 .helperText { font-size: 12px; color: #666; line-height: 1.4; }
 
 @media (max-width: 768px) {
@@ -142,22 +148,26 @@
   .kpiCard { min-width: 0; padding: 10px 8px; }
   .kpiValue { font-size: 18px; }
   .kpiLabel { font-size: 10px; }
-  .goalGrid { grid-template-columns: 1fr; gap: 8px; }
+  .conceptGrid { grid-template-columns: 1fr; gap: 8px; }
   .teamGrid { grid-template-columns: 1fr; }
+  .splitRow { grid-template-columns: 1fr; gap: 8px; }
   .fieldRow { flex-direction: column; gap: 8px; }
   .fieldRow > * { min-width: 0; }
+  .controlsRow { flex-direction: column; gap: 6px; }
+  .controlsRow .select { max-width: 100%; }
+  .searchInput { max-width: 100%; width: 100%; }
   .inlineForm { flex-direction: column; gap: 6px; padding: 10px; }
-  .inlineForm .input, .inlineForm .select { width: 100%; min-width: 0; flex: none; }
+  .inlineForm .input, .inlineForm .select, .inlineForm .textarea { width: 100%; min-width: 0; flex: none; }
   .dnaBlock { padding: 12px; margin-bottom: 12px; }
   .blockHeader { flex-wrap: wrap; gap: 6px; }
-  .tableRow { min-width: 400px; font-size: 12px; }
-  .meterRow { gap: 6px; }
+  .compRow { grid-template-columns: 1fr; font-size: 12px; }
   .aiBox { padding: 12px; }
   .aiOutput { font-size: 11px; }
-  .ghostBtn, .deleteBtn, .miniSelect { min-height: auto; min-width: auto; }
+  .chipBtn { font-size: 11px; padding: 4px 10px; }
+  .ghostBtn, .deleteBtn, .favBtn, .checkBtn, .miniSelect { min-height: auto; min-width: auto; }
   .primaryBtn { padding: 10px 16px; font-size: 14px; width: 100%; }
-  .healthCard { flex-direction: column; text-align: center; }
-  .barChart { height: 100px; }
+  .overlay { padding: 8px; }
+  .wizardPanel { padding: 20px; max-height: 90vh; overflow-y: auto; }
   .exportGrid { flex-direction: column; }
 }
 

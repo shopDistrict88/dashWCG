@@ -402,10 +402,9 @@
   margin: 0;
 }
 
-/* Mobile Responsive */
 @media (max-width: 768px) {
   .container {
-    padding: var(--spacing-lg);
+    padding: 8px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -414,16 +413,40 @@
 
   .header {
     flex-direction: column;
-    gap: var(--spacing-md);
+    gap: 8px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
   }
 
   .uploadBtn {
     width: 100%;
   }
 
+  .tabs {
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabs button {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
   .filesHeader {
     flex-direction: column;
-    gap: var(--spacing-md);
+    gap: 8px;
   }
 
   .filterSelect,
@@ -434,5 +457,84 @@
   .filesGrid,
   .moodboardsGrid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .fileCard {
+    border-radius: 8px;
+  }
+
+  .fileInfo {
+    padding: 12px;
+  }
+
+  .fileActions {
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  .actionBtn {
+    min-height: auto;
+    min-width: auto;
+  }
+
+  .moodboardCard {
+    border-radius: 8px;
+  }
+
+  .moodboardInfo {
+    padding: 12px;
+  }
+
+  .createBtn {
+    width: 100%;
+  }
+
+  .moodboardsHeader {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .categoryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .categoryCard {
+    padding: 12px;
+  }
+
+  .inspirationTip {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 6px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .fileInfo {
+    padding: 10px;
+  }
+
+  .fileActions {
+    padding: 10px;
+  }
+
+  .moodboardInfo {
+    padding: 10px;
+  }
+
+  .categoryCard {
+    padding: 10px;
+  }
+
+  .inspirationTip {
+    padding: 10px;
   }
 }

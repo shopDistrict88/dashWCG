@@ -1,359 +1,148 @@
-import { useState } from 'react'
-import styles from './Placeholder.module.css'
+import { useState, useMemo } from 'react'
+import { useCloudStorage } from '../hooks/useCloudStorage'
+import styles from './SystemPages.module.css'
 
-// Creative Intelligence Hub - Advanced creative analytics and monitoring
+const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+const now = () => new Date().toISOString()
+const fmtDate = (d: string) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'
+
+/* ═══════════════════════════════════════════════════════════
+   CREATIVE INTELLIGENCE — merged hub
+   Signals + Ideas + Quiet Wins + Insights + Moodboards
+   Features: 61-100, 181-190, 211-216
+   ═══════════════════════════════════════════════════════════ */
+
+type CITab = 'signals' | 'ideas' | 'wins' | 'insights' | 'moodboards'
+
+interface CreativeSignal { id: string; title: string; type: string; score: number; trend: 'Rising' | 'Stable' | 'Declining'; notes: string; createdAt: string }
+interface Idea { id: string; title: string; description: string; category: string; impact: 'high' | 'medium' | 'low'; feasibility: 'easy' | 'medium' | 'hard'; score: number; status: 'new' | 'evaluating' | 'approved' | 'archived'; tags: string[]; linkedProject: string; createdAt: string }
+interface Win { id: string; title: string; description: string; date: string; scope: 'personal' | 'team'; milestone: boolean }
+interface Insight { id: string; title: string; description: string; impact: string; actionable: boolean; source: string; createdAt: string }
+interface MoodItem { id: string; title: string; url: string; tags: string[]; boardName: string; createdAt: string }
+
 export function CreativeIntelligence() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'momentum' | 'trust' | 'impact' | 'drift'>('momentum')
+  const [tab, setTab] = useState<CITab>('signals')
+  const [signals, setSignals] = useCloudStorage<CreativeSignal[]>('ci_signals', [])
+  const [ideas, setIdeas] = useCloudStorage<Idea[]>('ci_ideas', [])
+  const [wins, setWins] = useCloudStorage<Win[]>('ci_wins', [])
+  const [insights, setInsights] = useCloudStorage<Insight[]>('ci_insights', [])
+  const [moods, setMoods] = useCloudStorage<MoodItem[]>('ci_moods', [])
+  const [search, setSearch] = useState(''); const [showForm, setShowForm] = useState<string | null>(null)
+  const [focusMode, setFocusMode] = useState(false)
 
-  const momentumData = [
-    { id: '1', metric: 'Output Velocity', score: 87, trend: 'Rising', period: 'Last 30 days' },
-    { id: '2', metric: 'Quality Consistency', score: 92, trend: 'Stable', period: 'Last 30 days' },
-    { id: '3', metric: 'Creative Flow', score: 78, trend: 'Rising', period: 'Last 30 days' },
-  ]
-
-  const trustScores = [
-    { id: '1', audience: 'Core Followers', score: 94, change: '+3', engagement: 'Very High' },
-    { id: '2', audience: 'New Audience', score: 72, change: '+8', engagement: 'Growing' },
-    { id: '3', audience: 'Industry Peers', score: 88, change: '+1', engagement: 'High' },
-  ]
-
-  const impactCurves = [
-    { id: '1', release: 'Fall Collection 2025', peak: 'Week 3', decay: 'Slow', longTerm: 92 },
-    { id: '2', release: 'Brand Campaign', peak: 'Week 1', decay: 'Fast', longTerm: 68 },
-    { id: '3', release: 'Collaboration Drop', peak: 'Week 2', decay: 'Medium', longTerm: 84 },
-  ]
-
-  const driftDetection = [
-    { id: '1', element: 'Visual Identity', drift: 'Low', lastCheck: '2026-01-20', status: 'Aligned' },
-    { id: '2', element: 'Tone of Voice', drift: 'Medium', lastCheck: '2026-01-15', status: 'Monitor' },
-    { id: '3', element: 'Brand Values', drift: 'None', lastCheck: '2026-01-22', status: 'Locked' },
-  ]
-
-  const filteredMomentum = momentumData.filter(m =>
-    m.metric.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredTrust = trustScores.filter(t =>
-    t.audience.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredImpact = impactCurves.filter(i =>
-    i.release.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const filteredDrift = driftDetection.filter(d =>
-    d.element.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const calcScore = (impact: string, feas: string) => ({ high: 3, medium: 2, low: 1 }[impact] || 2) * 30 + ({ easy: 3, medium: 2, hard: 1 }[feas] || 2) * 10
+  const sortedIdeas = useMemo(() => { let r = [...ideas]; if (search) r = r.filter(i => i.title.toLowerCase().includes(search.toLowerCase())); return r.sort((a, b) => b.score - a.score) }, [ideas, search])
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Creative Intelligence</h1>
-          <p className={styles.subtitle}>Momentum tracking, trust scoring & brand drift detection</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert('Generate intelligence report')}>
-          Generate Report
-        </button>
-      </div>
+    <div className={`${styles.container} ${focusMode ? styles.focusMode : ''}`}>
+      <header className={styles.header}><div className={styles.headerLeft}><h1 className={styles.title}>Creative Intelligence</h1><p className={styles.subtitle}>Signals · Ideas · Wins · Insights · Inspiration</p></div>
+        <div className={styles.headerRight}><button className={styles.secondaryBtn} onClick={() => setFocusMode(!focusMode)}>{focusMode ? 'Exit Focus' : 'Focus (#80)'}</button></div></header>
+      <nav className={styles.tabNav}>{(['signals', 'ideas', 'wins', 'insights', 'moodboards'] as CITab[]).map(t => <button key={t} className={`${styles.tabBtn} ${tab === t ? styles.tabActive : ''}`} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</nav>
 
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search metrics..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
-
-      <div className={styles.tabs}>
-        <button 
-          className={`${styles.tab} ${activeTab === 'momentum' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('momentum')}
-        >
-          Creative Momentum
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'trust' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('trust')}
-        >
-          Audience Trust
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'impact' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('impact')}
-        >
-          Release Impact
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'drift' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('drift')}
-        >
-          Brand Drift
-        </button>
-      </div>
-
-      {activeTab === 'momentum' && (
-        <div className={styles.grid}>
-          {filteredMomentum.map(m => (
-            <div key={m.id} className={styles.card}>
-              <h3>{m.metric}</h3>
-              <p className={styles.meta}>{m.period}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Score</span>
-                  <span className={styles.value}>{m.score}/100</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Trend</span>
-                  <span className={styles.value}>{m.trend}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`View ${m.metric} details`)}>
-                View Details
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'trust' && (
-        <div className={styles.grid}>
-          {filteredTrust.map(t => (
-            <div key={t.id} className={styles.card}>
-              <h3>{t.audience}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Trust Score</span>
-                  <span className={styles.value}>{t.score}/100</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Change</span>
-                  <span className={styles.value}>{t.change}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Engagement</span>
-                  <span className={styles.value}>{t.engagement}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Analyze ${t.audience}`)}>
-                Analyze
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'impact' && (
-        <div className={styles.grid}>
-          {filteredImpact.map(i => (
-            <div key={i.id} className={styles.card}>
-              <h3>{i.release}</h3>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Peak</span>
-                  <span className={styles.value}>{i.peak}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Decay</span>
-                  <span className={styles.value}>{i.decay}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Long-term</span>
-                  <span className={styles.value}>{i.longTerm}/100</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`View ${i.release} curve`)}>
-                View Curve
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'drift' && (
-        <div className={styles.grid}>
-          {filteredDrift.map(d => (
-            <div key={d.id} className={styles.card}>
-              <span className={styles.category}>{d.status}</span>
-              <h3>{d.element}</h3>
-              <p className={styles.meta}>Last checked: {new Date(d.lastCheck).toLocaleDateString()}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Drift Level</span>
-                  <span className={styles.value}>{d.drift}</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Analyze ${d.element} drift`)}>
-                Analyze Drift
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// Quiet Wins & Signal Tracking
-export function QuietWins() {
-  const [searchQuery, setSearchQuery] = useState('')
-
-  const wins = [
-    { id: '1', win: 'Consistency milestone: 90 days', date: '2026-01-22', visibility: 'Private', impact: 'High' },
-    { id: '2', win: 'Quality improvement detected', date: '2026-01-18', visibility: 'Team', impact: 'Medium' },
-    { id: '3', win: 'Process optimization complete', date: '2026-01-10', visibility: 'Private', impact: 'Very High' },
-  ]
-
-  const filteredWins = wins.filter(w =>
-    w.win.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Quiet Wins Tracker</h1>
-          <p className={styles.subtitle}>Non-public achievements and internal progress</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert('Log quiet win')}>
-          Log Win
-        </button>
-      </div>
-
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search wins..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
-
-      <div className={styles.grid}>
-        {filteredWins.map(w => (
-          <div key={w.id} className={styles.card}>
-            <span className={styles.category}>{w.visibility}</span>
-            <h3>{w.win}</h3>
-            <p className={styles.meta}>{new Date(w.date).toLocaleDateString()}</p>
-            <div className={styles.metrics}>
-              <div>
-                <span className={styles.label}>Impact</span>
-                <span className={styles.value}>{w.impact}</span>
-              </div>
-            </div>
-            <button className={styles.secondaryBtn} onClick={() => alert(`View ${w.win}`)}>
-              View Details
-            </button>
+      <main className={styles.mainContent}>
+        {/* ═══ SIGNALS (#61-68) ═══ */}
+        {tab === 'signals' && <div className={styles.section}>
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Signals</div><div className={styles.kpiValue}>{signals.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Rising</div><div className={styles.kpiValue}>{signals.filter(s => s.trend === 'Rising').length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Avg Score</div><div className={styles.kpiValue}>{signals.length ? Math.round(signals.reduce((a, s) => a + s.score, 0) / signals.length) : 0}</div></div>
           </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// Idea Management System
-export function IdeaManagement() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'dormant' | 'compression' | 'expansion'>('dormant')
-
-  const dormantIdeas = [
-    { id: '1', idea: 'Modular product system', dormant: '45 days', potential: 'High', revivedCount: 2 },
-    { id: '2', idea: 'Sustainable packaging redesign', dormant: '120 days', potential: 'Medium', revivedCount: 0 },
-    { id: '3', idea: 'Collaboration framework', dormant: '30 days', potential: 'Very High', revivedCount: 1 },
-  ]
-
-  const filteredIdeas = dormantIdeas.filter(i =>
-    i.idea.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <h1>Idea Management</h1>
-          <p className={styles.subtitle}>Dormancy tracking, compression & expansion tools</p>
-        </div>
-        <button className={styles.primaryBtn} onClick={() => alert('Add idea')}>
-          Add Idea
-        </button>
-      </div>
-
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search ideas..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
-
-      <div className={styles.tabs}>
-        <button 
-          className={`${styles.tab} ${activeTab === 'dormant' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('dormant')}
-        >
-          Dormant Ideas
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'compression' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('compression')}
-        >
-          Compression Lab
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'expansion' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('expansion')}
-        >
-          Expansion Lab
-        </button>
-      </div>
-
-      {activeTab === 'dormant' && (
-        <div className={styles.grid}>
-          {filteredIdeas.map(i => (
-            <div key={i.id} className={styles.card}>
-              <h3>{i.idea}</h3>
-              <p className={styles.meta}>Dormant for {i.dormant}</p>
-              <div className={styles.metrics}>
-                <div>
-                  <span className={styles.label}>Potential</span>
-                  <span className={styles.value}>{i.potential}</span>
-                </div>
-                <div>
-                  <span className={styles.label}>Revived</span>
-                  <span className={styles.value}>{i.revivedCount}x</span>
-                </div>
-              </div>
-              <button className={styles.secondaryBtn} onClick={() => alert(`Revive ${i.idea}`)}>
-                Revive Idea
-              </button>
+          <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'signal' ? null : 'signal')}>+ Track Signal (#61)</button>
+          {showForm === 'signal' && <div className={styles.inlineForm}><input className={styles.input} placeholder="Signal name" id="cs_title" /><select className={styles.select} id="cs_type"><option>Visual</option><option>Audience</option><option>Market</option><option>Creative</option></select><input className={styles.input} type="number" placeholder="Score 0-100" id="cs_score" /><select className={styles.select} id="cs_trend"><option>Rising</option><option>Stable</option><option>Declining</option></select><button className={styles.primaryBtn} onClick={() => { const t = (document.getElementById('cs_title') as HTMLInputElement).value; if (t) { setSignals(p => [{ id: uid(), title: t, type: (document.getElementById('cs_type') as HTMLSelectElement).value, score: Number((document.getElementById('cs_score') as HTMLInputElement).value) || 50, trend: (document.getElementById('cs_trend') as HTMLSelectElement).value as any, notes: '', createdAt: now() }, ...p]); setShowForm(null) } }}>Add</button></div>}
+          <div className={styles.grid}>{signals.map(s => (
+            <div key={s.id} className={styles.card}><div className={styles.cardHeader}><span className={styles.cardTitle}>{s.title}</span><span className={`${styles.statusBadge} ${styles[`st_${s.trend.toLowerCase()}`]}`}>{s.trend}</span></div>
+              <div className={styles.cardMeta}><span className={styles.tag}>{s.type}</span><span className={styles.scoreBadge}>{s.score}/100</span></div>
+              <div className={styles.cardActions}><button className={styles.deleteBtn} onClick={() => setSignals(p => p.filter(x => x.id !== s.id))}>×</button></div>
             </div>
-          ))}
-        </div>
-      )}
+          ))}</div>
+          <div className={styles.aiBox}><div className={styles.aiBoxHeader}>AI Advisory (#67)</div><pre className={styles.aiOutput}>{`Creative Intelligence:\n${'─'.repeat(35)}\n• ${signals.length} signals tracked\n• ${signals.filter(s => s.trend === 'Rising').length} rising trends\n• Top signal: ${signals.length ? [...signals].sort((a, b) => b.score - a.score)[0]?.title : 'N/A'}\n• Recommendation: ${signals.filter(s => s.trend === 'Rising').length > 2 ? 'Multiple rising signals — consider cross-pollination.' : 'Build signal volume for better insights.'}`}</pre></div>
+        </div>}
 
-      {activeTab === 'compression' && (
-        <div className={styles.emptyState}>
-          <p>Compress complex ideas into core concepts</p>
-          <button className={styles.secondaryBtn} onClick={() => alert('Start compression')}>
-            Start Compression
-          </button>
-        </div>
-      )}
+        {/* ═══ IDEAS (#91-100, #181-190) ═══ */}
+        {tab === 'ideas' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Idea Management & Inspiration</h2>
+          <div className={styles.controlsRow}><input className={styles.searchInput} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search ideas (#92)..." /><button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'idea' ? null : 'idea')}>+ Capture Idea (#91)</button></div>
+          {showForm === 'idea' && <div className={styles.inlineForm}>
+            <input className={styles.input} placeholder="Idea title" id="ci_title" />
+            <select className={styles.select} id="ci_cat"><option>Product</option><option>Content</option><option>Feature</option><option>Process</option><option>Creative</option></select>
+            <select className={styles.select} id="ci_impact"><option value="medium">Medium Impact</option><option value="high">High Impact</option><option value="low">Low Impact</option></select>
+            <select className={styles.select} id="ci_feas"><option value="medium">Medium Feasibility</option><option value="easy">Easy</option><option value="hard">Hard</option></select>
+            <textarea className={styles.textarea} rows={2} placeholder="Description..." id="ci_desc" style={{ flex: 1, minWidth: 160 }} />
+            <button className={styles.primaryBtn} onClick={() => { const t = (document.getElementById('ci_title') as HTMLInputElement).value; const impact = (document.getElementById('ci_impact') as HTMLSelectElement).value; const feas = (document.getElementById('ci_feas') as HTMLSelectElement).value; if (t) { setIdeas(p => [{ id: uid(), title: t, description: (document.getElementById('ci_desc') as HTMLTextAreaElement).value, category: (document.getElementById('ci_cat') as HTMLSelectElement).value, impact: impact as any, feasibility: feas as any, score: calcScore(impact, feas), status: 'new', tags: [], linkedProject: '', createdAt: now() }, ...p]); setShowForm(null) } }}>Add</button>
+          </div>}
+          <div className={styles.grid}>{sortedIdeas.map(i => (
+            <div key={i.id} className={styles.card}>
+              <div className={styles.cardHeader}><span className={styles.cardTitle}>{i.title}</span><span className={styles.scoreBadge}>Score: {i.score}</span></div>
+              <div className={styles.cardMeta}><span className={styles.tag}>{i.category}</span><span className={styles.tag}>{i.impact} impact</span><span className={styles.tag}>{i.feasibility}</span></div>
+              {i.description && <p className={styles.cardPreview}>{i.description.slice(0, 80)}</p>}
+              <div className={styles.cardActions}>
+                <select className={styles.miniSelect} value={i.status} onChange={e => setIdeas(p => p.map(x => x.id === i.id ? { ...x, status: e.target.value as any } : x))}><option value="new">New</option><option value="evaluating">Evaluating</option><option value="approved">Approved</option><option value="archived">Archived</option></select>
+                <button className={styles.deleteBtn} onClick={() => setIdeas(p => p.filter(x => x.id !== i.id))}>×</button>
+              </div>
+            </div>
+          ))}</div>
+        </div>}
 
-      {activeTab === 'expansion' && (
-        <div className={styles.emptyState}>
-          <p>Expand concepts into detailed frameworks</p>
-          <button className={styles.secondaryBtn} onClick={() => alert('Start expansion')}>
-            Start Expansion
-          </button>
-        </div>
-      )}
+        {/* ═══ WINS (#81-90) ═══ */}
+        {tab === 'wins' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Quiet Wins Tracker</h2>
+          <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'win' ? null : 'win')}>+ Log Win (#81)</button>
+          {showForm === 'win' && <div className={styles.inlineForm}><input className={styles.input} placeholder="Achievement" id="cw_title" /><input className={styles.input} placeholder="Description" id="cw_desc" /><select className={styles.select} id="cw_scope"><option value="personal">Personal</option><option value="team">Team</option></select><button className={styles.primaryBtn} onClick={() => { const t = (document.getElementById('cw_title') as HTMLInputElement).value; if (t) { setWins(p => [{ id: uid(), title: t, description: (document.getElementById('cw_desc') as HTMLInputElement).value, date: now(), scope: (document.getElementById('cw_scope') as HTMLSelectElement).value as any, milestone: false }, ...p]); setShowForm(null) } }}>Log</button></div>}
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Total Wins</div><div className={styles.kpiValue}>{wins.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Milestones (#84)</div><div className={styles.kpiValue}>{wins.filter(w => w.milestone).length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Personal</div><div className={styles.kpiValue}>{wins.filter(w => w.scope === 'personal').length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Team</div><div className={styles.kpiValue}>{wins.filter(w => w.scope === 'team').length}</div></div>
+          </div>
+          <div className={styles.timeline}>{wins.map(w => (
+            <div key={w.id} className={styles.timelineItem}><span className={styles.timelineDot} /><div style={{ flex: 1 }}>
+              <div className={styles.cardHeader}><span className={styles.fontName}>{w.title}</span><span className={styles.helperText}>{fmtDate(w.date)}</span></div>
+              {w.description && <p className={styles.cardPreview}>{w.description}</p>}
+              <div className={styles.cardActions}><button className={`${styles.ghostBtn} ${w.milestone ? styles.chipActive : ''}`} onClick={() => setWins(p => p.map(x => x.id === w.id ? { ...x, milestone: !x.milestone } : x))}>{w.milestone ? '★ Milestone' : '☆ Mark Milestone'}</button><span className={styles.tag}>{w.scope}</span><button className={styles.deleteBtn} onClick={() => setWins(p => p.filter(x => x.id !== w.id))}>×</button></div>
+            </div></div>
+          ))}</div>
+          <div className={styles.exportGrid}><button className={styles.exportBtn} onClick={() => { const d = wins.map(w => `${w.milestone ? '★ ' : ''}${w.title} (${fmtDate(w.date)}) — ${w.description}`).join('\n'); const b = new Blob([d], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `wins-${Date.now()}.txt`; a.click() }}>Export Wins (#90)</button></div>
+        </div>}
+
+        {/* ═══ INSIGHTS (#211-216) ═══ */}
+        {tab === 'insights' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Insights Lab</h2>
+          <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'insight' ? null : 'insight')}>+ Add Insight (#211)</button>
+          {showForm === 'insight' && <div className={styles.inlineForm}><input className={styles.input} placeholder="Insight title" id="ci2_title" /><input className={styles.input} placeholder="Description" id="ci2_desc" /><select className={styles.select} id="ci2_impact"><option>High</option><option>Medium</option><option>Low</option></select><button className={styles.primaryBtn} onClick={() => { const t = (document.getElementById('ci2_title') as HTMLInputElement).value; if (t) { setInsights(p => [{ id: uid(), title: t, description: (document.getElementById('ci2_desc') as HTMLInputElement).value, impact: (document.getElementById('ci2_impact') as HTMLSelectElement).value, actionable: true, source: '', createdAt: now() }, ...p]); setShowForm(null) } }}>Add</button></div>}
+          <div className={styles.kpiRow}>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Total</div><div className={styles.kpiValue}>{insights.length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>Actionable</div><div className={styles.kpiValue}>{insights.filter(i => i.actionable).length}</div></div>
+            <div className={styles.kpiCard}><div className={styles.kpiLabel}>High Impact</div><div className={styles.kpiValue}>{insights.filter(i => i.impact === 'High').length}</div></div>
+          </div>
+          <div className={styles.grid}>{insights.map(i => (
+            <div key={i.id} className={styles.card}><div className={styles.cardHeader}><span className={styles.cardTitle}>{i.title}</span><span className={`${styles.statusBadge} ${styles[`st_${i.impact.toLowerCase()}`]}`}>{i.impact}</span></div>
+              {i.description && <p className={styles.cardPreview}>{i.description}</p>}
+              <div className={styles.cardActions}><button className={`${styles.ghostBtn} ${i.actionable ? styles.chipActive : ''}`} onClick={() => setInsights(p => p.map(x => x.id === i.id ? { ...x, actionable: !x.actionable } : x))}>{i.actionable ? 'Actionable' : 'Note'}</button><button className={styles.deleteBtn} onClick={() => setInsights(p => p.filter(x => x.id !== i.id))}>×</button></div>
+            </div>
+          ))}</div>
+          <div className={styles.aiBox}><div className={styles.aiBoxHeader}>AI Recommendations (#215)</div><pre className={styles.aiOutput}>{`Insights Summary:\n${'─'.repeat(35)}\n• ${insights.length} insights captured\n• ${insights.filter(i => i.actionable).length} actionable items\n• ${ideas.length} ideas in pipeline\n• ${wins.length} wins logged\n• Focus: ${insights.filter(i => i.impact === 'High').length > 0 ? 'Act on high-impact insights first.' : 'Gather more data points.'}`}</pre></div>
+          <div className={styles.exportGrid}><button className={styles.exportBtn} onClick={() => { const d = insights.map(i => `${i.title} (${i.impact}) — ${i.description}`).join('\n'); const b = new Blob([d], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `insights-${Date.now()}.txt`; a.click() }}>Export Insights (#216)</button></div>
+        </div>}
+
+        {/* ═══ MOODBOARDS (#184-190) ═══ */}
+        {tab === 'moodboards' && <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Ideas & Inspiration</h2>
+          <button className={styles.primaryBtn} onClick={() => setShowForm(showForm === 'mood' ? null : 'mood')}>+ Add Inspiration (#181)</button>
+          {showForm === 'mood' && <div className={styles.inlineForm}><input className={styles.input} placeholder="Title" id="cm_title" /><input className={styles.input} placeholder="URL / Link" id="cm_url" /><input className={styles.input} placeholder="Board name" id="cm_board" /><button className={styles.primaryBtn} onClick={() => { const t = (document.getElementById('cm_title') as HTMLInputElement).value; if (t) { setMoods(p => [{ id: uid(), title: t, url: (document.getElementById('cm_url') as HTMLInputElement).value, tags: [], boardName: (document.getElementById('cm_board') as HTMLInputElement).value || 'General', createdAt: now() }, ...p]); setShowForm(null) } }}>Add</button></div>}
+          {(() => { const boards = [...new Set(moods.map(m => m.boardName || 'General'))]; return boards.map(b => (
+            <div key={b} className={styles.dnaBlock}><label className={styles.label}>{b}</label>
+              <div className={styles.grid}>{moods.filter(m => (m.boardName || 'General') === b).map(m => (
+                <div key={m.id} className={styles.card}><span className={styles.cardTitle}>{m.title}</span>{m.url && <span className={styles.helperText}>{m.url}</span>}
+                  <div className={styles.cardActions}><button className={styles.deleteBtn} onClick={() => setMoods(p => p.filter(x => x.id !== m.id))}>×</button></div>
+                </div>
+              ))}</div>
+            </div>
+          )) })()}
+        </div>}
+      </main>
     </div>
   )
 }
+
+export { CreativeIntelligence as QuietWins }
+export { CreativeIntelligence as IdeaManagement }

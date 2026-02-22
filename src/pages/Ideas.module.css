@@ -400,85 +400,42 @@
   }
 }
 
-/* Extra Small: 480px and below */
-@media (max-width: 480px) {
-  .container {
-    padding: 8px;
-  }
+@media (max-width: 768px) {
+  .container { padding: 8px; overflow-x: hidden; }
 
-  .header {
-    flex-direction: column;
-    gap: 10px;
-  }
+  .header { flex-direction: column; gap: 8px; }
+  .title { font-size: 20px; }
+  .subtitle { font-size: 12px; }
 
-  .title {
-    font-size: 18px;
-  }
+  .statsBar { grid-template-columns: repeat(2, 1fr); }
 
-  .controlsBar {
-    flex-direction: column;
-    gap: 8px;
-  }
+  .layout { grid-template-columns: 1fr; }
+  .formSection { position: static; }
 
+  .formRow { grid-template-columns: 1fr; }
+
+  .controlsBar { flex-direction: column; align-items: stretch; }
   .filterControls,
-  .sortControls {
-    width: 100%;
-    min-width: 0;
-  }
+  .sortControls { width: 100%; min-width: 0; }
 
-  button {
-    min-height: 44px;
-    font-size: 13px;
-  }
+  .scoreSection { grid-template-columns: 1fr; gap: 8px; }
+  .scoreDisplay { border-right: none; border-bottom: 1px solid #333333; padding-bottom: 8px; }
 
-  input, select {
-    font-size: 16px !important;
-  }
+  .noteCard { padding: 12px; }
+
+  .deleteBtn { min-height: auto; min-width: auto; }
+
+  .submitBtn { width: 100%; }
 }
 
-@media (max-width: 640px) {
-  .container {
-    padding: 12px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow-x: hidden;
-  }
+@media (max-width: 430px) {
+  .container { padding: 6px; }
+  .title { font-size: 18px; }
 
-  .title {
-    font-size: 24px;
-  }
+  .statsBar { grid-template-columns: 1fr; }
+  .stat { padding: 10px; }
 
-  .statsBar {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .formRow {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .scoreSection {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .scoreDisplay {
-    border-right: none;
-    border-bottom: 1px solid #333333;
-    padding-bottom: 8px;
-    margin-bottom: 0;
-  }
-
-  .controlsBar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filterControls,
-  .sortControls {
-    width: 100%;
-  }
+  .noteCard { padding: 10px; }
+  .formSection { padding: 16px; }
 }
 

@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react'
 import type { User, Dashboard, Toast } from '../types'
+import { supabase } from '../lib/supabase'
+import { useAuth } from './AuthContext'
 
 interface AppContextType {
   user: User | null
@@ -12,9 +14,6 @@ interface AppContextType {
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
-
-const STORAGE_KEY = 'wcg_user'
-const DASHBOARD_KEY = 'wcg_dashboard'
 
 const defaultDashboard: Dashboard = {
   creators: [],
@@ -31,60 +30,70 @@ const defaultDashboard: Dashboard = {
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const { user: authUser, logout: authLogout } = useAuth()
   const [user, setUser] = useState<User | null>(null)
   const [dashboard, setDashboard] = useState<Dashboard>(defaultDashboard)
   const [toasts, setToasts] = useState<Toast[]>([])
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const loaded = useRef(false)
 
-  // Load user from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      setUser(JSON.parse(stored))
-    }
-  }, [])
+    if (!authUser) { setUser(null); setDashboard(defaultDashboard); loaded.current = false; return }
 
-  // Load dashboard from localStorage on mount
-  useEffect(() => {
-    if (user) {
-      const stored = localStorage.getItem(DASHBOARD_KEY)
-      if (stored) {
-        setDashboard(JSON.parse(stored))
-      }
+    const appUser: User = {
+      id: authUser.id,
+      email: authUser.email || '',
+      name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || '',
+      createdAt: authUser.created_at || new Date().toISOString(),
     }
-  }, [user])
+    setUser(appUser)
 
-  // Save user to localStorage
+    supabase
+      .from('dashboard_data')
+      .select('data')
+      .eq('user_id', authUser.id)
+      .eq('module_key', 'wcg_dashboard')
+      .maybeSingle()
+      .then(({ data: row }) => {
+        if (row?.data) {
+          setDashboard({ ...defaultDashboard, ...(row.data as Partial<Dashboard>) })
+        }
+        loaded.current = true
+      })
+  }, [authUser])
+
   const handleSetUser = (newUser: User | null) => {
     setUser(newUser)
-    if (newUser) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser))
-    } else {
-      localStorage.removeItem(STORAGE_KEY)
-      localStorage.removeItem(DASHBOARD_KEY)
-    }
   }
 
-  // Save dashboard to localStorage
   const handleUpdateDashboard = (updates: Partial<Dashboard>) => {
     const updated = { ...dashboard, ...updates }
     setDashboard(updated)
-    localStorage.setItem(DASHBOARD_KEY, JSON.stringify(updated))
+
+    if (!authUser) return
+    if (saveTimer.current) clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(() => {
+      supabase
+        .from('dashboard_data')
+        .upsert(
+          { user_id: authUser.id, module_key: 'wcg_dashboard', data: updated as unknown as Record<string, unknown> },
+          { onConflict: 'user_id,module_key' }
+        )
+        .then()
+    }, 800)
   }
 
-  // Add toast notification
   const handleAddToast = (message: string, type: 'success' | 'error' | 'info') => {
     const id = Math.random().toString(36).substr(2, 9)
     const toast: Toast = { id, message, type, duration: 3000 }
     setToasts((prev) => [...prev, toast])
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id))
-    }, 3000)
+    setTimeout(() => { setToasts((prev) => prev.filter((t) => t.id !== id)) }, 3000)
   }
 
-  // Logout
   const handleLogout = () => {
-    handleSetUser(null)
+    setUser(null)
     setDashboard(defaultDashboard)
+    authLogout()
   }
 
   return (
@@ -106,8 +115,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
 export function useApp() {
   const context = useContext(AppContext)
-  if (!context) {
-    throw new Error('useApp must be used within AppProvider')
-  }
+  if (!context) throw new Error('useApp must be used within AppProvider')
   return context
 }

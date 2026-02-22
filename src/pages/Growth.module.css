@@ -1,174 +1,200 @@
-.container {
-  width: 100%;
-  padding: 16px;
-  box-sizing: border-box;
+/* Growth Experiments — Apple-style dark theme */
+.container { width: 100%; padding: 24px; box-sizing: border-box; color: #fff; }
+.focusMode .dnaBlock { display: none; }
+.focusMode .dnaBlock:first-child { display: block; }
+
+/* Header */
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+.headerLeft { min-width: 0; }
+.headerRight { display: flex; gap: 8px; flex-shrink: 0; }
+.title { font-size: 28px; font-weight: 700; color: #fff; margin: 0; letter-spacing: -0.5px; }
+.subtitle { font-size: 13px; color: #666; margin-top: 4px; }
+
+/* Tabs */
+.tabNav { display: flex; gap: 4px; margin-bottom: 24px; overflow-x: auto; border-bottom: 1px solid #222; }
+.tabBtn { background: transparent; border: none; color: #777; font-size: 13px; padding: 10px 16px; cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; white-space: nowrap; }
+.tabBtn:hover { color: #ccc; }
+.tabActive { color: #fff; border-bottom-color: #fff; }
+
+/* KPI */
+.kpiRow { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.kpiCard { background: #111; border: 1px solid #222; border-radius: 8px; padding: 16px; transition: border-color .2s; }
+.kpiCard:hover { border-color: #444; }
+.kpiLabel { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.kpiValue { font-size: 22px; font-weight: 700; color: #fff; }
+
+/* Controls */
+.controlsRow { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.searchInput { flex: 1; min-width: 160px; padding: 8px 14px; background: #111; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 13px; }
+.searchInput:focus { outline: none; border-color: #555; }
+
+/* Buttons */
+.primaryBtn { padding: 8px 18px; background: #fff; color: #000; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; white-space: nowrap; }
+.primaryBtn:hover { background: #ddd; }
+.secondaryBtn { padding: 8px 18px; background: transparent; color: #999; border: 1px solid #333; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all .2s; }
+.secondaryBtn:hover { color: #fff; border-color: #555; }
+.ghostBtn { padding: 6px 12px; background: transparent; color: #888; border: 1px solid #333; border-radius: 5px; font-size: 12px; cursor: pointer; transition: all .2s; white-space: nowrap; }
+.ghostBtn:hover { color: #fff; border-color: #555; }
+.deleteBtn { padding: 4px 8px; background: transparent; color: #555; border: 1px solid #333; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all .15s; }
+.deleteBtn:hover { color: #f44; border-color: #f44; }
+.exportBtn { padding: 8px 16px; background: #111; color: #aaa; border: 1px solid #333; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all .2s; }
+.exportBtn:hover { color: #fff; border-color: #555; }
+.exportGrid { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+/* Section */
+.section { width: 100%; }
+.sectionTitle { font-size: 18px; font-weight: 600; color: #fff; margin: 0 0 20px; }
+.mainContent { width: 100%; }
+
+/* Cards */
+.cardGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.card { background: #111; border: 1px solid #222; border-radius: 8px; padding: 18px; transition: border-color .2s; cursor: pointer; }
+.card:hover { border-color: #444; }
+.cardSelected { border-color: #fff; }
+.cardHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.cardTitle { font-size: 15px; font-weight: 600; color: #fff; }
+.cardMeta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.cardPreview { font-size: 13px; color: #777; margin: 0 0 10px; line-height: 1.4; }
+.cardActions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+
+/* Status badges */
+.statusBadge { padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+.st_active { background: #162916; color: #4caf50; }
+.st_paused { background: #2a2a1a; color: #ffa726; }
+.st_completed { background: #1a1a2e; color: #7c8fff; }
+
+/* Result badges */
+.resultBadge { padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.res_positive { background: #162916; color: #4caf50; }
+.res_negative { background: #2a1a1a; color: #f44; }
+.res_neutral { background: #1a1a1a; color: #888; }
+.res_pending { background: #1a1a2e; color: #7c8fff; }
+
+/* Tags */
+.tag { padding: 3px 10px; background: #1a1a1a; color: #888; border: 1px solid #2a2a2a; border-radius: 10px; font-size: 11px; font-weight: 500; }
+.scoreBadge { padding: 3px 10px; background: #1a1a2e; color: #7c8fff; border-radius: 10px; font-size: 11px; font-weight: 600; }
+
+/* Score rows */
+.scoreRow { display: flex; gap: 16px; margin: 8px 0; flex-wrap: wrap; }
+.scoreItem { display: flex; flex-direction: column; gap: 2px; }
+.scoreLabel { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: .5px; }
+.scoreVal { font-size: 14px; font-weight: 600; color: #fff; }
+
+/* DNA blocks */
+.dnaBlock { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+.blockHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.label { font-size: 12px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; display: block; }
+
+/* Forms */
+.formPanel { background: #111; border: 1px solid #222; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+.formStack { display: flex; flex-direction: column; gap: 14px; }
+.fieldRow { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: end; }
+.formGroup { display: flex; flex-direction: column; gap: 4px; }
+.formGroup label { font-size: 12px; font-weight: 600; color: #999; }
+.inlineForm { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.input, .select, .textarea { padding: 8px 12px; background: #0a0a0a; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 13px; font-family: inherit; }
+.input:focus, .select:focus, .textarea:focus { outline: none; border-color: #555; }
+.select { cursor: pointer; }
+.textarea { resize: vertical; }
+.miniSelect { padding: 4px 8px; background: #0a0a0a; border: 1px solid #333; border-radius: 4px; color: #aaa; font-size: 11px; cursor: pointer; }
+.checkbox { accent-color: #fff; width: 16px; height: 16px; cursor: pointer; }
+
+/* Variants */
+.variantList { display: flex; flex-direction: column; gap: 8px; }
+.variantItem { display: flex; gap: 8px; align-items: center; }
+.variantItem .input { flex: 1; }
+
+/* Table */
+.tableWrap { overflow-x: auto; }
+.tableRow { display: grid; gap: 8px; padding: 10px 0; border-bottom: 1px solid #1a1a1a; align-items: center; }
+.tableRow5 { grid-template-columns: 0.5fr 2fr 1fr 1fr 1fr; }
+.tableRow7 { grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr; }
+.tableHeader { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+.tableCell { font-size: 13px; color: #ccc; }
+
+/* Team grid */
+.teamGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.teamCard { background: #111; border: 1px solid #222; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 4px; transition: border-color .2s; position: relative; }
+.teamCard:hover { border-color: #444; }
+.teamCard .deleteBtn { position: absolute; top: 8px; right: 8px; }
+.fontName { font-size: 14px; font-weight: 600; color: #fff; }
+
+/* Tasks */
+.taskItem { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
+.taskContent { flex: 1; font-size: 13px; color: #ccc; }
+
+/* Comments */
+.commentList { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.commentItem { display: flex; flex-direction: column; gap: 2px; padding: 10px; background: #111; border: 1px solid #1a1a1a; border-radius: 6px; font-size: 13px; color: #ccc; }
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; gap: 12px; }
+.timelineItem { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #aaa; }
+.timelineDot { width: 6px; height: 6px; border-radius: 50%; background: #555; flex-shrink: 0; }
+
+/* Funnel */
+.funnelChart { display: flex; flex-direction: column; gap: 10px; }
+.funnelStep { position: relative; height: 36px; display: flex; align-items: center; }
+.funnelBar { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(90deg, #1a1a2e, #111); border-radius: 4px; transition: width .3s; }
+.funnelLabel { position: relative; z-index: 1; padding-left: 12px; font-size: 13px; color: #ccc; font-weight: 500; }
+
+/* AI Box */
+.aiBox { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 8px; padding: 20px; margin-top: 16px; }
+.aiBoxHeader { font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.aiOutput { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: #888; line-height: 1.6; white-space: pre-wrap; word-break: break-word; margin: 0; }
+
+/* Helper / empty */
+.helperText { font-size: 12px; color: #555; }
+.emptyState { text-align: center; padding: 40px; color: #555; font-size: 14px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container { padding: 8px; }
+  .header { flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .headerRight { width: 100%; }
+  .title { font-size: 20px; }
+  .subtitle { font-size: 12px; }
+  .sectionTitle { font-size: 16px; margin-bottom: 12px; }
+  .tabNav { gap: 0; margin-bottom: 16px; scrollbar-width: none; -ms-overflow-style: none; }
+  .tabNav::-webkit-scrollbar { display: none; }
+  .tabBtn { font-size: 12px; padding: 8px 10px; }
+  .kpiRow { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px; }
+  .kpiCard { min-width: 0; padding: 10px 8px; }
+  .kpiValue { font-size: 18px; }
+  .kpiLabel { font-size: 10px; }
+  .cardGrid { grid-template-columns: 1fr; }
+  .card { padding: 12px; }
+  .teamGrid { grid-template-columns: 1fr; }
+  .fieldRow { flex-direction: column; gap: 8px; }
+  .fieldRow > * { min-width: 0; }
+  .controlsRow { flex-direction: column; gap: 6px; }
+  .controlsRow > * { max-width: 100%; }
+  .searchInput { max-width: 100%; width: 100%; }
+  .inlineForm { flex-direction: column; gap: 6px; padding: 10px; }
+  .inlineForm > * { width: 100%; box-sizing: border-box; }
+  .dnaBlock { padding: 12px; margin-bottom: 12px; }
+  .blockHeader { flex-wrap: wrap; gap: 6px; }
+  .tableWrap { overflow-x: auto; }
+  .tableRow { min-width: 400px; }
+  .tableRow5 { grid-template-columns: 0.5fr 2fr 1fr; }
+  .tableRow5 span:nth-child(4), .tableRow5 span:nth-child(5) { display: none; }
+  .tableRow7 { grid-template-columns: 2fr 1fr 1fr; }
+  .tableRow7 span:nth-child(4), .tableRow7 span:nth-child(5), .tableRow7 span:nth-child(6), .tableRow7 span:nth-child(7) { display: none; }
+  .aiBox { padding: 12px; }
+  .aiOutput { font-size: 11px; }
+  .ghostBtn, .deleteBtn, .miniSelect { min-height: auto; min-width: auto; }
+  .primaryBtn { padding: 10px 16px; font-size: 14px; width: 100%; }
+  .exportGrid { flex-direction: column; }
+  .exportBtn { width: 100%; }
 }
 
-.header {
-  margin-bottom: 32px;
-  border-bottom: 1px solid #333333;
-  padding-bottom: 24px;
-}
-
-.title {
-  font-size: 32px;
-  font-weight: 600;
-  color: #ffffff;
-  margin: 0 0 8px 0;
-}
-
-.subtitle {
-  font-size: 14px;
-  color: #999999;
-  margin: 0;
-}
-
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.statsBar {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.stat {
-  background: #1a1a1a;
-  border: 1px solid #333333;
-  border-radius: 6px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.stat span:first-child {
-  font-size: 12px;
-  color: #999999;
-  margin-bottom: 8px;
-}
-
-.stat span:last-child {
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.section {
-  background: #1a1a1a;
-  border: 1px solid #333333;
-  border-radius: 8px;
-  padding: 24px;
-}
-
-.section h2 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #ffffff;
-  margin: 0 0 16px 0;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.input,
-.textarea,
-.select {
-  background: #0a0a0a;
-  border: 1px solid #333333;
-  border-radius: 4px;
-  padding: 10px 12px;
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 13px;
-}
-
-.input::placeholder,
-.textarea::placeholder {
-  color: #666666;
-}
-
-.button {
-  background: #ffffff;
-  color: #000000;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.experimentsList {
-  display: grid;
-  gap: 12px;
-}
-
-.expCard {
-  background: #0a0a0a;
-  border: 1px solid #333333;
-  border-radius: 6px;
-  padding: 16px;
-}
-
-.expHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.expHeader h3 {
-  font-size: 14px;
-  font-weight: 600;
-  color: #ffffff;
-  margin: 0;
-}
-
-.deleteBtn {
-  background: none;
-  border: none;
-  color: #666666;
-  cursor: pointer;
-  font-size: 16px;
-  padding: 4px;
-}
-
-.hypothesis {
-  font-size: 12px;
-  color: #d0d0d0;
-  margin: 0 0 12px 0;
-  line-height: 1.4;
-}
-
-.resultSelector {
-  display: flex;
-  gap: 8px;
-}
-
-.select {
-  flex: 1;
-  font-size: 12px;
-  padding: 8px;
-}
-
-@media (max-width: 640px) {
-  .container {
-    padding: 16px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow-x: hidden;
-  }
-
-  .statsBar {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
+@media (max-width: 430px) {
+  .container { padding: 6px; }
+  .title { font-size: 18px; }
+  .tabBtn { font-size: 11px; padding: 7px 8px; }
+  .kpiRow { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+  .kpiCard { padding: 8px 6px; }
+  .kpiValue { font-size: 16px; }
+  .card { padding: 10px; }
+  .dnaBlock { padding: 10px; }
 }

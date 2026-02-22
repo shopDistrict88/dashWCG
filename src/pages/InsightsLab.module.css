@@ -4,21 +4,6 @@
   margin: 0 auto;
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow-x: hidden;
-  }
-  
-  .metrics {
-    grid-template-columns: 1fr !important;
-    gap: 1rem;
-  }
-}
-
 .header {
   margin-bottom: 3rem;
 }
@@ -278,4 +263,97 @@ input:checked + .slider:before {
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .header p {
+    font-size: 12px;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .metricCard {
+    padding: 12px;
+  }
+
+  .insightCard {
+    padding: 12px;
+  }
+
+  .insightHeader {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .actionButton {
+    width: 100%;
+  }
+
+  .trendsCard {
+    padding: 12px;
+  }
+
+  .trendItem {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .signalCard {
+    padding: 12px;
+  }
+
+  .signalHeader {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .signalInfo {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 6px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .metricCard {
+    padding: 10px;
+  }
+
+  .insightCard {
+    padding: 10px;
+  }
+
+  .trendsCard {
+    padding: 10px;
+  }
+
+  .signalCard {
+    padding: 10px;
+  }
 }
